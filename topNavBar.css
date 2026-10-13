@@ -1,0 +1,151 @@
+/* Shared styles for the two top nav bars (built by topNavBar.js) */
+
+/* Light mode (default): white page, AWS navy nav bars */
+:root,
+[data-theme="light"] {
+  --accent: #FF9900;          /* Amazon orange */
+  --page-bg: #FFFFFF;
+  --page-text: #16191F;
+  --nav-top-bg: #232F3E;      /* AWS squid ink */
+  --nav-second-bg: #161E2D;   /* slightly darker than the top bar */
+  --nav-text: #FFFFFF;
+}
+
+/* Dark mode: navy page, white nav bars */
+[data-theme="dark"] {
+  --page-bg: #232F3E;
+  --page-text: #FFFFFF;
+  --nav-top-bg: #FFFFFF;
+  --nav-second-bg: #EAEDED;   /* slightly darker than the top bar */
+  --nav-text: #232F3E;
+}
+
+body {
+  margin: 0;
+  background: var(--page-bg);
+  color: var(--page-text);
+  font-family: "Amazon Ember", Arial, sans-serif;
+}
+
+/* Both bars: left | centre | right columns, no gap between the bars */
+.nav-top,
+.nav-second {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  margin: 0;
+  color: var(--nav-text);
+}
+
+.nav-top {
+  padding: 12px 24px;
+  background: var(--nav-top-bg);
+}
+
+.nav-second {
+  padding: 6px 24px;
+  background: var(--nav-second-bg);
+}
+
+/* Site name on the left */
+.brand {
+  justify-self: start;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Page links in the middle */
+.nav-links {
+  display: flex;
+  gap: 24px;
+}
+
+.nav-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Orange underline on hover and on the current page */
+.nav-link:hover,
+.nav-link.active {
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 6px;
+}
+
+/* Right-hand groups in both bars */
+.nav-right,
+.nav-second-right {
+  grid-column: 3;
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Search bar (not functional yet) */
+.nav-search {
+  display: flex;
+  gap: 6px;
+  margin: 0;
+}
+
+.nav-search input {
+  padding: 5px 8px;
+  background: #FFFFFF;
+  color: #16191F;
+  border: 1px solid #879596;
+  border-radius: 4px;
+}
+
+.nav-search button {
+  padding: 5px 10px;
+  background: transparent;
+  color: inherit;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.nav-search button:hover {
+  border-color: var(--accent);
+}
+
+/* Orange Sign in button on the far right */
+.signin-btn {
+  padding: 6px 16px;
+  background: var(--accent);
+  color: #232F3E;
+  font-weight: bold;
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+.signin-btn:hover {
+  background: #EC7211;
+}
+
+/* Light / dark mode button */
+.theme-toggle {
+  padding: 4px 10px;
+  background: transparent;
+  color: inherit;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.theme-toggle:hover {
+  border-color: var(--accent);
+}
+
+/* Visible keyboard focus */
+.site-header a:focus-visible,
+.site-header button:focus-visible,
+.site-header input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
