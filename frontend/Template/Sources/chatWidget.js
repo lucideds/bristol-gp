@@ -1,14 +1,3 @@
-/*
- * Chat widget: a round button in the bottom-right corner that opens a small
- * chat popup. Right now it only shows the messages the user types (no reply).
- *
- * Connecting an AI later:
- *   Only change sendMessage(text) below. Make it call the AI (for example a
- *   fetch() to your backend) and return the reply as a string. handleSubmit()
- *   already shows any non-empty string it returns as an 'assistant' message.
- *   Use addMessage(role, text) if you need to show other messages
- *   (e.g. 'assistant' for streamed replies or an error notice).
- */
 (function () {
   /**
    * Sends the user's message to the AI.
@@ -74,11 +63,11 @@
   function buildChat() {
     var html =
       '<button type="button" class="chat-toggle" aria-label="Open chat" aria-expanded="false" aria-controls="chat-panel">' +
-        '\uD83D\uDCAC' +
+        'T buddy' +
       '</button>' +
       '<div id="chat-panel" class="chat-panel" role="dialog" aria-label="Chat" hidden>' +
         '<div class="chat-header">' +
-          '<span class="chat-title">Chat</span>' +
+          '<span class="chat-title">ask T buddy</span>' +
           '<button type="button" class="chat-close" aria-label="Close chat">\u00D7</button>' +
         '</div>' +
         '<div class="chat-messages" aria-live="polite"></div>' +

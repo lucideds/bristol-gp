@@ -35,7 +35,6 @@
   var PAGES = [
     { label: 'Home', path: 'home.html' },
     { label: 'T Level', path: 'TLevel.html' },
-    { label: 'Program', path: 'programs.html' },
     { label: 'Advice', path: 'advice.html' },
     { label: 'FAQ', path: 'faqs.html' },
     { label: 'Contact', path: 'contact.html' }

@@ -1,6 +1,4 @@
 (function () {
-  // Work out the site root from this script's own URL (same as topNavBar.js).
-  // document.currentScript only works here at the top level, not in callbacks.
   var script = document.currentScript;
   var SITE_ROOT = new URL('../', script.src);
 
