@@ -1,0 +1,46 @@
+/* Sticky footer: page content grows, footer sits at the bottom of short pages.
+   margin: 0 matches topNavBar.css so pages without the nav don't overflow 100vh. */
+body {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Footer keeps the page background; a thin line separates it from the content */
+.site-footer {
+  margin-top: auto;
+  padding: 16px 24px;
+  text-align: center;
+  background: transparent;
+  color: var(--page-text, #16191F);
+  border-top: 1px solid #879596;
+  font-family: "Amazon Ember", Arial, sans-serif;
+}
+
+.site-footer a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Orange underline on hover and on the current page, like the nav links */
+.site-footer a:hover,
+.site-footer a[aria-current="page"] {
+  text-decoration: underline;
+  text-decoration-color: var(--accent, #FF9900);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 6px;
+}
+
+.site-footer a:focus-visible {
+  outline: 2px solid var(--accent, #FF9900);
+  outline-offset: 2px;
+}
+
+/* On narrow screens keep the centred link clear of the chat button */
+@media (max-width: 480px) {
+  .site-footer {
+    padding-right: 88px;
+    padding-left: 88px;
+  }
+}
