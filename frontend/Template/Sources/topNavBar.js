@@ -2,7 +2,8 @@
   // 1. Work out the site root from this script's own URL.
   //    (document.currentScript only works here at the top level, not in callbacks.)
   var script = document.currentScript;
-  var SITE_ROOT = new URL('./', script.src);
+  //    The script lives in Template/Sources/, so the pages are one folder up.
+  var SITE_ROOT = new URL('../', script.src);
 
   function link(path) {
     return new URL(path, SITE_ROOT).href;
@@ -32,12 +33,12 @@
 
   // 3. Page links in the middle of the top bar, in order.
   var PAGES = [
-    { label: 'Home', path: 'homePage/home.html' },
-    { label: 'T Level', path: 'aboutTLevel/TLevel.html' },
-    { label: 'Program', path: 'programs/programs.html' },
-    { label: 'Advice', path: 'advicePage/advice.html' },
-    { label: 'FAQ', path: 'FAQsPage/faqs.html' },
-    { label: 'Contact', path: 'contactPage/contact.html' }
+    { label: 'Home', path: 'home.html' },
+    { label: 'T Level', path: 'TLevel.html' },
+    { label: 'Program', path: 'programs.html' },
+    { label: 'Advice', path: 'advice.html' },
+    { label: 'FAQ', path: 'faqs.html' },
+    { label: 'Contact', path: 'contact.html' }
   ];
 
   //checking if the links have loaded on the page
@@ -66,13 +67,13 @@
 
   //this actualy renders the bars
   function buildNav() {
-    var signinHref = link('signInPage/signin.html');
+    var signinHref = link('signin.html');
     var signin = currentAttrs(signinHref);
 
     var html =
       '<header class="site-header">' +
         '<nav class="nav-top" aria-label="Main">' +
-          '<a class="brand" href="' + link('homePage/home.html') + '">T Level Connect</a>' +
+          '<a class="brand" href="' + link('home.html') + '">T Level Connect</a>' +
           '<div class="nav-links">' +
             PAGES.map(function (p) { return navLink(p.label, p.path); }).join('') +
           '</div>' +
@@ -86,7 +87,7 @@
         '</nav>' +
         '<nav class="nav-second" aria-label="Accessibility and display">' +
           '<div class="nav-second-right">' +
-            navLink('Accessibility', 'accessibilityPage/accessibility.html') +
+            navLink('Accessibility', 'accessibility.html') +
             '<button type="button" class="theme-toggle"></button>' +
           '</div>' +
         '</nav>' +

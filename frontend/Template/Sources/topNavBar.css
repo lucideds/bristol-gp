@@ -1,13 +1,11 @@
-/* Shared styles for the two top nav bars (built by topNavBar.js) */
-
 /* Light mode (default): white page, AWS navy nav bars */
 :root,
 [data-theme="light"] {
-  --accent: #FF9900;          /* Amazon orange */
+  --accent: #FF9900;        
   --page-bg: #FFFFFF;
   --page-text: #16191F;
-  --nav-top-bg: #232F3E;      /* AWS squid ink */
-  --nav-second-bg: #161E2D;   /* slightly darker than the top bar */
+  --nav-top-bg: #232F3E;     
+  --nav-second-bg: #161E2D;   
   --nav-text: #FFFFFF;
 }
 
@@ -16,7 +14,7 @@
   --page-bg: #232F3E;
   --page-text: #FFFFFF;
   --nav-top-bg: #FFFFFF;
-  --nav-second-bg: #EAEDED;   /* slightly darker than the top bar */
+  --nav-second-bg: #EAEDED;   
   --nav-text: #232F3E;
 }
 
