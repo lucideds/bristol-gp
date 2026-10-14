@@ -5,6 +5,7 @@
 # The chat widget's AI API lives in chat_api.py and is plugged in below (see "AI chat").
 # =====================================================================
 
+import difflib     # Finds the closest matching text, used to suggest a page on the 404 page.
 import os          # Lets us work with file paths and read environment variables.
 import re          # Regular expressions, used to check that an email looks valid.
 import secrets     # Makes secure random values (used for a fallback secret key).
@@ -412,9 +413,28 @@ app.register_blueprint(chat_bp)
 
 # ---------- Error pages ----------
 
+def suggest_page(path):
+    """Returns the real page closest to a mistyped `path` (e.g. "/faq" gives "/faqs"),
+    or None if nothing is close enough."""
+    pages = sorted({                                       # Every page a visitor could open directly:
+        rule.rule for rule in app.url_map.iter_rules()
+        if "GET" in rule.methods                           # ...that can be visited,
+        and not rule.arguments                             # ...has no <variables> in the URL,
+        and not rule.rule.endswith(".html")                # ...is the clean URL (not the old .html one),
+        and not rule.rule.startswith(("/api", "/static", "/Sources"))  # ...and is a page, not data or files.
+    })
+    typed = path.lower().rstrip("/").removesuffix(".html") or "/"  # "/FAQ.html/" -> "/faq"
+    for page in pages:                                     # Same page in different capitals, e.g. "/FAQS"?
+        if page.lower() == typed and page != path:
+            return page
+    match = difflib.get_close_matches(typed, pages, n=1, cutoff=0.6)  # Otherwise, the closest spelling.
+    return match[0] if match and match[0] != path else None
+
+
 @app.errorhandler(404)                                     # Runs when a page isn't found.
 def page_not_found(e):
-    return render_template("404.html"), 404                # Show the 404 page with the 404 status code.
+    # Show the 404 page with the 404 status code, plus a "Did you mean...?" link if one is close.
+    return render_template("404.html", suggestion=suggest_page(request.path)), 404
 
 
 @app.errorhandler(500)                                     # Runs when something crashes on the server.
