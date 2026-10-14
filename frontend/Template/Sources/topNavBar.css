@@ -147,3 +147,107 @@ body {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
+
+/* Hamburger toggle: hidden on desktop, shown only at the mobile breakpoint below */
+.nav-toggle {
+  display: none;
+  padding: 4px 10px;
+  background: transparent;
+  color: inherit;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.nav-toggle:hover {
+  border-color: var(--accent);
+}
+
+/* Desktop: the collapsible wrapper is transparent to the .nav-top grid so the
+   links stay in the centre column and .nav-right stays in the right column.
+   The mobile media query below overrides this with the toggled panel. */
+.nav-collapsible {
+  display: contents;
+}
+
+/* Future-proofing for content added to currently-empty pages: media, tables and
+   form controls should never force horizontal scrolling. */
+img, picture, video, canvas, svg {
+  max-width: 100%;
+  height: auto;
+}
+
+table {
+  max-width: 100%;
+  display: block;
+  overflow-x: auto;
+}
+
+input, textarea, select, button {
+  max-width: 100%;
+}
+
+/* Tablet and below: collapse links/search/sign-in into a toggled panel */
+@media (max-width: 768px) {
+  .nav-top {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .nav-toggle {
+    display: inline-block;
+  }
+
+  .nav-collapsible {
+    display: none;
+    width: 100%;
+  }
+
+  .nav-collapsible--open {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 0 0;
+  }
+
+  .nav-collapsible--open .nav-links {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .nav-collapsible--open .nav-right {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .nav-collapsible--open .nav-search {
+    flex-direction: column;
+  }
+
+  .nav-collapsible--open .nav-search input {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .nav-collapsible--open .signin-btn {
+    text-align: center;
+  }
+}
+
+/* Small phones: tighten horizontal padding */
+@media (max-width: 480px) {
+  .nav-top {
+    padding: 12px 16px;
+  }
+
+  .nav-second {
+    padding: 6px 16px;
+  }
+}

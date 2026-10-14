@@ -133,3 +133,19 @@
   outline: 2px solid var(--accent, #FF9900);
   outline-offset: 2px;
 }
+
+/* Small phones: near-full-width sheet with even side margins */
+@media (max-width: 480px) {
+  .chat-panel {
+    right: 10px;
+    left: 10px;
+    width: auto;
+    bottom: 76px;
+  }
+
+  .chat-toggle {
+    right: 12px;
+    bottom: 12px;
+    padding: 10px 14px;
+  }
+}
