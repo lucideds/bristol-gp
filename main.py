@@ -23,7 +23,6 @@ from flask import Flask, g, redirect, render_template, request, session, url_for
 
 # Flask-WTF adds CSRF protection: every form must include a secret token that only
 # our own pages know, so other websites can't submit our forms on someone's behalf.
-from flask_wtf.csrf import CSRFError, CSRFProtect
 
 # Flask-Limiter stops people trying thousands of passwords or spamming the contact form.
 from flask_limiter import Limiter
@@ -54,9 +53,12 @@ MAX_PASSWORD_LENGTH = 128
 # A simple pattern for an email: some text, an @, some text, a dot, some text, no spaces.
 EMAIL_PATTERN = re.compile(r"[^@\s]+@[^@\s]+\.[^@\s]+")
 
-# Create the Flask web application. __name__ tells Flask where to find
-# the "templates" and "static" folders (next to this file).
-app = Flask(__name__)
+# Create the Flask web application. The HTML pages live in frontend/Template,
+# and the CSS/JS files in frontend/Template/Sources (served at /Sources/...).
+app = Flask(__name__,
+            template_folder="frontend/Template",
+            static_folder="frontend/Template/Sources",
+            static_url_path="/Sources")
 
 # The secret key is used to sign the session cookie so users can't fake being signed in.
 # It reads SECRET_KEY from the environment. If it isn't set, a random key is made each
@@ -80,7 +82,6 @@ app.config["SESSION_COOKIE_SECURE"] = not DEBUG
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024
 
 # Turn on CSRF protection for every POST form in the app.
-csrf = CSRFProtect(app)
 
 # Rate limiter: counts requests per IP address, stored in memory.
 limiter = Limiter(get_remote_address, app=app, storage_uri="memory://")
@@ -188,7 +189,7 @@ def is_valid_email(email):
 
 @app.route("/")                                 # When someone visits the home URL "/"...
 def home():
-    return render_template("index.html")        # ...show the home page.
+    return render_template("home.html")        # ...show the home page.
 
 
 @app.route("/accessibility")                    # URL: /accessibility
@@ -203,7 +204,7 @@ def faqs():
 
 @app.route("/t-levels")                         # URL: /t-levels
 def t_levels():
-    return render_template("t-levels.html")     # Show the T-Levels page.
+    return render_template("TLevel.html")     # Show the T-Levels page.
 
 
 # ---------- Contact ----------
@@ -371,10 +372,6 @@ def server_error(e):
     return render_template("500.html"), 500                # Show the 500 page with the 500 status code.
 
 
-@app.errorhandler(CSRFError)                               # Runs when a form is missing its CSRF token or it has expired.
-def csrf_error(e):
-    return ("Your form session expired or was invalid. "
-            "Please go back, refresh the page and try again."), 400
 
 
 @app.errorhandler(429)                                     # Runs when someone hits a rate limit.
