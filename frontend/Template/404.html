@@ -79,10 +79,47 @@
       }
     }
 
+    /* Compass shaped like the font's own 0 (same height, oval and stroke thickness)
+       so it sits evenly next to the real 0; the orange comes from currentColor */
+    .error-compass {
+      width: 0.59em;
+      max-width: none;   /* topNavBar.css caps svg at max-width: 100%, which squashed it */
+      height: 0.76em;
+      margin: 0 0.03em;  /* same side spacing the font gives its digits */
+      vertical-align: -0.01em;
+    }
+
+    /* The needle swings about as if it can't find north */
+    .compass-needle {
+      transform-box: view-box;
+      transform-origin: 50% 50%;
+      animation: needle-search 4s ease-in-out infinite;
+    }
+
+    @keyframes needle-search {
+      0%, 100% {
+        transform: rotate(-30deg);
+      }
+      30% {
+        transform: rotate(35deg);
+      }
+      55% {
+        transform: rotate(-10deg);
+      }
+      75% {
+        transform: rotate(25deg);
+      }
+    }
+
     /* No movement for people who have turned on "reduce motion" on their device */
     @media (prefers-reduced-motion: reduce) {
       .error-code span {
         animation: none;
+      }
+
+      .compass-needle {
+        animation: none;
+        transform: rotate(20deg);
       }
     }
 
@@ -201,7 +238,15 @@
 <body>
   <main class="error-page">
     <section class="error-card" aria-labelledby="error-title">
-      <p class="error-code" aria-hidden="true"><span>4</span><span>0</span><span>4</span></p>
+      <p class="error-code" aria-hidden="true"><span>4</span><span><!-- Compass in place of the 0, needle searching around because we're "lost" -->
+        <svg class="error-compass" viewBox="0 0 59 76" focusable="false">
+          <ellipse cx="29.5" cy="38" rx="21" ry="29.5" fill="none" stroke="currentColor" stroke-width="17"/>
+          <g class="compass-needle">
+            <polygon points="29.5,23 34,38 25,38" fill="currentColor"/>
+            <polygon points="29.5,53 34,38 25,38" fill="var(--page-text)" opacity="0.55"/>
+            <circle cx="29.5" cy="38" r="3" fill="var(--page-bg)"/>
+          </g>
+        </svg></span><span>4</span></p>
       <h1 id="error-title" class="error-title">Page not found</h1>
       <!-- request.path is the address they tried; Jinja escapes it, and long ones are shortened -->
       <p class="error-text">Sorry, we couldn't find <code class="error-path">{{ request.path|truncate(60, true) }}</code>. It may have been moved or the link may be wrong.</p>
