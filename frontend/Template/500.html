@@ -99,6 +99,16 @@
       color: var(--page-text);
     }
 
+    /* The address the visitor tried, shown like a small tag so typos stand out */
+    .error-path {
+      padding: 1px 6px;
+      font-family: Menlo, Consolas, monospace;
+      font-size: 0.875em;
+      overflow-wrap: anywhere;
+      background: rgba(135, 149, 150, 0.2);
+      border-radius: 4px;
+    }
+
     /* Orange button with navy text, same as the sign in button */
     .error-button {
       display: inline-flex;
@@ -186,7 +196,8 @@
     <section class="error-card" aria-labelledby="error-title">
       <p class="error-code" aria-hidden="true"><span>5</span><span>0</span><span>0</span></p>
       <h1 id="error-title" class="error-title">Something went wrong</h1>
-      <p class="error-text">Sorry, something went wrong on our side. It's not your fault. Please try again in a moment, or contact us if it keeps happening.</p>
+      <!-- request.path is the page that crashed; Jinja escapes it, and long ones are shortened -->
+      <p class="error-text">Sorry, something went wrong on our side while loading <code class="error-path">{{ request.path|truncate(60, true) }}</code>. It's not your fault. Please try again in a moment, or contact us if it keeps happening.</p>
       <div class="error-actions">
         <a class="error-button" href="/">Home page</a>
         <!-- An empty href reloads the current page -->
