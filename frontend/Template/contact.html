@@ -8,10 +8,37 @@
   <script src="Sources/topNavBar.js" defer></script>
   <link rel="stylesheet" href="Sources/footer.css">
   <link rel="stylesheet" href="Sources/chatWidget.css">
+  <link rel="stylesheet" href="Sources/auth.css">
   <script src="Sources/footer.js" defer></script>
   <script src="Sources/chatWidget.js" defer></script>
 </head>
 <body>
-
+  <main class="auth-page">
+    <section class="auth-card" aria-labelledby="contact-title">
+      <h1 id="contact-title" class="auth-title">Contact us</h1>
+      {% if success %}
+        <p class="form-message form-message--success" role="status">Thanks, your message has been sent.</p>
+      {% else %}
+        <form class="auth-form" method="post" action="/contact">
+          {% if error %}<p class="form-message form-message--error" role="alert">{{ error }}</p>{% endif %}
+          <div class="auth-field">
+            <label for="contact-name">Name</label>
+            <input id="contact-name" name="name" type="text" autocomplete="name" maxlength="100" required
+                   value="{{ request.form.name or (current_user.name if current_user else '') }}">
+          </div>
+          <div class="auth-field">
+            <label for="contact-email">Email</label>
+            <input id="contact-email" name="email" type="email" autocomplete="email" maxlength="254" required
+                   value="{{ request.form.email or (current_user.email if current_user else '') }}">
+          </div>
+          <div class="auth-field">
+            <label for="contact-message">Message</label>
+            <textarea id="contact-message" name="message" maxlength="2000" required>{{ request.form.message }}</textarea>
+          </div>
+          <button type="submit" class="auth-primary">Send message</button>
+        </form>
+      {% endif %}
+    </section>
+  </main>
 </body>
 </html>

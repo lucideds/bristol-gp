@@ -109,6 +109,8 @@
     function modeFromUrl() {
       if (location.hash === '#register') return 'register';
       if (new URLSearchParams(location.search).get('mode') === 'register') return 'register';
+      // The server shows this page at /register when sign-up fails, so open that tab.
+      if (location.pathname === '/register') return 'register';
       return 'signin';
     }
 

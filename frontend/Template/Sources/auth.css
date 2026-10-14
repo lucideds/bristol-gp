@@ -89,7 +89,8 @@
   font-weight: bold;
 }
 
-.auth-field input {
+.auth-field input,
+.auth-field textarea {
   width: 100%;
   box-sizing: border-box;
   padding: 8px;
@@ -138,6 +139,43 @@
   font-weight: bold;
   line-height: 14px;
   text-align: center;
+}
+
+/* Message from the server above a form (e.g. wrong password, message sent) */
+.form-message {
+  margin: 0 0 4px;
+  padding: 8px 10px;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+.form-message--error {
+  color: var(--auth-error);
+}
+
+.form-message--success {
+  color: #1D8102;
+}
+
+/* Multi-line box on the contact form, styled like the inputs */
+.auth-field textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* Signed-in details on the account page */
+.account-details {
+  margin: 0 0 16px;
+}
+
+.account-details dt {
+  font-size: 0.8125rem;
+  color: var(--auth-muted);
+}
+
+.account-details dd {
+  margin: 0 0 10px;
 }
 
 /* Full-width orange primary button */

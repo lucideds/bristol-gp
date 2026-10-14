@@ -24,10 +24,11 @@
       </div>
 
       <div id="panel-signin" role="tabpanel" aria-labelledby="tab-signin">
-        <form id="signin-form" class="auth-form" method="post" action="/login" novalidate>
+        <form id="signin-form" class="auth-form" method="post" action="/login{% if request.args.next %}?next={{ request.args.next|urlencode }}{% endif %}" novalidate>
+          {% if login_error %}<p class="form-message form-message--error" role="alert">{{ login_error }}</p>{% endif %}
           <div class="auth-field">
             <label for="signin-email">Email</label>
-            <input id="signin-email" name="email" type="email" autocomplete="email" required aria-describedby="signin-email-error">
+            <input id="signin-email" name="email" type="email" value="{{ request.form.email if login_error else '' }}" autocomplete="email" required aria-describedby="signin-email-error">
             <p id="signin-email-error" class="field-error" aria-live="polite" hidden><span class="field-error-icon" aria-hidden="true">!</span><span class="field-error-text"></span></p>
           </div>
           <div class="auth-field">
@@ -42,14 +43,15 @@
 
       <div id="panel-register" role="tabpanel" aria-labelledby="tab-register" hidden>
         <form id="register-form" class="auth-form" method="post" action="/register" novalidate>
+          {% if register_error %}<p class="form-message form-message--error" role="alert">{{ register_error }}</p>{% endif %}
           <div class="auth-field">
             <label for="register-name">Full name</label>
-            <input id="register-name" name="name" type="text" autocomplete="name" required aria-describedby="register-name-error">
+            <input id="register-name" name="name" type="text" value="{{ request.form.name if register_error else '' }}" autocomplete="name" required aria-describedby="register-name-error">
             <p id="register-name-error" class="field-error" aria-live="polite" hidden><span class="field-error-icon" aria-hidden="true">!</span><span class="field-error-text"></span></p>
           </div>
           <div class="auth-field">
             <label for="register-email">Email</label>
-            <input id="register-email" name="email" type="email" autocomplete="email" required aria-describedby="register-email-error">
+            <input id="register-email" name="email" type="email" value="{{ request.form.email if register_error else '' }}" autocomplete="email" required aria-describedby="register-email-error">
             <p id="register-email-error" class="field-error" aria-live="polite" hidden><span class="field-error-icon" aria-hidden="true">!</span><span class="field-error-text"></span></p>
           </div>
           <div class="auth-field">

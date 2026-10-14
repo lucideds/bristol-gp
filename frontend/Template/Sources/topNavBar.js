@@ -97,6 +97,26 @@
 
     document.body.insertAdjacentHTML('afterbegin', html);
 
+    // Ask the Flask server if someone is signed in; if so, turn "Sign in" into "Account".
+    // (Fails quietly when the page is opened as a file, so the button stays "Sign in".)
+    fetch(link('api/session'), { credentials: 'same-origin' })
+      .then(function (res) { return res.ok ? res.json() : null; })
+      .then(function (data) {
+        if (!data || !data.signed_in) return;
+        var btn = document.querySelector('.signin-btn');
+        var accountHref = link('account');
+        var cur = isCurrent(accountHref);
+        btn.href = accountHref;
+        btn.textContent = 'Account';
+        btn.classList.toggle('active', cur);
+        if (cur) {
+          btn.setAttribute('aria-current', 'page');
+        } else {
+          btn.removeAttribute('aria-current');
+        }
+      })
+      .catch(function () {});
+
     // Search is not working yet: stop the form from reloading the page.
     document.querySelector('.nav-search').addEventListener('submit', function (e) {
       e.preventDefault();
