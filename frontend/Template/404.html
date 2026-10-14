@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Page not found – T Level Connect</title>
   <!-- Paths start with "/" so styles still load on missing pages deeper in the site, e.g. /t-levels/xyz -->
+  <!-- Fredoka: rounded, friendly font used only for the big "404" -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600&display=swap">
   <link rel="stylesheet" href="/Sources/topNavBar.css">
   <link rel="stylesheet" href="/Sources/footer.css">
   <link rel="stylesheet" href="/Sources/chatWidget.css">
@@ -32,8 +36,9 @@
     /* Large orange status code. Decorative only: the heading below says what happened. */
     .error-code {
       margin: 0;
-      font-size: 6rem;
-      font-weight: bold;
+      font-family: "Fredoka", "Arial Rounded MT Bold", sans-serif;
+      font-size: 7rem;
+      font-weight: 600;
       line-height: 1;
       color: var(--accent);
     }
