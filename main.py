@@ -413,27 +413,48 @@ app.register_blueprint(chat_bp)
 
 # ---------- Error pages ----------
 
-def suggest_page(path):
-    """Returns the real page closest to a mistyped `path` (e.g. "/faq" gives "/faqs"),
-    or None if nothing is close enough."""
-    pages = sorted({                                       # Every page a visitor could open directly:
+def visitable_pages():
+    """Every page a visitor could open directly, e.g. ["/", "/advice", "/faqs", ...]."""
+    return sorted({
         rule.rule for rule in app.url_map.iter_rules()
         if "GET" in rule.methods                           # ...that can be visited,
         and not rule.arguments                             # ...has no <variables> in the URL,
         and not rule.rule.endswith(".html")                # ...is the clean URL (not the old .html one),
         and not rule.rule.startswith(("/api", "/static", "/Sources"))  # ...and is a page, not data or files.
     })
-    typed = path.lower().rstrip("/").removesuffix(".html") or "/"  # "/FAQ.html/" -> "/faq"
-    for page in pages:                                     # Same page in different capitals, e.g. "/FAQS"?
+
+
+def tidy_path(path):
+    """Lower-cases a path and drops a trailing "/" or ".html", e.g. "/FAQS.html/" gives "/faqs"."""
+    return path.lower().rstrip("/").removesuffix(".html") or "/"
+
+
+def same_page_ignoring_case(path):
+    """Returns the real page if `path` only differs by capitals, e.g. "/FAQS" gives "/faqs"."""
+    typed = tidy_path(path)
+    for page in visitable_pages():
         if page.lower() == typed and page != path:
             return page
-    match = difflib.get_close_matches(typed, pages, n=1, cutoff=0.6)  # Otherwise, the closest spelling.
+    return None
+
+
+def suggest_page(path):
+    """Returns the real page closest to a mistyped `path` (e.g. "/faq" gives "/faqs"),
+    or None if nothing is close enough."""
+    match = difflib.get_close_matches(tidy_path(path), visitable_pages(), n=1, cutoff=0.6)
     return match[0] if match and match[0] != path else None
 
 
 @app.errorhandler(404)                                     # Runs when a page isn't found.
 def page_not_found(e):
-    # Show the 404 page with the 404 status code, plus a "Did you mean...?" link if one is close.
+    # Only capitals wrong (e.g. "/FAQS")? Send them straight to the real page instead of a 404.
+    # GET/HEAD only, because redirecting a submitted form would lose what was typed into it.
+    correct = same_page_ignoring_case(request.path)
+    if correct and request.method in ("GET", "HEAD"):
+        query = request.query_string.decode()              # Keep anything after "?", e.g. "?next=/account".
+        return redirect(correct + ("?" + query if query else ""), code=301)  # 301 = moved permanently.
+
+    # Otherwise show the 404 page with the 404 status code, plus a "Did you mean...?" link if one is close.
     return render_template("404.html", suggestion=suggest_page(request.path)), 404
 
 
