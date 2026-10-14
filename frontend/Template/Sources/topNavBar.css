@@ -11,7 +11,7 @@
 
 /* Dark mode: navy page, white nav bars */
 [data-theme="dark"] {
-  --page-bg: #232F3E;
+  --page-bg: #0b0c0d;
   --page-text: #FFFFFF;
   --nav-top-bg: #232F3E;
   --nav-second-bg: #161E2D;   
