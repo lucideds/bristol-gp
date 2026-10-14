@@ -1,15 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="Sources/footer.css">
-    <link rel="stylesheet" href="Sources/chatWidget.css">
-    <script src="Sources/footer.js" defer></script>
-    <script src="Sources/chatWidget.js" defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Something went wrong – T Level Connect</title>
+  <!-- Paths start with "/" so styles still load whichever page crashed, e.g. /t-levels/xyz -->
+  <!-- M PLUS Rounded 1c: rounded, friendly font used only for the big "500" (text=50 loads just those glyphs) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@800&display=swap&text=50">
+  <link rel="stylesheet" href="/Sources/topNavBar.css">
+  <link rel="stylesheet" href="/Sources/footer.css">
+  <link rel="stylesheet" href="/Sources/chatWidget.css">
+  <script src="/Sources/topNavBar.js" defer></script>
+  <script src="/Sources/footer.js" defer></script>
+  <script src="/Sources/chatWidget.js" defer></script>
+  <style>
+    /* Error pages (404 / 500). Colours come from the theme variables in topNavBar.css,
+       so light mode is a white page and dark mode is a navy page. */
+
+    /* Page area between nav and footer; bottom padding clears the chat button */
+    .error-page {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 48px 24px 96px;
+      text-align: center;
+    }
+
+    .error-card {
+      max-width: 480px;
+    }
+
+    /* Large orange status code. Decorative only: the heading below says what happened. */
+    .error-code {
+      margin: 0;
+      font-family: "M PLUS Rounded 1c", "Arial Rounded MT Bold", sans-serif;
+      font-size: 7rem;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--accent);
+    }
+
+    .error-title {
+      margin: 20px 0 8px;
+      font-size: 1.75rem;
+      color: var(--page-text);
+    }
+
+    .error-text {
+      max-width: 400px;
+      margin: 0 auto 28px;
+      line-height: 1.5;
+      color: var(--page-text);
+    }
+
+    /* Orange button with navy text, same as the sign in button */
+    .error-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 40px;
+      padding: 0 20px;
+      box-sizing: border-box;
+      background: var(--accent);
+      color: #232F3E;
+      font-weight: bold;
+      text-decoration: none;
+      border: 1px solid #EC7211;
+      border-radius: 4px;
+      transition: background-color 0.15s ease;
+    }
+
+    .error-button:hover {
+      background: #EC7211;
+    }
+
+    .error-button:focus-visible {
+      outline: 2px solid var(--page-text);
+      outline-offset: 2px;
+    }
+
+    /* Three equal-width buttons in a row; stacked full width on phones */
+    .error-actions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      max-width: 420px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 480px) {
+      .error-actions {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Popular pages under the button, with the same orange underline as the nav links */
+    .error-links {
+      margin-top: 32px;
+      padding-top: 20px;
+      border-top: 1px solid #879596;
+    }
+
+    .error-links-title {
+      margin: 0 0 12px;
+      font-size: 0.875rem;
+      color: var(--page-text);
+    }
+
+    .error-links ul {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px 24px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .error-links a {
+      color: var(--page-text);
+      text-decoration: none;
+    }
+
+    .error-links a:hover {
+      text-decoration: underline;
+      text-decoration-color: var(--accent);
+      text-decoration-thickness: 3px;
+      text-underline-offset: 6px;
+    }
+
+    .error-links a:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+  </style>
 </head>
 <body>
-    
+  <main class="error-page">
+    <section class="error-card" aria-labelledby="error-title">
+      <p class="error-code" aria-hidden="true">500</p>
+      <h1 id="error-title" class="error-title">Something went wrong</h1>
+      <p class="error-text">Sorry, something went wrong on our side. It's not your fault. Please try again in a moment, or contact us if it keeps happening.</p>
+      <div class="error-actions">
+        <a class="error-button" href="/">Home page</a>
+        <!-- An empty href reloads the current page -->
+        <a class="error-button" href="">Try again</a>
+        <a class="error-button" href="/contact">Contact us</a>
+      </div>
+
+      <nav class="error-links" aria-labelledby="error-links-title">
+        <p id="error-links-title" class="error-links-title">Or try one of these pages:</p>
+        <ul>
+          <li><a href="/t-levels">T Levels</a></li>
+          <li><a href="/advice">Advice</a></li>
+          <li><a href="/faqs">FAQs</a></li>
+        </ul>
+      </nav>
+    </section>
+  </main>
 </body>
 </html>
