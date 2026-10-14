@@ -2,6 +2,7 @@
 # app.py - the Flask backend for the T-Levels website.
 # It serves the 10 HTML pages, stores user accounts and contact
 # messages in a SQLite database, and handles signing in and out.
+# The chat widget's AI API lives in chat_api.py and is plugged in below (see "AI chat").
 # =====================================================================
 
 import os          # Lets us work with file paths and read environment variables.
@@ -11,11 +12,13 @@ import sqlite3     # Python's built-in library for SQLite databases (a database 
 from functools import wraps  # Helper used when writing decorators, keeps the original function's name.
 from urllib.parse import urlparse  # Splits a URL into parts so we can check where a redirect goes.
 
+from dotenv import load_dotenv  # Reads settings like SECRET_KEY and OPENROUTER_API_KEY from a .env file.
+
 # Flask tools used in this file:
 #   Flask           - the class that creates the web app
 #   g               - a temporary storage area that lasts for one request (we keep the database connection and user in it)
 #   redirect        - sends the browser to a different URL
-#   render_template - loads an HTML file from the "templates" folder and fills in any {{ }} values
+#   render_template - loads an HTML file from the "frontend/Template" folder and fills in any {{ }} values
 #   request         - holds everything about the incoming request (form data, method, URL)
 #   session         - a secure cookie that remembers who is signed in between pages
 #   url_for         - builds a URL from a function name, e.g. url_for("home") gives "/"
@@ -34,12 +37,20 @@ from flask_limiter.util import get_remote_address
 #   check_password_hash    - checks a typed password against the scrambled version
 from werkzeug.security import check_password_hash, generate_password_hash
 
+# The AI chat API (/api/chat and /api/chat/stream) used by the chat widget.
+from chat_api import chat_bp
+
 # The folder this file lives in, so the database is always created next to app.py
 # no matter which folder you run the program from.
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Full path to the database file, e.g. ".../tlevels-site/site.db".
 DATABASE = os.path.join(BASE_DIR, "site.db")
+
+# Load settings from the .env file next to this file (if there is one).
+# Real environment variables always win over values in .env.
+# This runs before any os.environ.get() below, so .env can set them all.
+load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 # Debug mode is only switched on if the FLASK_DEBUG environment variable is "1".
 # This way it can't accidentally be left on when the site goes live.
@@ -54,12 +65,17 @@ MAX_PASSWORD_LENGTH = 128
 # A simple pattern for an email: some text, an @, some text, a dot, some text, no spaces.
 EMAIL_PATTERN = re.compile(r"[^@\s]+@[^@\s]+\.[^@\s]+")
 
-# Create the Flask web application. The HTML pages live in frontend/Template,
-# and the CSS/JS files in frontend/Template/Sources (served at /Sources/...).
-app = Flask(__name__,
-            template_folder="frontend/Template",
-            static_folder="frontend/Template/Sources",
-            static_url_path="/Sources")
+# Create the Flask web application.
+#   template_folder - the HTML pages live in frontend/Template
+#   static_folder   - the CSS and JavaScript live in frontend/Template/Sources
+#   static_url_path - serve them at /Sources/..., which matches the
+#                     href="Sources/..." links already used in the pages
+app = Flask(
+    __name__,
+    template_folder=os.path.join(BASE_DIR, "frontend", "Template"),
+    static_folder=os.path.join(BASE_DIR, "frontend", "Template", "Sources"),
+    static_url_path="/Sources",
+)
 
 # The secret key is used to sign the session cookie so users can't fake being signed in.
 # It reads SECRET_KEY from the environment. If it isn't set, a random key is made each
@@ -384,6 +400,14 @@ def logout():
     """Signs the user out."""
     session.clear()                                        # Forget who was signed in.
     return redirect(url_for("home"))                       # Go back to the home page.
+
+
+# ---------- AI chat ----------
+# The chat widget's API (/api/chat and /api/chat/stream) lives in chat_api.py.
+# It's exempt from CSRF because it only accepts JSON, which other websites can't send without our permission.
+
+csrf.exempt(chat_bp)
+app.register_blueprint(chat_bp)
 
 
 # ---------- Error pages ----------
