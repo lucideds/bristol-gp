@@ -43,6 +43,49 @@
       color: var(--accent);
     }
 
+    /* Each digit pops up in turn, then floats gently, staggered so they bob like a wave */
+    .error-code span {
+      display: inline-block;
+      animation:
+        digit-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both,
+        digit-float 3s ease-in-out 0.8s infinite;
+    }
+
+    .error-code span:nth-child(2) {
+      animation-delay: 0.1s, 1.2s;
+    }
+
+    .error-code span:nth-child(3) {
+      animation-delay: 0.2s, 1.6s;
+    }
+
+    @keyframes digit-pop {
+      from {
+        opacity: 0;
+        transform: translateY(24px) scale(0.6);
+      }
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    @keyframes digit-float {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-6px);
+      }
+    }
+
+    /* No movement for people who have turned on "reduce motion" on their device */
+    @media (prefers-reduced-motion: reduce) {
+      .error-code span {
+        animation: none;
+      }
+    }
+
     .error-title {
       margin: 20px 0 8px;
       font-size: 1.75rem;
@@ -141,7 +184,7 @@
 <body>
   <main class="error-page">
     <section class="error-card" aria-labelledby="error-title">
-      <p class="error-code" aria-hidden="true">500</p>
+      <p class="error-code" aria-hidden="true"><span>5</span><span>0</span><span>0</span></p>
       <h1 id="error-title" class="error-title">Something went wrong</h1>
       <p class="error-text">Sorry, something went wrong on our side. It's not your fault. Please try again in a moment, or contact us if it keeps happening.</p>
       <div class="error-actions">

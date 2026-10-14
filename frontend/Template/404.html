@@ -43,6 +43,49 @@
       color: var(--accent);
     }
 
+    /* Each digit pops up in turn, then floats gently, staggered so they bob like a wave */
+    .error-code span {
+      display: inline-block;
+      animation:
+        digit-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both,
+        digit-float 3s ease-in-out 0.8s infinite;
+    }
+
+    .error-code span:nth-child(2) {
+      animation-delay: 0.1s, 1.2s;
+    }
+
+    .error-code span:nth-child(3) {
+      animation-delay: 0.2s, 1.6s;
+    }
+
+    @keyframes digit-pop {
+      from {
+        opacity: 0;
+        transform: translateY(24px) scale(0.6);
+      }
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    @keyframes digit-float {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-6px);
+      }
+    }
+
+    /* No movement for people who have turned on "reduce motion" on their device */
+    @media (prefers-reduced-motion: reduce) {
+      .error-code span {
+        animation: none;
+      }
+    }
+
     .error-title {
       margin: 20px 0 8px;
       font-size: 1.75rem;
@@ -54,6 +97,16 @@
       margin: 0 auto 28px;
       line-height: 1.5;
       color: var(--page-text);
+    }
+
+    /* The address the visitor tried, shown like a small tag so typos stand out */
+    .error-path {
+      padding: 1px 6px;
+      font-family: Menlo, Consolas, monospace;
+      font-size: 0.875em;
+      overflow-wrap: anywhere;
+      background: rgba(135, 149, 150, 0.2);
+      border-radius: 4px;
     }
 
     /* Orange button with navy text, same as the sign in button */
@@ -148,9 +201,10 @@
 <body>
   <main class="error-page">
     <section class="error-card" aria-labelledby="error-title">
-      <p class="error-code" aria-hidden="true">404</p>
+      <p class="error-code" aria-hidden="true"><span>4</span><span>0</span><span>4</span></p>
       <h1 id="error-title" class="error-title">Page not found</h1>
-      <p class="error-text">Sorry, we couldn't find the page you were looking for. It may have been moved or the link may be wrong.</p>
+      <!-- request.path is the address they tried; Jinja escapes it, and long ones are shortened -->
+      <p class="error-text">Sorry, we couldn't find <code class="error-path">{{ request.path|truncate(60, true) }}</code>. It may have been moved or the link may be wrong.</p>
       <div class="error-actions">
         <a class="error-button" href="/">Home page</a>
         <!-- Takes the visitor back to the page they came from -->
