@@ -1,15 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="Sources/footer.css">
-    <link rel="stylesheet" href="Sources/chatWidget.css">
-    <script src="Sources/footer.js" defer></script>
-    <script src="Sources/chatWidget.js" defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page not found – T Level Connect</title>
+  <!-- Paths start with "/" so styles still load on missing pages deeper in the site, e.g. /t-levels/xyz -->
+  <!-- Fredoka: rounded, friendly font used only for the big "404" -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600&display=swap">
+  <link rel="stylesheet" href="/Sources/topNavBar.css">
+  <link rel="stylesheet" href="/Sources/footer.css">
+  <link rel="stylesheet" href="/Sources/chatWidget.css">
+  <script src="/Sources/topNavBar.js" defer></script>
+  <script src="/Sources/footer.js" defer></script>
+  <script src="/Sources/chatWidget.js" defer></script>
+  <style>
+    /* Error pages (404 / 500). Colours come from the theme variables in topNavBar.css,
+       so light mode is a white page and dark mode is a navy page. */
+
+    /* Page area between nav and footer; bottom padding clears the chat button */
+    .error-page {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 48px 24px 96px;
+      text-align: center;
+    }
+
+    .error-card {
+      max-width: 480px;
+    }
+
+    /* Large orange status code. Decorative only: the heading below says what happened. */
+    .error-code {
+      margin: 0;
+      font-family: "Fredoka", "Arial Rounded MT Bold", sans-serif;
+      font-size: 7rem;
+      font-weight: 600;
+      line-height: 1;
+      color: var(--accent);
+    }
+
+    .error-title {
+      margin: 16px 0 8px;
+      font-size: 1.75rem;
+      color: var(--page-text);
+    }
+
+    .error-text {
+      margin: 0 0 24px;
+      color: var(--page-text);
+    }
+
+    /* Orange button with navy text, same as the sign in button */
+    .error-button {
+      display: inline-block;
+      padding: 8px 20px;
+      background: var(--accent);
+      color: #232F3E;
+      font-weight: bold;
+      text-decoration: none;
+      border: 1px solid #EC7211;
+      border-radius: 4px;
+    }
+
+    .error-button:hover {
+      background: #EC7211;
+    }
+
+    .error-button:focus-visible {
+      outline: 2px solid var(--page-text);
+      outline-offset: 2px;
+    }
+  </style>
 </head>
 <body>
-    
+  <main class="error-page">
+    <section class="error-card" aria-labelledby="error-title">
+      <p class="error-code" aria-hidden="true">404</p>
+      <h1 id="error-title" class="error-title">Page not found</h1>
+      <p class="error-text">Sorry, we couldn't find the page you were looking for. It may have been moved or the link may be wrong.</p>
+      <a class="error-button" href="/">Go to the home page</a>
+    </section>
+  </main>
 </body>
 </html>
