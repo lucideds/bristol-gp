@@ -13,9 +13,9 @@
 [data-theme="dark"] {
   --page-bg: #232F3E;
   --page-text: #FFFFFF;
-  --nav-top-bg: #FFFFFF;
-  --nav-second-bg: #EAEDED;   
-  --nav-text: #232F3E;
+  --nav-top-bg: #232F3E;
+  --nav-second-bg: #161E2D;   
+  --nav-text: #ffffff;
 }
 
 body {
