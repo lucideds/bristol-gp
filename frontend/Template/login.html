@@ -1,11 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign in – T Level Connect</title>
+  <link rel="stylesheet" href="Sources/topNavBar.css">
+  <link rel="stylesheet" href="Sources/footer.css">
+  <link rel="stylesheet" href="Sources/chatWidget.css">
+  <link rel="stylesheet" href="Sources/auth.css">
+  <script src="Sources/topNavBar.js" defer></script>
+  <script src="Sources/footer.js" defer></script>
+  <script src="Sources/chatWidget.js" defer></script>
+  <script src="Sources/auth.js" defer></script>
 </head>
 <body>
-    
+  <main class="auth-page">
+    <section class="auth-card" aria-labelledby="auth-title">
+      <h1 id="auth-title" class="auth-title">Sign in</h1>
+
+      <div class="auth-switch" role="tablist" aria-label="Sign in or create an account">
+        <button type="button" role="tab" id="tab-signin" aria-controls="panel-signin" aria-selected="true" tabindex="0">Sign in</button>
+        <button type="button" role="tab" id="tab-register" aria-controls="panel-register" aria-selected="false" tabindex="-1">Sign up</button>
+      </div>
+
+      <div id="panel-signin" role="tabpanel" aria-labelledby="tab-signin">
+        <form id="signin-form" class="auth-form" method="post" action="/login" novalidate>
+          <div class="auth-field">
+            <label for="signin-email">Email</label>
+            <input id="signin-email" name="email" type="email" autocomplete="email" required aria-describedby="signin-email-error">
+            <p id="signin-email-error" class="field-error" aria-live="polite" hidden><span class="field-error-icon" aria-hidden="true">!</span><span class="field-error-text"></span></p>
+          </div>
+          <div class="auth-field">
+            <label for="signin-password">Password</label>
+            <input id="signin-password" name="password" type="password" autocomplete="current-password" required aria-describedby="signin-password-error">
+            <p id="signin-password-error" class="field-error" aria-live="polite" hidden><span class="field-error-icon" aria-hidden="true">!</span><span class="field-error-text"></span></p>
+          </div>
+          <button type="submit" class="auth-primary">Sign in</button>
+        </form>
+        <p class="auth-alt">New here? <a href="#register" data-auth-switch="register">Create an account</a></p>
+      </div>
+
+      <div id="panel-register" role="tabpanel" aria-labelledby="tab-register" hidden>
+        <form id="register-form" class="auth-form" method="post" action="/register" novalidate>
+          <div class="auth-field">
+            <label for="register-name">Full name</label>
+            <input id="register-name" name="name" type="text" autocomplete="name" required aria-describedby="register-name-error">
+            <p id="register-name-error" class="field-error" aria-live="polite" hidden><span class="field-error-icon" aria-hidden="true">!</span><span class="field-error-text"></span></p>
+          </div>
+          <div class="auth-field">
+            <label for="register-email">Email</label>
+            <input id="register-email" name="email" type="email" autocomplete="email" required aria-describedby="register-email-error">
+            <p id="register-email-error" class="field-error" aria-live="polite" hidden><span class="field-error-icon" aria-hidden="true">!</span><span class="field-error-text"></span></p>
+          </div>
+          <div class="auth-field">
+            <label for="register-password">Password</label>
+            <input id="register-password" name="password" type="password" autocomplete="new-password" minlength="8" required aria-describedby="register-password-hint register-password-error">
+            <p id="register-password-hint" class="field-hint">Passwords must be at least 8 characters.</p>
+            <p id="register-password-error" class="field-error" aria-live="polite" hidden><span class="field-error-icon" aria-hidden="true">!</span><span class="field-error-text"></span></p>
+          </div>
+          <div class="auth-field">
+            <label for="register-confirm">Confirm password</label>
+            <input id="register-confirm" name="confirm_password" type="password" autocomplete="new-password" required aria-describedby="register-confirm-error">
+            <p id="register-confirm-error" class="field-error" aria-live="polite" hidden><span class="field-error-icon" aria-hidden="true">!</span><span class="field-error-text"></span></p>
+          </div>
+          <button type="submit" class="auth-primary">Create account</button>
+        </form>
+        <p class="auth-alt">Already have an account? <a href="#signin" data-auth-switch="signin">Sign in</a></p>
+      </div>
+    </section>
+  </main>
 </body>
 </html>

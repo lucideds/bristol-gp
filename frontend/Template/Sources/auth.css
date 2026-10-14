@@ -1,0 +1,201 @@
+/* Sign in / sign up page tokens: error red and muted helper text */
+:root,
+[data-theme="light"] {
+  --auth-error: #C40000;
+  --auth-muted: #545B64;
+}
+
+[data-theme="dark"] {
+  --auth-error: #FF5D64;
+  --auth-muted: #D5DBDB;
+}
+
+/* Page area between nav and footer; bottom padding clears the chat button */
+.auth-page {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 48px 24px 96px;
+}
+
+/* Single narrow bordered card, no decoration */
+.auth-card {
+  width: 100%;
+  max-width: 360px;
+  box-sizing: border-box;
+  padding: 24px 26px;
+  background: var(--page-bg);
+  color: var(--page-text);
+  border: 1px solid #879596;
+  border-radius: 8px;
+}
+
+/* Large, light heading */
+.auth-title {
+  margin: 0 0 16px;
+  font-size: 1.75rem;
+  font-weight: 400;
+}
+
+/* Sign in / Sign up segmented switch */
+.auth-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: 20px;
+  border: 1px solid #879596;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.auth-switch [role="tab"] {
+  padding: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  border: 0;
+  cursor: pointer;
+}
+
+.auth-switch [role="tab"][aria-selected="true"] {
+  background: var(--nav-top-bg);
+  color: var(--nav-text);
+  font-weight: bold;
+}
+
+/* Orange underline on the unselected tab, like the nav links */
+.auth-switch [role="tab"][aria-selected="false"]:hover {
+  box-shadow: inset 0 -3px 0 var(--accent);
+}
+
+/* Inset focus ring so overflow: hidden on the switch doesn't clip it */
+.auth-switch [role="tab"]:focus-visible {
+  outline-offset: -3px;
+}
+
+/* Form fields */
+.auth-form {
+  margin: 0;
+}
+
+.auth-field {
+  margin-bottom: 14px;
+}
+
+.auth-field label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.875rem;
+  font-weight: bold;
+}
+
+.auth-field input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px;
+  background: #FFFFFF;
+  color: #16191F;
+  font: inherit;
+  border: 1px solid #879596;
+  border-radius: 4px;
+}
+
+.auth-field input[aria-invalid="true"] {
+  border-color: var(--auth-error);
+  box-shadow: 0 0 0 1px var(--auth-error);
+}
+
+/* Helper text under a field */
+.field-hint {
+  margin: 4px 0 0;
+  font-size: 0.8125rem;
+  color: var(--auth-muted);
+}
+
+/* Inline error: red text with a small round alert marker */
+.field-error {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  margin: 4px 0 0;
+  font-size: 0.8125rem;
+  color: var(--auth-error);
+}
+
+.field-error[hidden] {
+  display: none;
+}
+
+.field-error-icon {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  margin-top: 1px;
+  border-radius: 50%;
+  background: var(--auth-error);
+  color: #FFFFFF;
+  font-size: 0.6875rem;
+  font-weight: bold;
+  line-height: 14px;
+  text-align: center;
+}
+
+/* Full-width orange primary button */
+.auth-primary {
+  width: 100%;
+  margin-top: 6px;
+  padding: 8px 12px;
+  background: var(--accent);
+  color: #232F3E;
+  font: inherit;
+  font-weight: bold;
+  border: 1px solid #EC7211;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.auth-primary:hover {
+  background: #EC7211;
+}
+
+/* Alternate action under the form, separated by a thin line */
+.auth-alt {
+  margin: 20px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid #879596;
+  text-align: center;
+  font-size: 0.875rem;
+}
+
+.auth-alt a {
+  color: inherit;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.auth-alt a:hover,
+.auth-alt a:focus-visible {
+  text-decoration: underline;
+  text-decoration-color: #FF9900;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 6px;
+}
+
+/* Visible keyboard focus */
+.auth-card a:focus-visible,
+.auth-card button:focus-visible,
+.auth-card input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Narrow screens: tighter padding */
+@media (max-width: 480px) {
+  .auth-page {
+    padding: 24px 16px 96px;
+  }
+
+  .auth-card {
+    padding: 20px 16px;
+  }
+}
