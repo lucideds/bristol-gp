@@ -73,15 +73,18 @@
       '<header class="site-header">' +
         '<nav class="nav-top" aria-label="Main">' +
           '<a class="brand" href="' + link('home.html') + '">T Level Connect</a>' +
-          '<div class="nav-links">' +
-            PAGES.map(function (p) { return navLink(p.label, p.path); }).join('') +
-          '</div>' +
-          '<div class="nav-right">' +
-            '<form class="nav-search" role="search">' +
-              '<input type="search" name="q" placeholder="Search" aria-label="Search the site">' +
-              '<button type="submit">Search</button>' +
-            '</form>' +
-            '<a class="signin-btn' + signin.cls + '" href="' + signinHref + '"' + signin.aria + '>Sign in</a>' +
+          '<button type="button" class="nav-toggle" aria-expanded="false" aria-controls="nav-collapsible" aria-label="Menu">\u2630</button>' +
+          '<div class="nav-collapsible" id="nav-collapsible">' +
+            '<div class="nav-links">' +
+              PAGES.map(function (p) { return navLink(p.label, p.path); }).join('') +
+            '</div>' +
+            '<div class="nav-right">' +
+              '<form class="nav-search" role="search">' +
+                '<input type="search" name="q" placeholder="Search" aria-label="Search the site">' +
+                '<button type="submit">Search</button>' +
+              '</form>' +
+              '<a class="signin-btn' + signin.cls + '" href="' + signinHref + '"' + signin.aria + '>Sign in</a>' +
+            '</div>' +
           '</div>' +
         '</nav>' +
         '<nav class="nav-second" aria-label="Accessibility and display">' +
@@ -108,6 +111,40 @@
       applyTheme(next);
       saveTheme(next);
       updateToggle(toggle);
+    });
+
+    // Hamburger menu: collapses the links/search/sign-in group on narrow screens.
+    var navToggle = document.querySelector('.nav-toggle');
+    var navCollapsible = document.getElementById('nav-collapsible');
+
+    function closeNavMenu() {
+      navCollapsible.classList.remove('nav-collapsible--open');
+      navToggle.setAttribute('aria-expanded', 'false');
+    }
+
+    function openNavMenu() {
+      navCollapsible.classList.add('nav-collapsible--open');
+      navToggle.setAttribute('aria-expanded', 'true');
+    }
+
+    navToggle.addEventListener('click', function () {
+      if (navToggle.getAttribute('aria-expanded') === 'true') {
+        closeNavMenu();
+      } else {
+        openNavMenu();
+      }
+    });
+
+    // Close the menu on Escape.
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && navToggle.getAttribute('aria-expanded') === 'true') {
+        closeNavMenu();
+      }
+    });
+
+    // Close the menu once a link inside it is followed.
+    navCollapsible.addEventListener('click', function (e) {
+      if (e.target.closest('a')) closeNavMenu();
     });
   }
 
