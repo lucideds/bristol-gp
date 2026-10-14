@@ -165,13 +165,6 @@ body {
   border-color: var(--accent);
 }
 
-/* Desktop: the collapsible wrapper is transparent to the .nav-top grid so the
-   links stay in the centre column and .nav-right stays in the right column.
-   The mobile media query below overrides this with the toggled panel. */
-.nav-collapsible {
-  display: contents;
-}
-
 /* Future-proofing for content added to currently-empty pages: media, tables and
    form controls should never force horizontal scrolling. */
 img, picture, video, canvas, svg {
