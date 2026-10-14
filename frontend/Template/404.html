@@ -74,6 +74,46 @@
       outline: 2px solid var(--page-text);
       outline-offset: 2px;
     }
+
+    /* Popular pages under the button, with the same orange underline as the nav links */
+    .error-links {
+      margin-top: 32px;
+      padding-top: 20px;
+      border-top: 1px solid #879596;
+    }
+
+    .error-links-title {
+      margin: 0 0 12px;
+      font-size: 0.875rem;
+      color: var(--page-text);
+    }
+
+    .error-links ul {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px 24px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .error-links a {
+      color: var(--page-text);
+      text-decoration: none;
+    }
+
+    .error-links a:hover {
+      text-decoration: underline;
+      text-decoration-color: var(--accent);
+      text-decoration-thickness: 3px;
+      text-underline-offset: 6px;
+    }
+
+    .error-links a:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
   </style>
 </head>
 <body>
@@ -83,6 +123,16 @@
       <h1 id="error-title" class="error-title">Page not found</h1>
       <p class="error-text">Sorry, we couldn't find the page you were looking for. It may have been moved or the link may be wrong.</p>
       <a class="error-button" href="/">Go to the home page</a>
+
+      <nav class="error-links" aria-labelledby="error-links-title">
+        <p id="error-links-title" class="error-links-title">Or try one of these pages:</p>
+        <ul>
+          <li><a href="/t-levels">T Levels</a></li>
+          <li><a href="/advice">Advice</a></li>
+          <li><a href="/faqs">FAQs</a></li>
+          <li><a href="/contact">Contact us</a></li>
+        </ul>
+      </nav>
     </section>
   </main>
 </body>
