@@ -25,6 +25,7 @@
 
       <div id="panel-signin" role="tabpanel" aria-labelledby="tab-signin">
         <form id="signin-form" class="auth-form" method="post" action="/login{% if request.args.next %}?next={{ request.args.next|urlencode }}{% endif %}" novalidate>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           {% if login_error %}<p class="form-message form-message--error" role="alert">{{ login_error }}</p>{% endif %}
           <div class="auth-field">
             <label for="signin-email">Email</label>
@@ -43,6 +44,7 @@
 
       <div id="panel-register" role="tabpanel" aria-labelledby="tab-register" hidden>
         <form id="register-form" class="auth-form" method="post" action="/register" novalidate>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           {% if register_error %}<p class="form-message form-message--error" role="alert">{{ register_error }}</p>{% endif %}
           <div class="auth-field">
             <label for="register-name">Full name</label>

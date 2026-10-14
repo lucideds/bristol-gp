@@ -54,9 +54,12 @@ MAX_PASSWORD_LENGTH = 128
 # A simple pattern for an email: some text, an @, some text, a dot, some text, no spaces.
 EMAIL_PATTERN = re.compile(r"[^@\s]+@[^@\s]+\.[^@\s]+")
 
-# Create the Flask web application. __name__ tells Flask where to find
-# the "templates" and "static" folders (next to this file).
-app = Flask(__name__)
+# Create the Flask web application. The HTML pages live in frontend/Template,
+# and the CSS/JS files in frontend/Template/Sources (served at /Sources/...).
+app = Flask(__name__,
+            template_folder="frontend/Template",
+            static_folder="frontend/Template/Sources",
+            static_url_path="/Sources")
 
 # The secret key is used to sign the session cookie so users can't fake being signed in.
 # It reads SECRET_KEY from the environment. If it isn't set, a random key is made each
@@ -71,10 +74,11 @@ app.config["SECRET_KEY"] = secret_key
 
 # Cookie settings:
 #   SAMESITE "Lax" - the browser won't send our cookie with forms submitted from other websites.
-#   SECURE         - only send the cookie over HTTPS. Turned on when not in debug mode,
-#                    because local testing usually uses plain http://.
+#   SECURE         - only send the cookie over HTTPS. Turned on by setting HTTPS=1, because
+#                    local testing uses plain http:// and the browser would drop the cookie
+#                    (so nobody could stay signed in).
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
-app.config["SESSION_COOKIE_SECURE"] = not DEBUG
+app.config["SESSION_COOKIE_SECURE"] = os.environ.get("HTTPS") == "1"
 
 # Reject any request bigger than 16 KB. Our forms are tiny, so this only stops abuse.
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024
@@ -158,8 +162,7 @@ def inject_user():
 
 def login_required(view):
     """A decorator: put @login_required above a page function to make that page sign-in only.
-    (Not used at the moment, because the account page now shows sign in / sign up itself,
-    but it's here if you want to protect another page later.)"""
+    Used on the account page; add it to any other page you want to protect."""
     @wraps(view)                                # Keep the original function's name so url_for still works.
     def wrapped(*args, **kwargs):               # This replaces the page function and runs first.
         if g.user is None:                      # If nobody is signed in...
@@ -185,29 +188,63 @@ def is_valid_email(email):
 
 # ---------- Public pages ----------
 # Each of these links a URL to an HTML file in the templates folder.
+# The nav bar and footer (Sources/*.js) link to the ".html" file names, e.g. "/faqs.html",
+# so each page answers on both its file name and its short URL. The short URL is listed
+# last (closest to the function) so url_for() builds that one.
 
+@app.route("/home.html")
 @app.route("/")                                 # When someone visits the home URL "/"...
 def home():
-    return render_template("index.html")        # ...show the home page.
+    return render_template("home.html")         # ...show the home page.
 
 
+@app.route("/accessibility.html")
 @app.route("/accessibility")                    # URL: /accessibility
 def accessibility():
     return render_template("accessibility.html")  # Show the accessibility page.
 
 
+@app.route("/faqs.html")
 @app.route("/faqs")                             # URL: /faqs
 def faqs():
     return render_template("faqs.html")         # Show the FAQs page.
 
 
+@app.route("/TLevel.html")
 @app.route("/t-levels")                         # URL: /t-levels
 def t_levels():
-    return render_template("t-levels.html")     # Show the T-Levels page.
+    return render_template("TLevel.html")       # Show the T-Levels page.
+
+
+@app.route("/advice.html")
+@app.route("/advice")                           # URL: /advice
+def advice():
+    return render_template("advice.html")       # Show the advice page.
+
+
+@app.route("/privacy.html")
+@app.route("/privacy")                          # URL: /privacy
+def privacy():
+    return render_template("privacy.html")      # Show the privacy page.
+
+
+@app.route("/quiz.html")
+@app.route("/quiz")                             # URL: /quiz
+def quiz():
+    return render_template("quiz.html")         # Show the quiz page.
+
+
+@app.route("/api/session")                      # Used by topNavBar.js to show "Sign in" or "Account".
+def api_session():
+    """Tells the page's JavaScript whether someone is signed in (and their name)."""
+    if g.user is None:
+        return {"signed_in": False}             # Flask turns a dict into a JSON response.
+    return {"signed_in": True, "name": g.user["name"]}
 
 
 # ---------- Contact ----------
 
+@app.route("/contact.html", methods=["GET", "POST"])
 @app.route("/contact", methods=["GET", "POST"])  # GET = viewing the page, POST = submitting the form.
 @limiter.limit("5 per minute", methods=["POST"])  # At most 5 messages a minute from one person (stops spam).
 def contact():
@@ -267,7 +304,8 @@ def try_register(form):
     try:                                                   # Try to add the user...
         cur = db.execute(
             "INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)",
-            (name, email, generate_password_hash(password)),  # Store the scrambled password, never the real one.
+            (name, email, generate_password_hash(password, method="pbkdf2:sha256")),  # Store the scrambled password, never the real one.
+            # pbkdf2 is used because some Pythons (e.g. the one built into macOS) lack scrypt, the default.
         )
         db.commit()                                        # Save the new user.
     except sqlite3.IntegrityError:                         # This error happens if the email is already taken (UNIQUE rule).
@@ -297,38 +335,25 @@ def try_login(form):
     return None                                            # No error.
 
 
-@app.route("/account", methods=["GET", "POST"])            # URL: /account (view the page or submit a form).
-@limiter.limit("10 per minute", methods=["POST"])          # Slows down anyone guessing passwords.
+@app.route("/account.html")
+@app.route("/account")                                     # URL: /account
+@login_required                                            # Not signed in? Go to the sign-in page first.
 def account():
-    """Signed in: shows account details.
-    Not signed in: shows a sign-in form and a sign-up form."""
-    login_error = None                                     # Error message for the sign-in form (if any).
-    register_error = None                                  # Error message for the sign-up form (if any).
-
-    # Only handle a form if one was submitted AND nobody is signed in yet.
-    if request.method == "POST" and g.user is None:
-        action = request.form.get("action")                # The hidden field says which form was used.
-        if action == "login":                              # The sign-in form was submitted...
-            login_error = try_login(request.form)          # ...try to sign in.
-        elif action == "register":                         # The sign-up form was submitted...
-            register_error = try_register(request.form)    # ...try to create the account.
-        else:                                              # The hidden field was missing or changed...
-            login_error = "Something went wrong with the form. Please try again."
-        if login_error is None and register_error is None: # If neither failed...
-            return redirect(url_for("account"))            # ...reload the page, which now shows their details.
-
-    # Show the account page. The HTML decides what to show using {% if current_user %}.
-    return render_template(
-        "account.html",
-        login_error=login_error,                           # Pass any sign-in error to the page.
-        register_error=register_error,                     # Pass any sign-up error to the page.
-    )
+    """Shows the signed-in user's details and a sign-out button."""
+    return render_template("account.html")                 # The page reads the details from current_user.
 
 
-@app.route("/login", methods=["GET", "POST"])              # URL: /login (separate sign-in page).
+# login.html holds both the sign-in and the sign-up form. The sign-in form posts to
+# /login and the sign-up form posts to /register; both show login.html again on error.
+
+@app.route("/login.html", methods=["GET", "POST"])
+@app.route("/signin.html")                                 # The nav bar's "Sign in" button links here.
+@app.route("/login", methods=["GET", "POST"])              # URL: /login
 @limiter.limit("10 per minute", methods=["POST"])          # Slows down anyone guessing passwords.
 def login():
-    """Separate sign-in page."""
+    """Sign-in page."""
+    if g.user is not None:                                 # Already signed in? Nothing to do here.
+        return redirect(url_for("account"))
     error = None                                           # No error to start with.
     if request.method == "POST":                           # Form submitted?
         error = try_login(request.form)                    # Try to sign in.
@@ -337,19 +362,21 @@ def login():
             if is_safe_redirect(next_page):                # Only follow it if it stays on this site.
                 return redirect(next_page)                 # Send them to the page they wanted.
             return redirect(url_for("account"))            # Otherwise go to the account page.
-    return render_template("login.html", error=error)      # Show the login page (with any error).
+    return render_template("login.html", login_error=error)  # Show the login page (with any error).
 
 
-@app.route("/register", methods=["GET", "POST"])           # URL: /register (separate sign-up page).
+@app.route("/register", methods=["GET", "POST"])           # URL: /register
 @limiter.limit("10 per minute", methods=["POST"])          # Stops mass account creation.
 def register():
-    """Separate sign-up page."""
+    """Sign-up page (the "Sign up" tab of login.html)."""
+    if g.user is not None:                                 # Already signed in? Nothing to do here.
+        return redirect(url_for("account"))
     error = None                                           # No error to start with.
     if request.method == "POST":                           # Form submitted?
         error = try_register(request.form)                 # Try to create the account.
         if error is None:                                  # It worked:
             return redirect(url_for("account"))            # Go to the account page.
-    return render_template("register.html", error=error)   # Show the register page (with any error).
+    return render_template("login.html", register_error=error)  # Show the sign-up tab (with any error).
 
 
 @app.route("/logout", methods=["POST"])                    # URL: /logout. POST only, so other sites can't sign people out with a link.

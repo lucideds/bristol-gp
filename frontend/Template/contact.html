@@ -20,6 +20,7 @@
         <p class="form-message form-message--success" role="status">Thanks, your message has been sent.</p>
       {% else %}
         <form class="auth-form" method="post" action="/contact">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           {% if error %}<p class="form-message form-message--error" role="alert">{{ error }}</p>{% endif %}
           <div class="auth-field">
             <label for="contact-name">Name</label>

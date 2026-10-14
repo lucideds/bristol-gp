@@ -40,7 +40,7 @@
     }
 
     function clearAll(form) {
-      Array.prototype.forEach.call(form.querySelectorAll('input'), clearError);
+      Array.prototype.forEach.call(form.querySelectorAll('input:not([type="hidden"])'), clearError);
     }
 
     // ---------- Field rules: each returns an error message, or '' if valid ----------
@@ -144,14 +144,14 @@
         e.preventDefault();
         var mode = a.getAttribute('data-auth-switch');
         setMode(mode, false);
-        panels[mode].querySelector('input').focus();
+        panels[mode].querySelector('input:not([type="hidden"])').focus();
       });
     });
 
     // ---------- Submit: block only when invalid, otherwise post natively ----------
 
     function onSubmit(e) {
-      var inputs = e.target.querySelectorAll('input');
+      var inputs = e.target.querySelectorAll('input:not([type="hidden"])');
       var firstInvalid = null;
       Array.prototype.forEach.call(inputs, function (input) {
         if (!validate(input) && !firstInvalid) firstInvalid = input;
