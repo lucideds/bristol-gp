@@ -27,7 +27,7 @@ from flask import Blueprint, Response, current_app, jsonify, request, stream_wit
 chat_bp = Blueprint("chat_api", __name__)
 
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"  # OpenRouter's chat API.
-DEFAULT_CHAT_MODEL = "nvidia/nemotron-3.5-lightning:free"        # Used unless OPENROUTER_MODEL is set.
+DEFAULT_CHAT_MODEL = "nvidia/nemotron-3.5-super-vl:free"        # Used unless OPENROUTER_MODEL is set.
 
 # The instructions the AI gets before every conversation. Visitors can't change these.
 CHAT_SYSTEM_PROMPT = """
