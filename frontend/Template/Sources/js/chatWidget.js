@@ -5,7 +5,10 @@
   var script = document.currentScript;
   var API_URL = new URL('../../api/chat', script.src).href;            // Whole reply at once (fallback).
   var STREAM_URL = new URL('../../api/chat/stream', script.src).href;  // Reply streamed word by word.
-  var STAR_URL = new URL('../assests/star.png', script.src).href;      // Icon in the chat header.
+  var SPARKLE_URL = new URL('../assests/chat-ai-sparkle.svg', script.src).href;              // Header + launcher icon.
+  var SPARKLE_SMALL_URL = new URL('../assests/chat-ai-sparkle-small.svg', script.src).href;  // "AI-generated" badge icon.
+  var SEND_ICON_URL = new URL('../assests/chat-send.svg', script.src).href;                  // Send button icon.
+  var LEARN_MORE_URL = new URL('../../faqs.html', script.src).href;                           // Disclaimer link.
 
   var MAX_HISTORY = 12;          // Most recent messages sent to the server each time.
   var MAX_STORED_REPLY = 4000;   // Long replies are shortened in the history (not on screen).
@@ -193,6 +196,32 @@
     list.scrollTop = list.scrollHeight;
   }
 
+  // The "AI-generated" label shown at the top of every AI reply.
+  function makeAiBadge() {
+    var badge = document.createElement('span');
+    badge.className = 'chat-badge chat-msg-badge';
+    var icon = document.createElement('img');
+    icon.src = SPARKLE_SMALL_URL;
+    icon.alt = '';
+    icon.className = 'chat-badge-icon';
+    badge.appendChild(icon);
+    badge.appendChild(document.createTextNode('AI-generated'));
+    return badge;
+  }
+
+  // Puts the text in a message bubble (as plain text, never HTML). AI replies also get the badge.
+  function fillMessage(msg, role, text) {
+    if (role === 'assistant') {
+      msg.appendChild(makeAiBadge());
+      var body = document.createElement('span');
+      body.className = 'chat-msg-text';
+      body.textContent = text;
+      msg.appendChild(body);
+    } else {
+      msg.textContent = text;
+    }
+  }
+
   /**
    * Shows a message in the chat list.
    * @param {'user'|'assistant'|'error'} role Who sent the message.
@@ -202,7 +231,7 @@
   function addMessage(role, text) {
     var msg = document.createElement('div');
     msg.className = 'chat-msg chat-msg--' + role;
-    msg.textContent = text;
+    fillMessage(msg, role, text);
     list.appendChild(msg);
     scrollToBottom();
     return msg;
@@ -215,8 +244,12 @@
     streamEl = document.createElement('div');
     streamEl.className = 'chat-msg chat-msg--assistant chat-msg--streaming';
     streamEl.setAttribute('aria-hidden', 'true');
+    streamEl.appendChild(makeAiBadge());
+    var body = document.createElement('span');
+    body.className = 'chat-msg-text';
     streamText = document.createTextNode('');
-    streamEl.appendChild(streamText);
+    body.appendChild(streamText);
+    streamEl.appendChild(body);
     list.setAttribute('aria-busy', 'true');
     list.appendChild(streamEl);
     scrollToBottom();
@@ -237,7 +270,7 @@
       if (fullText) {
         var msg = document.createElement('div');
         msg.className = 'chat-msg chat-msg--assistant';
-        msg.textContent = fullText;
+        fillMessage(msg, 'assistant', fullText);
         list.replaceChild(msg, streamEl);
       } else {
         list.removeChild(streamEl);
@@ -358,24 +391,29 @@
   function buildChat() {
     var html =
       '<button type="button" class="chat-toggle" aria-label="Open T buddy chat" aria-expanded="false" aria-controls="chat-panel">' +
+        '<img src="' + SPARKLE_URL + '" alt="" class="chat-toggle-icon">' +
         'T buddy' +
       '</button>' +
       '<div id="chat-panel" class="chat-panel" role="dialog" aria-labelledby="chat-title" aria-describedby="chat-disclaimer" hidden>' +
         '<div class="chat-header">' +
           '<span id="chat-title" class="chat-title">' +
-            '<img src="' + STAR_URL + '" alt="" class="chat-title-icon">' +
-            'ask a question' +
+            '<img src="' + SPARKLE_URL + '" alt="" class="chat-title-icon">' +
+            'Ask a question' +
           '</span>' +
+          '<span class="chat-badge chat-header-badge">AI assistant</span>' +
           '<button type="button" class="chat-close" aria-label="Close chat">\u00D7</button>' +
         '</div>' +
-        '<p id="chat-disclaimer" class="chat-disclaimer">' +
-          'AI assistant \u2013 it can make mistakes. Check placement details on the official Amazon pages, and please don\u2019t share personal information.' +
-        '</p>' +
         '<div class="chat-messages" role="log" aria-live="polite" aria-relevant="additions"></div>' +
         '<form class="chat-form">' +
-          '<input type="text" class="chat-input" aria-label="Type a message" placeholder="Type a message\u2026" autocomplete="off" maxlength="2000">' +
-          '<button type="submit" class="chat-send">Send</button>' +
+          '<input type="text" class="chat-input" aria-label="Type a message" placeholder="Type your question" autocomplete="off" maxlength="2000">' +
+          '<button type="submit" class="chat-send" aria-label="Send">' +
+            '<img src="' + SEND_ICON_URL + '" alt="" class="chat-send-icon">' +
+          '</button>' +
         '</form>' +
+        '<p id="chat-disclaimer" class="chat-disclaimer">' +
+          'AI responses may be inaccurate. Check important information and don\u2019t share personal details. ' +
+          '<a href="' + LEARN_MORE_URL + '">Learn more</a>' +
+        '</p>' +
       '</div>';
 
     document.body.insertAdjacentHTML('beforeend', html);
