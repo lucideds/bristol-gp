@@ -1,10 +1,11 @@
 (function () {
   // Work out the chat API URL from this script's own URL, like topNavBar.js does.
   // (document.currentScript only works here at the top level, not in callbacks.)
-  // The script lives in Template/Sources/, so the site root is one folder up.
+  // The script lives in Template/Sources/js/, so the site root is two folders up.
   var script = document.currentScript;
-  var API_URL = new URL('../api/chat', script.src).href;            // Whole reply at once (fallback).
-  var STREAM_URL = new URL('../api/chat/stream', script.src).href;  // Reply streamed word by word.
+  var API_URL = new URL('../../api/chat', script.src).href;            // Whole reply at once (fallback).
+  var STREAM_URL = new URL('../../api/chat/stream', script.src).href;  // Reply streamed word by word.
+  var STAR_URL = new URL('../assests/star.png', script.src).href;      // Icon in the chat header.
 
   var MAX_HISTORY = 12;          // Most recent messages sent to the server each time.
   var MAX_STORED_REPLY = 4000;   // Long replies are shortened in the history (not on screen).
@@ -361,7 +362,10 @@
       '</button>' +
       '<div id="chat-panel" class="chat-panel" role="dialog" aria-labelledby="chat-title" aria-describedby="chat-disclaimer" hidden>' +
         '<div class="chat-header">' +
-          '<span id="chat-title" class="chat-title">ask T buddy</span>' +
+          '<span id="chat-title" class="chat-title">' +
+            '<img src="' + STAR_URL + '" alt="" class="chat-title-icon">' +
+            'ask a question' +
+          '</span>' +
           '<button type="button" class="chat-close" aria-label="Close chat">\u00D7</button>' +
         '</div>' +
         '<p id="chat-disclaimer" class="chat-disclaimer">' +

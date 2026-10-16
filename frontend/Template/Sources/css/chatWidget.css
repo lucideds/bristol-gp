@@ -31,14 +31,15 @@
   max-height: calc(100vh - 100px);
   max-height: calc(100dvh - 100px);   /* ignored where dvh is unsupported */
   display: flex;
-  border-radius: 8px;
+  border-radius: 12px;
   flex-direction: column;
   background: var(--page-bg, #FFFFFF);
   color: var(--page-text, #16191F);
-  border: 1px solid #879596;
+  border: 1.2px solid #232424;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
   font-family: "Amazon Ember", Arial, sans-serif;
   z-index: 1000;
+
 }
 
 .chat-panel[hidden] {
@@ -58,10 +59,20 @@
   align-items: center;
   padding: 8px 12px;
   border-bottom: 1px solid #879596;
+  background-color: #374f6e;
+  border-radius: 11px 11px 0px 0px;
 }
 
 .chat-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-weight: bold;
+}
+
+.chat-title-icon {
+  width: 18px;
+  height: 18px;
 }
 
 .chat-close {

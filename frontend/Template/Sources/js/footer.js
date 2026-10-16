@@ -1,6 +1,6 @@
 (function () {
   var script = document.currentScript;
-  var SITE_ROOT = new URL('../', script.src);
+  var SITE_ROOT = new URL('../../', script.src);
 
   function link(path) {
     return new URL(path, SITE_ROOT).href;

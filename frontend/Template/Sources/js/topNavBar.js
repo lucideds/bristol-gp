@@ -2,8 +2,8 @@
   // 1. Work out the site root from this script's own URL.
   //    (document.currentScript only works here at the top level, not in callbacks.)
   var script = document.currentScript;
-  //    The script lives in Template/Sources/, so the pages are one folder up.
-  var SITE_ROOT = new URL('../', script.src);
+  //    The script lives in Template/Sources/js/, so the pages are two folders up.
+  var SITE_ROOT = new URL('../../', script.src);
 
   function link(path) {
     return new URL(path, SITE_ROOT).href;
@@ -72,7 +72,9 @@
     var html =
       '<header class="site-header">' +
         '<nav class="nav-top" aria-label="Main">' +
-          '<a class="brand" href="' + link('home.html') + '">T Level Connect</a>' +
+          '<a class="brand" href="' + link('home.html') + '">' +
+            '<img src="' + link('Sources/assests/amazon_logo.png') + '" alt="Home">' +
+         '</a>' +
           '<button type="button" class="nav-toggle" aria-expanded="false" aria-controls="nav-collapsible" aria-label="Menu">\u2630</button>' +
           '<div class="nav-collapsible" id="nav-collapsible">' +
             '<div class="nav-links">' +

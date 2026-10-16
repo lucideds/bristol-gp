@@ -4,7 +4,7 @@
   --accent: #FF9900;        
   --page-bg: #FFFFFF;
   --page-text: #16191F;
-  --nav-top-bg: #232F3E;     
+  --nav-top-bg: #374f6e;     
   --nav-second-bg: #161E2D;   
   --nav-text: #FFFFFF;
 }
@@ -50,12 +50,10 @@ body {
 }
 
 /* Site name on the left */
-.brand {
-  justify-self: start;
-  font-size: 1.25rem;
-  font-weight: bold;
-  color: inherit;
-  text-decoration: none;
+.brand img {
+  display: block;
+  height: 40px;
+  width: auto;
 }
 
 /* Page links in the middle */
