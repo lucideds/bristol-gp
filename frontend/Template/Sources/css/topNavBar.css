@@ -25,155 +25,247 @@ body {
   font-family: "Amazon Ember", Arial, sans-serif;
 }
 
-/* Both bars: left | centre | right columns, no gap between the bars */
-.nav-top,
-.nav-second {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  margin: 0;
-  color: var(--nav-text);
+/* ---------- Site header (Figma "header") ---------- */
+/* Header-only tokens: same values in light and dark themes */
+.site-header {
+  --hdr-navy: #232f3e;
+  --hdr-dark: #131a22;
+  --hdr-ink: #0f1111;
+  --hdr-placeholder: #565959;
+  --hdr-orange: #ff9900;
+  --hdr-orange-hover: #fa8900;
+  --hdr-orange-border: #a35c00;
+  --hdr-white: #fff;
+  font-family: "Atkinson Hyperlegible", "Amazon Ember", Arial, sans-serif;
+  color: var(--hdr-white);
 }
 
+/* Two full-width stacked bars, no gap between them */
 .nav-top {
-  min-height: 60px;
-  padding: 0 24px;
-  background: var(--nav-top-bg);
+  margin: 0;
+  background: var(--hdr-navy);
+}
+
+.nav-second {
+  margin: 0;
+  background: var(--hdr-dark);
+}
+
+/* Centred 1200px content column inside each bar */
+.nav-container {
+  display: flex;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
   box-sizing: border-box;
 }
 
-/* Slim second bar: small text so it reads as secondary to the main bar */
-.nav-second {
-  padding: 4px 24px;
-  background: var(--nav-second-bg);
-  font-size: 0.875rem;
+.nav-top-inner {
+  height: 68px;
+  padding: 0 24px 0 46px;
 }
 
-/* Site name on the left */
+.nav-second-inner {
+  height: 44px;
+  padding: 0 24px 0 16px;
+}
+
+/* Logo */
+.brand {
+  flex: none;
+  display: block;
+}
+
 .brand img {
   display: block;
-  height: 40px;
-  width: auto;
+  width: 102px;
+  height: 34px;
 }
 
-/* Page links in the middle */
-.nav-links {
-  display: flex;
-  gap: 24px;
-}
-
-.nav-link {
-  padding: 4px 0;
-  color: inherit;
-  text-decoration: none;
-}
-
-/* Orange underline on hover and on the current page */
-.nav-link:hover,
-.nav-link.active {
-  text-decoration: underline;
-  text-decoration-color: var(--accent);
-  text-decoration-thickness: 3px;
-  text-underline-offset: 6px;
-}
-
-/* Right-hand groups in both bars */
-.nav-right,
-.nav-second-right {
-  grid-column: 3;
-  justify-self: end;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-/* Search bar (not functional yet): input and button joined into one 34px-high control */
+/* Search: white input joined to an orange button (visual only for now) */
 .nav-search {
   display: flex;
-  margin: 0;
+  flex: 0 1 560px;
+  min-width: 0;
+  height: 44px;
+  margin: 0 0 0 40px;
 }
 
 .nav-search input {
-  width: 180px;
-  height: 34px;
-  padding: 0 10px;
+  flex: 1;
+  min-width: 0;
+  width: auto;
+  height: 44px;
+  padding: 0 12px;
   box-sizing: border-box;
-  background: #FFFFFF;
-  color: #16191F;
+  background: #fff;
+  color: var(--hdr-ink);
   font: inherit;
-  font-size: 0.875rem;
-  border: 1px solid #879596;
-  border-right: 0;
-  border-radius: 4px 0 0 4px;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  border: 1.6px solid #fff;
+  border-radius: 8px 0 0 8px;
+}
+
+.nav-search input::placeholder {
+  color: var(--hdr-placeholder);
+  opacity: 1;
 }
 
 .nav-search button {
-  height: 34px;
-  padding: 0 12px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 59.2px;
+  height: 44px;
+  padding: 0;
   box-sizing: border-box;
-  background: #EAEDED;
-  color: #232F3E;
-  font: inherit;
-  font-size: 0.875rem;
-  border: 1px solid #879596;
-  border-radius: 0 4px 4px 0;
+  background: var(--hdr-orange);
+  border: 1.6px solid var(--hdr-orange-border);
+  border-radius: 0 8px 8px 0;
   cursor: pointer;
 }
 
 .nav-search button:hover {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: var(--hdr-orange-hover);
 }
 
-/* Orange Sign in button on the far right */
-.signin-btn {
+.nav-search button img {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+/* Accessibility / Sign in tools on the right of the top bar */
+.nav-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  margin-left: auto;
+}
+
+.nav-tool {
   display: inline-flex;
   align-items: center;
-  height: 34px;
-  padding: 0 16px;
+  gap: 8px;
+  height: 44px;
+  padding: 0 12px;
   box-sizing: border-box;
-  background: var(--accent);
-  color: #232F3E;
-  font-weight: bold;
-  border-radius: 4px;
-  text-decoration: none;
-}
-
-.signin-btn:hover {
-  background: #EC7211;
-}
-
-/* Light / dark mode button */
-.theme-toggle {
-  padding: 3px 10px;
-  background: transparent;
-  color: inherit;
-  font: inherit;
+  color: #fff;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 24px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
   white-space: nowrap;
-  border: 1px solid currentColor;
   border-radius: 4px;
+}
+
+/* Icons are drawn with ::before so they survive the "Sign in" -> "Account" text swap */
+.nav-tool::before {
+  content: "";
+  flex: none;
+  width: 24px;
+  height: 24px;
+  background: center / 24px 24px no-repeat;
+}
+
+.nav-tool--accessibility::before {
+  background-image: url("../assests/nav-accessibility.svg");
+}
+
+.nav-tool--signin::before {
+  background-image: url("../assests/nav-signin.svg");
+}
+
+.nav-tool:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.nav-tool.active {
+  box-shadow: inset 0 -4px 0 var(--hdr-orange);
+}
+
+/* Page links in the dark nav bar */
+.nav-links {
+  display: flex;
+  align-items: stretch;
+  height: 44px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 12px;
+  box-sizing: border-box;
+  color: #fff;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 24px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.nav-link:hover {
+  box-shadow: inset 0 -2px 0 rgba(255, 153, 0, 0.6);
+}
+
+/* Current page: 4px inset orange bar, so the text does not shift */
+.nav-link.active {
+  box-shadow: inset 0 -4px 0 var(--hdr-orange);
+}
+
+.nav-second-right {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+/* Light / dark mode button, styled as a nav bar item */
+.theme-toggle {
+  height: 44px;
+  padding: 0 12px;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 24px;
+  white-space: nowrap;
+  border: 0;
   cursor: pointer;
 }
 
 .theme-toggle:hover {
-  border-color: var(--accent);
+  box-shadow: inset 0 -2px 0 rgba(255, 153, 0, 0.6);
 }
 
 /* Visible keyboard focus */
 .site-header a:focus-visible,
 .site-header button:focus-visible,
 .site-header input:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--hdr-orange);
   outline-offset: 2px;
+}
+
+/* Keep the ring inside the 44px dark bar */
+.site-header .nav-link:focus-visible,
+.site-header .theme-toggle:focus-visible {
+  outline-offset: -2px;
 }
 
 /* Hamburger toggle: hidden on desktop, shown only at the mobile breakpoint below */
 .nav-toggle {
   display: none;
-  padding: 4px 10px;
+  flex: none;
+  padding: 0;
   background: transparent;
-  color: inherit;
-  border: 1px solid currentColor;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: 4px;
   font-size: 1.25rem;
   line-height: 1;
@@ -181,11 +273,10 @@ body {
 }
 
 .nav-toggle:hover {
-  border-color: var(--accent);
+  border-color: var(--hdr-orange);
 }
 
-/* Desktop: the collapsible wrapper is transparent to the .nav-top grid so the
-   links stay in the centre column and .nav-right stays in the right column.
+/* Desktop: the collapsible wrapper is transparent to the dark bar's flex layout.
    The mobile media query below overrides this with the toggled panel. */
 .nav-collapsible {
   display: contents;
@@ -208,62 +299,97 @@ input, textarea, select, button {
   max-width: 100%;
 }
 
-/* Tablet and below: collapse links/search/sign-in into a toggled panel */
+/* Small laptops: tighten spacing in the top bar */
+@media (max-width: 1024px) {
+  .nav-top-inner {
+    padding: 0 24px;
+  }
+
+  .nav-search {
+    margin-left: 24px;
+  }
+
+  .nav-tools {
+    margin-left: 16px;
+  }
+}
+
+/* Tablet and below: search drops to its own row; page links collapse behind the hamburger */
 @media (max-width: 768px) {
-  .nav-top {
-    display: flex;
+  .nav-top-inner {
+    height: auto;
     flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
+    row-gap: 12px;
     padding: 12px 24px;
   }
 
+  .nav-tools {
+    margin-left: auto;
+  }
+
   .nav-toggle {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    margin-left: 8px;
+  }
+
+  .nav-search {
+    order: 10;
+    flex: 1 1 100%;
+    margin: 0;
+  }
+
+  .nav-second-inner {
+    height: auto;
+    min-height: 44px;
+    flex-wrap: wrap;
+    padding: 0 24px;
+  }
+
+  .nav-second-right {
+    order: 1;
   }
 
   .nav-collapsible {
     display: none;
-    width: 100%;
   }
 
   .nav-collapsible--open {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-    width: 100%;
-    padding: 12px 0 0;
+    display: block;
+    order: 2;
+    flex: 1 1 100%;
   }
 
   .nav-collapsible--open .nav-links {
     flex-direction: column;
-    gap: 12px;
+    height: auto;
   }
 
-  .nav-collapsible--open .nav-right {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-  }
-
-  .nav-collapsible--open .nav-search input {
-    flex: 1;
-    width: auto;
-  }
-
-  .nav-collapsible--open .signin-btn {
-    justify-content: center;
+  .nav-collapsible--open .nav-link {
+    width: 100%;
   }
 }
 
-/* Small phones: tighten horizontal padding */
+/* Small phones: tighter padding, icon-only tools (text kept for the accessible name) */
 @media (max-width: 480px) {
-  .nav-top {
-    padding: 12px 16px;
+  .nav-top-inner,
+  .nav-second-inner {
+    padding-left: 16px;
+    padding-right: 16px;
   }
 
-  .nav-second {
-    padding: 6px 16px;
+  .nav-tools {
+    gap: 4px;
+  }
+
+  .nav-tool {
+    width: 44px;
+    padding: 0;
+    gap: 0;
+    justify-content: center;
+    font-size: 0;
   }
 }

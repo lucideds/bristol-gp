@@ -68,31 +68,39 @@
   function buildNav() {
     var signinHref = link('signin.html');
     var signin = currentAttrs(signinHref);
+    var a11yHref = link('accessibility.html');
+    var a11y = currentAttrs(a11yHref);
 
     var html =
       '<header class="site-header">' +
-        '<nav class="nav-top" aria-label="Main">' +
-          '<a class="brand" href="' + link('home.html') + '">' +
-            '<img src="' + link('Sources/assests/amazon_logo.png') + '" alt="Home">' +
-         '</a>' +
-          '<button type="button" class="nav-toggle" aria-expanded="false" aria-controls="nav-collapsible" aria-label="Menu">\u2630</button>' +
-          '<div class="nav-collapsible" id="nav-collapsible">' +
-            '<div class="nav-links">' +
-              PAGES.map(function (p) { return navLink(p.label, p.path); }).join('') +
+        '<div class="nav-top">' +
+          '<div class="nav-container nav-top-inner">' +
+            '<a class="brand" href="' + link('home.html') + '">' +
+              '<img src="' + link('Sources/assests/amazon_logo.png') + '" alt="Home" width="102" height="34">' +
+            '</a>' +
+            '<form class="nav-search" role="search">' +
+              '<input type="search" name="q" placeholder="Search T Levels and placements" aria-label="Search the site">' +
+              '<button type="submit" aria-label="Search">' +
+                '<img src="' + link('Sources/assests/nav-search.svg') + '" alt="" width="24" height="24">' +
+              '</button>' +
+            '</form>' +
+            '<div class="nav-tools">' +
+              '<a class="nav-tool nav-tool--accessibility' + a11y.cls + '" href="' + a11yHref + '"' + a11y.aria + '>Accessibility</a>' +
+              '<a class="nav-tool nav-tool--signin signin-btn' + signin.cls + '" href="' + signinHref + '"' + signin.aria + '>Sign in</a>' +
             '</div>' +
-            '<div class="nav-right">' +
-              '<form class="nav-search" role="search">' +
-                '<input type="search" name="q" placeholder="Search" aria-label="Search the site">' +
-                '<button type="submit">Search</button>' +
-              '</form>' +
-              '<a class="signin-btn' + signin.cls + '" href="' + signinHref + '"' + signin.aria + '>Sign in</a>' +
-            '</div>' +
+            '<button type="button" class="nav-toggle" aria-expanded="false" aria-controls="nav-collapsible" aria-label="Menu">\u2630</button>' +
           '</div>' +
-        '</nav>' +
-        '<nav class="nav-second" aria-label="Accessibility and display">' +
-          '<div class="nav-second-right">' +
-            navLink('Accessibility', 'accessibility.html') +
-            '<button type="button" class="theme-toggle"></button>' +
+        '</div>' +
+        '<nav class="nav-second" aria-label="Main">' +
+          '<div class="nav-container nav-second-inner">' +
+            '<div class="nav-collapsible" id="nav-collapsible">' +
+              '<div class="nav-links">' +
+                PAGES.map(function (p) { return navLink(p.label, p.path); }).join('') +
+              '</div>' +
+            '</div>' +
+            '<div class="nav-second-right">' +
+              '<button type="button" class="theme-toggle"></button>' +
+            '</div>' +
           '</div>' +
         '</nav>' +
       '</header>';
