@@ -58,10 +58,11 @@ CHAT_RATE_WINDOW = 60           # ...in this many seconds.
 CHAT_TIMEOUT = (5, 30)          # Seconds to wait for OpenRouter: (to connect, to reply).
                                 # When streaming, "to reply" is the longest gap allowed between bits of the reply.
 CHAT_STREAM_MAX_SECONDS = 120   # Longest a whole streamed reply may take.
-CHAT_MAX_TOKENS = 2048          # Most tokens (roughly word pieces) the AI may use for one reply.
-# Nemotron's hidden "thinking" used to use up the whole token budget and cut replies off mid-sentence.
-# "effort": "none" turns the thinking off, and "exclude" makes sure it's never sent back to us.
-CHAT_REASONING = {"effort": "none", "exclude": True}
+CHAT_MAX_TOKENS = 4096          # Most tokens (roughly word pieces) the AI may use for one reply, thinking included.
+# The model "thinks" before replying. "effort": "medium" lets OpenRouter use about half of
+# CHAT_MAX_TOKENS for thinking, leaving the rest for the reply so it isn't cut off mid-sentence.
+# "exclude" makes sure the thinking is never sent back to us (or to visitors).
+CHAT_REASONING = {"effort": "medium", "exclude": True}
 
 # Rate limit data: IP address -> times of that IP's recent requests.
 # It lives in memory, so it resets when the server restarts. That's fine for a basic safeguard.
@@ -176,7 +177,7 @@ def call_openrouter(clean, api_key, model, stream=False):
         "messages": [{"role": "system", "content": CHAT_SYSTEM_PROMPT}] + clean,
         "max_tokens": CHAT_MAX_TOKENS,
         "temperature": 0.3,
-        "reasoning": dict(CHAT_REASONING),     # No hidden "thinking", and never send it back.
+        "reasoning": dict(CHAT_REASONING),     # Medium thinking, never sent back.
     }
     if stream:
         body["stream"] = True                  # Ask OpenRouter to send the reply a few words at a time.
