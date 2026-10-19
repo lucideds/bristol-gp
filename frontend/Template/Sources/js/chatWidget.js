@@ -392,7 +392,6 @@
     var html =
       '<button type="button" class="chat-toggle" aria-label="Open T buddy chat" aria-expanded="false" aria-controls="chat-panel">' +
         '<img src="' + SPARKLE_URL + '" alt="" class="chat-toggle-icon">' +
-        'T buddy' +
       '</button>' +
       '<div id="chat-panel" class="chat-panel" role="dialog" aria-labelledby="chat-title" aria-describedby="chat-disclaimer" hidden>' +
         '<div class="chat-header">' +
