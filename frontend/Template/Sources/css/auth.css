@@ -237,3 +237,311 @@
     padding: 20px 16px;
   }
 }
+
+/* Sign in card, styled to the Figma "Signin" frame (node 7:1363).
+   Fixed light colours in every theme, like the chat panel and accessibility popup;
+   text sizes in rem so the larger-text settings still apply. */
+.auth-card--figma {
+  --auth-error: #b12704;
+  --auth-muted: #565959;
+  width: 100%;
+  max-width: 23.75rem;
+  box-sizing: border-box;
+  padding: 24px;
+  background: #fff;
+  color: #0f1111;
+  border: 0.8px solid #d5d9d9;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(15, 17, 17, 0.12), 0 1px 1.5px rgba(15, 17, 17, 0.2);
+  font-family: "Atkinson Hyperlegible", "Amazon Ember", Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+/* The Figma card has no Sign in / Sign up switch; the tab buttons stay in the DOM for auth.js */
+.auth-card--figma .auth-switch[hidden] {
+  display: none;
+}
+
+.auth-card--figma .auth-title {
+  margin: 0;
+  font-size: 1.75rem;
+  line-height: 2.125rem;
+  font-weight: 700;
+  color: #0f1111;
+}
+
+.auth-card--figma .auth-subtitle {
+  margin: 8px 0 0;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  color: #565959;
+}
+
+.auth-card--figma .auth-form {
+  margin-top: 20px;
+}
+
+.auth-card--figma .auth-field {
+  margin: 0 0 20px;
+}
+
+.auth-card--figma .auth-field label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 700;
+  color: #0f1111;
+}
+
+.auth-card--figma .auth-field input {
+  display: block;
+  height: 2.75rem;
+  padding: 0 12px;
+  background: #fff;
+  color: #0f1111;
+  border: 1.6px solid #6f7777;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  box-shadow: none;
+}
+
+.auth-card--figma .auth-field input:focus-visible {
+  outline: 2px solid #ff9900;
+  outline-offset: 2px;
+}
+
+.auth-card--figma .auth-field input[aria-invalid="true"] {
+  border-color: #b12704;
+  box-shadow: none;
+}
+
+/* Show / Hide sits inside the password input on the right */
+.auth-card--figma .password-wrap {
+  position: relative;
+}
+
+.auth-card--figma .password-wrap input {
+  padding-right: 4.5rem;
+}
+
+.auth-card--figma .password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  margin: 0;
+  padding: 4px 0;
+  background: none;
+  border: 0;
+  font-family: inherit;
+  font-size: 0.833rem;
+  line-height: 1.05rem;
+  font-weight: 700;
+  color: #007185;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* "Keep me signed in": native checkbox drawn like the Figma one */
+.auth-card--figma .auth-check {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 2.75rem;
+  margin: 0 0 12px;
+}
+
+.auth-card--figma .auth-check input {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: 0;
+  background: #fff;
+  border: 1px solid #767676;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.auth-card--figma .auth-check input:checked {
+  background: #0f1111 url("../assests/a11y-check.svg") center / 0.875rem 0.875rem no-repeat;
+  border-color: #0f1111;
+}
+
+.auth-card--figma .auth-check label {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 400;
+  color: #0f1111;
+  cursor: pointer;
+}
+
+/* Orange pill primary button */
+.auth-card--figma .auth-primary {
+  display: block;
+  width: 100%;
+  min-height: 2.75rem;
+  margin: 0;
+  padding: 0 16px;
+  background: #ff9900;
+  color: #0f1111;
+  border: 1.6px solid #a35c00;
+  border-radius: 22px;
+  font: inherit;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+}
+
+.auth-card--figma .auth-primary:hover {
+  background: #fa8900;
+}
+
+.auth-card--figma .auth-link {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #007185;
+  text-decoration: underline;
+}
+
+.auth-card--figma .auth-divider {
+  height: 0;
+  margin: 20px 0 0;
+  border: 0;
+  border-top: 0.8px solid #d5d9d9;
+}
+
+.auth-card--figma .auth-alt-text {
+  margin: 20px 0 0;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #0f1111;
+}
+
+/* White pill secondary button (switches to the sign-up form) */
+.auth-card--figma .auth-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 2.75rem;
+  margin-top: 12px;
+  padding: 0 16px;
+  background: #fff;
+  color: #0f1111;
+  border: 1.6px solid #0f1111;
+  border-radius: 22px;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+}
+
+.auth-card--figma .auth-secondary:hover {
+  background: #f7fafa;
+}
+
+.auth-card--figma .field-hint {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #565959;
+}
+
+/* Inline field error: warning triangle + bold red text */
+.auth-card--figma .field-error {
+  gap: 6px;
+  align-items: flex-start;
+  margin-top: 4px;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 700;
+  color: #b12704;
+}
+
+.auth-card--figma .field-error-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin: 0;
+  border-radius: 0;
+  background: url("../assests/signin-field-error.svg") center / contain no-repeat;
+  font-size: 0;
+}
+
+/* Error summary box at the top of the card */
+.auth-card--figma .auth-error-summary {
+  position: relative;
+  margin: 0 0 20px;
+  padding: 16px 16px 16px 52px;
+  background: #fdeae6;
+  color: #0f1111;
+  border: 1.6px solid #b12704;
+  border-radius: 8px;
+}
+
+.auth-card--figma .auth-error-summary[hidden] {
+  display: none;
+}
+
+.auth-card--figma .auth-error-summary::before {
+  content: "";
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  width: 1.5rem;
+  height: 1.5rem;
+  background: url("../assests/signin-alert-error.svg") center / contain no-repeat;
+}
+
+.auth-card--figma .auth-error-summary-title {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 700;
+}
+
+.auth-card--figma .auth-error-summary-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 400;
+}
+
+.auth-card--figma .auth-error-summary-list a {
+  color: #0f1111;
+  text-decoration: underline;
+}
+
+/* Visible keyboard focus (teal ring, readable on white and on the orange button) */
+.auth-card--figma a:focus-visible,
+.auth-card--figma button:focus-visible,
+.auth-card--figma .auth-check input:focus-visible,
+.auth-card--figma .auth-error-summary:focus {
+  outline: 2px solid #007185;
+  outline-offset: 2px;
+}
+
+/* Keep the Figma padding on narrow screens too */
+@media (max-width: 480px) {
+  .auth-card--figma {
+    padding: 24px;
+  }
+}
+
+/* High contrast: keep the white card edge defined on the black page */
+[data-theme="high-contrast"] .auth-card--figma {
+  border-color: #fff;
+}

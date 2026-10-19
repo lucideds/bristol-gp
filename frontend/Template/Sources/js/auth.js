@@ -39,8 +39,63 @@
       return input.getAttribute('aria-invalid') === 'true';
     }
 
+    // Only inputs with a rule have an error element (the "Keep me signed in" checkbox has neither).
     function clearAll(form) {
-      Array.prototype.forEach.call(form.querySelectorAll('input:not([type="hidden"])'), clearError);
+      Array.prototype.forEach.call(form.querySelectorAll('input:not([type="hidden"])'), function (input) {
+        if (rules[input.id]) clearError(input);
+      });
+    }
+
+    // ---------- Error summary at the top of the card ----------
+
+    var summary = document.getElementById('auth-error-summary');
+    var summaryList = summary && summary.querySelector('.auth-error-summary-list');
+
+    function hideSummary() {
+      if (!summary) return;
+      summaryList.textContent = '';
+      summary.hidden = true;
+    }
+
+    function showSummary(invalidInputs) {
+      if (!summary) return;
+      summaryList.textContent = '';
+      invalidInputs.forEach(function (input) {
+        var li = document.createElement('li');
+        var a = document.createElement('a');
+        a.href = '#' + input.id;
+        a.textContent = errorFor(input).querySelector('.field-error-text').textContent;
+        a.addEventListener('click', function (e) {
+          e.preventDefault();
+          input.focus();
+        });
+        li.appendChild(a);
+        summaryList.appendChild(li);
+      });
+      summary.hidden = false;
+    }
+
+    // ---------- Show / Hide password ----------
+
+    function setPasswordVisible(toggle, input, visible) {
+      input.type = visible ? 'text' : 'password';
+      toggle.textContent = visible ? 'Hide' : 'Show';
+      toggle.setAttribute('aria-label', visible ? 'Hide password' : 'Show password');
+    }
+
+    function eachToggle(root, fn) {
+      Array.prototype.forEach.call(root.querySelectorAll('.password-toggle'), function (toggle) {
+        var input = document.getElementById(toggle.getAttribute('aria-controls'));
+        if (input) fn(toggle, input);
+      });
+    }
+
+    function initPasswordToggles() {
+      eachToggle(document, function (toggle, input) {
+        toggle.addEventListener('click', function () {
+          setPasswordVisible(toggle, input, input.type === 'password');
+        });
+      });
     }
 
     // ---------- Field rules: each returns an error message, or '' if valid ----------
@@ -48,7 +103,7 @@
     function checkEmail(input) {
       var v = input.value.trim();
       if (!v) return 'Enter your email address';
-      if (!EMAIL_RE.test(v)) return 'Enter a valid email address';
+      if (!EMAIL_RE.test(v)) return 'Enter an email address like name@example.com';
       return '';
     }
 
@@ -74,6 +129,7 @@
     };
 
     function validate(input) {
+      if (!rules[input.id]) return true;
       var msg = rules[input.id](input);
       if (msg) {
         showError(input, msg);
@@ -84,6 +140,9 @@
     }
 
     // ---------- Sign in / Sign up switch ----------
+
+    // The first setMode runs on page load and must keep any server error in the summary.
+    var modeReady = false;
 
     function setMode(mode, focusTab) {
       var other = mode === 'register' ? 'signin' : 'register';
@@ -96,6 +155,7 @@
       panels[mode].hidden = false;
       panels[other].hidden = true;
       clearAll(panels[other].querySelector('form'));
+      if (modeReady) hideSummary();
 
       heading.textContent = TITLES[mode];
       document.title = TITLES[mode] + ' – T Level Connect';
@@ -115,6 +175,7 @@
     }
 
     setMode(modeFromUrl(), false);
+    modeReady = true;
 
     window.addEventListener('hashchange', function () {
       if (location.hash === '#register' || location.hash === '#signin') {
@@ -152,18 +213,25 @@
 
     function onSubmit(e) {
       var inputs = e.target.querySelectorAll('input:not([type="hidden"])');
-      var firstInvalid = null;
+      var invalid = [];
       Array.prototype.forEach.call(inputs, function (input) {
-        if (!validate(input) && !firstInvalid) firstInvalid = input;
+        if (!validate(input)) invalid.push(input);
       });
-      if (firstInvalid) {
+      if (invalid.length) {
+        showSummary(invalid);
         e.preventDefault();
-        firstInvalid.focus();
+        invalid[0].focus();
+      } else {
+        hideSummary();
+        // Post passwords from a password field, so the browser doesn't save them as plain text.
+        eachToggle(e.target, function (toggle, input) { setPasswordVisible(toggle, input, false); });
       }
     }
 
     signinForm.addEventListener('submit', onSubmit);
     registerForm.addEventListener('submit', onSubmit);
+
+    initPasswordToggles();
 
   }
 
