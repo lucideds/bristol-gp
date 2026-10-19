@@ -8,28 +8,6 @@
   function link(path) {
     return new URL(path, SITE_ROOT).href;
   }
-  //gets the theme if its in dark or light mode
-  var THEME_KEY = 'tlc-theme';
-
-  function getSavedTheme() {
-    try {
-      return localStorage.getItem(THEME_KEY) === 'dark' ? 'dark' : 'light';
-    } catch (e) {
-      return 'light'; // some browsers block localStorage on file://
-    }
-  }
-
-  function saveTheme(theme) {
-    try {
-      localStorage.setItem(THEME_KEY, theme);
-    } catch (e) {}
-  }
-
-  function applyTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
-  }
-
-  applyTheme(getSavedTheme());
 
   // 3. Page links in the middle of the top bar, in order.
   var PAGES = [
@@ -56,20 +34,10 @@
     return '<a class="nav-link' + cur.cls + '" href="' + href + '"' + cur.aria + '>' + label + '</a>';
   }
 
-  // the button for switch mode from dadrk to light
-  function updateToggle(btn) {
-    var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    btn.textContent = isDark ? 'Light mode' : 'Dark mode';
-    btn.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
-    btn.setAttribute('aria-pressed', isDark ? 'true' : 'false');
-  }
-
   //this actualy renders the bars
   function buildNav() {
     var signinHref = link('signin.html');
     var signin = currentAttrs(signinHref);
-    var a11yHref = link('accessibility.html');
-    var a11y = currentAttrs(a11yHref);
 
     var html =
       '<header class="site-header">' +
@@ -85,7 +53,7 @@
               '</button>' +
             '</form>' +
             '<div class="nav-tools">' +
-              '<a class="nav-tool nav-tool--accessibility' + a11y.cls + '" href="' + a11yHref + '"' + a11y.aria + '>Accessibility</a>' +
+              '<button type="button" class="nav-tool nav-tool--accessibility" aria-haspopup="dialog" aria-controls="a11y-panel">Accessibility</button>' +
               '<a class="nav-tool nav-tool--signin signin-btn' + signin.cls + '" href="' + signinHref + '"' + signin.aria + '>Sign in</a>' +
             '</div>' +
             '<button type="button" class="nav-toggle" aria-expanded="false" aria-controls="nav-collapsible" aria-label="Menu">\u2630</button>' +
@@ -97,9 +65,6 @@
               '<div class="nav-links">' +
                 PAGES.map(function (p) { return navLink(p.label, p.path); }).join('') +
               '</div>' +
-            '</div>' +
-            '<div class="nav-second-right">' +
-              '<button type="button" class="theme-toggle"></button>' +
             '</div>' +
           '</div>' +
         '</nav>' +
@@ -133,15 +98,8 @@
       // TODO: add real search here (read e.target.q.value).
     });
 
-    // Light / dark mode toggle.
-    var toggle = document.querySelector('.theme-toggle');
-    updateToggle(toggle);
-    toggle.addEventListener('click', function () {
-      var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      applyTheme(next);
-      saveTheme(next);
-      updateToggle(toggle);
-    });
+    // The accessibility popup changed the theme: refresh the button text.
+    document.addEventListener('tlc:themechange', function () { updateToggle(toggle); });
 
     // Hamburger menu: collapses the links/search/sign-in group on narrow screens.
     var navToggle = document.querySelector('.nav-toggle');

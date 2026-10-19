@@ -1,0 +1,433 @@
+@import url("https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap");
+/* Accessibility popup, styled to the Figma "Accessibility" frame (node 49:95, Light mode).
+   The first part applies the saved settings to the whole site; the rest styles the popup. */
+
+/* ---------- Site-wide settings (set on <html> by accessibility.js) ---------- */
+
+/* Text size: scales everything sized in rem/em */
+html[data-text-size="large"] {
+  font-size: 125%;
+}
+
+html[data-text-size="extra-large"] {
+  font-size: 150%;
+}
+
+/* High contrast: black page, white text, same nav bars */
+[data-theme="high-contrast"] {
+  --accent: #FF9900;
+  --page-bg: #000000;
+  --page-text: #FFFFFF;
+  --nav-top-bg: #374f6e;
+  --nav-second-bg: #161E2D;
+  --nav-text: #FFFFFF;
+  --auth-error: #FF5D64;
+  --auth-muted: #FFFFFF;
+}
+
+/* Dyslexia-friendly font */
+html.a11y-readable-font body,
+html.a11y-readable-font body * {
+  font-family: Verdana, "Atkinson Hyperlegible", Arial, sans-serif !important;
+  letter-spacing: 0.05em;
+  word-spacing: 0.1em;
+}
+
+/* Reduce motion: stop animations and transitions */
+html.a11y-reduce-motion *,
+html.a11y-reduce-motion *::before,
+html.a11y-reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  /* "none" rather than a tiny duration, which would add a transition to every property */
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+
+/* Highlight links */
+html.a11y-highlight-links a {
+  text-decoration: underline !important;
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* ---------- The popup ---------- */
+/* Fixed Figma light colours in every theme, sized in px so it doesn't grow with the text size.
+   No "display" here: that would show the dialog while it is closed. */
+.a11y-panel {
+  position: fixed;
+  margin: 0;
+  padding: 0;
+  /* Just under the 112px header (68px top bar + 44px link bar) */
+  top: 120px;
+  /* Right edge lines up with the nav tools: 1200px column with 24px right padding */
+  right: max(16px, calc((100vw - 1200px) / 2 + 24px));
+  left: auto;
+  bottom: auto;
+  width: 384px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 136px);
+  overflow-y: auto;
+  box-sizing: border-box;
+  background: #fff;
+  color: #0f1111;
+  border: 0.8px solid #d5d9d9;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(15, 17, 17, 0.12), 0 1px 1.5px rgba(15, 17, 17, 0.2);
+  font-family: "Atkinson Hyperlegible", "Amazon Ember", Arial, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: normal;
+  word-spacing: normal;
+}
+
+.a11y-panel::backdrop {
+  background: rgba(15, 17, 17, 0.2);
+}
+
+/* Padding lives on this inner box, so a click on the dialog itself means the backdrop */
+.a11y-inner {
+  padding: 20px;
+}
+
+.a11y-panel button,
+.a11y-panel input,
+.a11y-panel legend {
+  font-family: inherit;
+}
+
+/* Phones and tablets: centre the popup */
+@media (max-width: 768px) {
+  .a11y-panel {
+    inset: 0;
+    margin: auto;
+    max-height: calc(100vh - 32px);
+  }
+}
+
+/* Header: title and close button */
+.a11y-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.a11y-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 28px;
+  color: #0f1111;
+}
+
+.a11y-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 22px;
+  cursor: pointer;
+}
+
+.a11y-close:hover {
+  background: #f0f2f2;
+}
+
+.a11y-close img {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+/* Groups */
+.a11y-section {
+  min-width: 0;
+  margin: 20px 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.a11y-section:first-of-type {
+  margin-top: 12px;
+}
+
+.a11y-label {
+  padding: 0;
+  margin-bottom: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+  color: #0f1111;
+}
+
+/* Tiles */
+.a11y-tiles {
+  display: grid;
+  /* minmax(0, ...) lets the tiles shrink below the swatch width on narrow phones */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.a11y-tile {
+  position: relative;
+  display: block;
+  cursor: pointer;
+}
+
+.a11y-tile-box {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  min-height: 95.2px;
+  box-sizing: border-box;
+  padding: 12px 8px;
+  background: #fff;
+  color: #0f1111;
+  border: 1.6px solid #6f7777;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.a11y-tile-box--colour {
+  min-height: 115.2px;
+  gap: 8px;
+  padding: 10px 8px 8px;
+  justify-content: flex-start;
+}
+
+.a11y-tile-sample {
+  font-weight: 700;
+}
+
+.a11y-tile-sample--standard {
+  font-size: 16px;
+  line-height: 16px;
+}
+
+.a11y-tile-sample--large {
+  font-size: 20px;
+  line-height: 20px;
+}
+
+.a11y-tile-sample--extra-large {
+  font-size: 24px;
+  line-height: 24px;
+}
+
+.a11y-tile-label {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 20px;
+}
+
+.a11y-tile input:checked + .a11y-tile-box {
+  border-color: #0f1111;
+  background: #fff0d6;
+}
+
+/* Hidden with visibility (not display) so the tick image loads before it is needed */
+.a11y-tile-check {
+  visibility: hidden;
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  background: #0f1111 url("../assests/a11y-check.svg") center / 14px 14px no-repeat;
+}
+
+.a11y-tile input:checked + .a11y-tile-box .a11y-tile-check {
+  visibility: visible;
+}
+
+.a11y-tile input:focus-visible + .a11y-tile-box {
+  outline: 2px solid #007185;
+  outline-offset: 2px;
+}
+
+/* Colour swatches */
+.a11y-swatch {
+  display: block;
+  width: 89.6px;
+  max-width: 100%;
+  height: 44px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 42px;
+  text-align: center;
+}
+
+.a11y-swatch--light {
+  background: #f0f2f2;
+  border: 0.8px solid #6f7777;
+  color: #0f1111;
+}
+
+.a11y-swatch--dark {
+  background: #0b1016;
+  border: 0.8px solid #8a96a3;
+  color: #f2f4f4;
+}
+
+.a11y-swatch--contrast {
+  background: #000;
+  border: 0.8px solid #fff;
+  color: #fff;
+}
+
+/* On / off rows */
+.a11y-toggle-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 0;
+  border-top: 0.8px solid #d5d9d9;
+  cursor: pointer;
+}
+
+.a11y-section + .a11y-toggle-row {
+  margin-top: 20px;
+}
+
+.a11y-toggle-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.a11y-toggle-title {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+  color: #0f1111;
+}
+
+.a11y-toggle-desc {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #565959;
+}
+
+.a11y-toggle-status {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 21px;
+  color: #565959;
+}
+
+.a11y-switch {
+  flex: none;
+  position: relative;
+  width: 52px;
+  height: 32px;
+  box-sizing: border-box;
+  background: #fff;
+  border: 1.6px solid #0f1111;
+  border-radius: 16px;
+}
+
+.a11y-switch::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 4px;
+  width: 20px;
+  height: 20px;
+  margin-top: -10px;
+  border-radius: 50%;
+  background: #0f1111;
+  transition: left 0.15s;
+}
+
+.a11y-toggle-row input:checked + .a11y-switch {
+  background: #0f1111;
+}
+
+.a11y-toggle-row input:checked + .a11y-switch::after {
+  left: 24px;
+  background: #fff;
+}
+
+.a11y-toggle-row input:focus-visible + .a11y-switch {
+  outline: 2px solid #007185;
+  outline-offset: 2px;
+}
+
+/* Footer */
+.a11y-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 0.8px solid #d5d9d9;
+}
+
+.a11y-reset {
+  padding: 0;
+  background: none;
+  border: 0;
+  color: #007185;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.a11y-done {
+  height: 44px;
+  padding: 0 24px;
+  background: #ff9900;
+  color: #0f1111;
+  border: 1.6px solid #a35c00;
+  border-radius: 22px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+  cursor: pointer;
+}
+
+.a11y-done:hover {
+  background: #fa8900;
+}
+
+.a11y-close:focus-visible,
+.a11y-reset:focus-visible,
+.a11y-done:focus-visible {
+  outline: 2px solid #007185;
+  outline-offset: 2px;
+}
+
+.a11y-note {
+  margin: 8px 0 0;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 18px;
+  color: #565959;
+}
+
+/* Hidden on screen but still read by screen readers and reachable by keyboard */
+.a11y-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}

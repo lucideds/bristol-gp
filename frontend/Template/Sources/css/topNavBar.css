@@ -164,6 +164,15 @@ body {
   border-radius: 4px;
 }
 
+/* The Accessibility tool is a <button> (it opens a popup); make it look like the links */
+button.nav-tool {
+  margin: 0;
+  background: transparent;
+  border: 0;
+  font-family: inherit;
+  cursor: pointer;
+}
+
 /* Icons are drawn with ::before so they survive the "Sign in" -> "Account" text swap */
 .nav-tool::before {
   content: "";

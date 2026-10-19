@@ -1,6 +1,6 @@
 # =====================================================================
 # app.py - the Flask backend for the T-Levels website.
-# It serves the 10 HTML pages, stores user accounts and contact
+# It serves the HTML pages, stores user accounts and contact
 # messages in a SQLite database, and handles signing in and out.
 # The chat widget's AI API lives in chat_api.py and is plugged in below (see "AI chat").
 # =====================================================================
@@ -88,6 +88,8 @@ if not secret_key:
           "Users will be signed out whenever the app restarts.")
     secret_key = secrets.token_hex(32)
 app.config["SECRET_KEY"] = secret_key
+# Re-read an HTML page when its file changes, so edits show up without restarting the server.
+app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 # Cookie settings:
 #   SAMESITE "Lax" - the browser won't send our cookie with forms submitted from other websites.
@@ -216,9 +218,10 @@ def home():
 
 
 @app.route("/accessibility.html")
-@app.route("/accessibility")                    # URL: /accessibility
+@app.route("/accessibility")                    # URL: /accessibility (old links and bookmarks)
 def accessibility():
-    return render_template("accessibility.html")  # Show the accessibility page.
+    # The settings are now a popup on every page, so open it on the home page.
+    return redirect(url_for("home") + "#accessibility")
 
 
 @app.route("/faqs.html")
