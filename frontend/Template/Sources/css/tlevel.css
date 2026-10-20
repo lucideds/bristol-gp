@@ -1,0 +1,146 @@
+/* T Level page: route cards (Figma "Route cards", node 111:309) and the pathway details.
+   Card fills are the fixed Figma colours in every theme (like the auth card and chat panel);
+   page text uses var(--page-text) so it follows the theme. Text, min-height and the grid
+   minimum are in rem so the Large / Extra large text settings apply.
+   Only --page-bg, --page-text and --accent are global tokens (the --hdr-* ones are scoped to
+   .site-header), so the other Figma fills stay as hex. */
+.tlevel-page {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 24px 24px 48px;
+  color: var(--page-text);
+  font-family: "Atkinson Hyperlegible", "Amazon Ember", Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.tlevel-title {
+  margin: 0 0 24px;
+  font-size: 2rem;
+  line-height: 2.5rem;
+  font-weight: 700;
+}
+
+/* ---------- Route cards ---------- */
+.route-cards-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  /* 5 columns at desktop, wraps to fewer as the screen narrows or the text grows */
+  grid-template-columns: repeat(auto-fill, minmax(min(12rem, 100%), 1fr));
+  gap: 24px;
+}
+
+/* Readable font (Verdana + letter spacing) is wider: "Engineering" needs ~14rem of card, so allow fewer columns */
+html.a11y-readable-font .route-cards-grid {
+  grid-template-columns: repeat(auto-fill, minmax(min(14rem, 100%), 1fr));
+}
+
+/* 2px transparent border + 20px padding = Figma's 22px text inset, with no shift between themes */
+.route-card {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  min-height: 14rem;
+  box-sizing: border-box;
+  padding: 20px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+}
+
+.route-card-title {
+  margin: 0;
+  font-size: 1.5rem;
+  line-height: 1.75rem;
+  font-weight: 700;
+}
+
+.route-card-title a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-position: from-font;
+}
+
+.route-card-title a:hover {
+  text-decoration-thickness: 3px;
+}
+
+/* Ring in the card's own text colour, so it shows on every fill (orange or teal would vanish on Media / Business) */
+.route-card-title a:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* Title stays at the top; the body is centred in the space below it */
+.route-card-body {
+  margin: auto 0;
+  padding-top: 16px;
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.route-card--digital     { background: #232f3e; color: #ffffff; }
+.route-card--business    { background: #007185; color: #ffffff; }
+.route-card--media       { background: var(--accent); color: #0f1111; }
+.route-card--finance     { background: #fff0d6; color: #0f1111; }
+.route-card--engineering { background: #ffffff; color: #0f1111; border-color: #6f7777; }
+
+/* Dark: the navy Digital card matches the page, so give it an edge */
+[data-theme="dark"] .route-card--digital {
+  border-color: #8a96a3;
+}
+
+/* High contrast: define every card edge on the black page, like the auth card */
+[data-theme="high-contrast"] .route-card {
+  border-color: #fff;
+}
+
+/* ---------- Pathway details ---------- */
+.route-detail {
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid #879596;
+  scroll-margin-top: 16px;
+}
+
+[data-theme="high-contrast"] .route-detail {
+  border-top-color: #fff;
+}
+
+.route-detail-title {
+  margin: 0;
+  font-size: 1.75rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+}
+
+.route-detail h3 {
+  margin: 24px 0 8px;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 700;
+}
+
+.route-detail p,
+.route-detail ul {
+  margin: 0;
+  max-width: 45rem;
+}
+
+.route-detail ul {
+  padding-left: 1.5rem;
+}
+
+.route-detail-pending {
+  font-style: italic;
+}
+
+@media (max-width: 480px) {
+  .tlevel-page {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}

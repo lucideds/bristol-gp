@@ -390,7 +390,7 @@
   // Adds the chat button and popup to the end of the page.
   function buildChat() {
     var html =
-      '<button type="button" class="chat-toggle" aria-label="Open T buddy chat" aria-expanded="false" aria-controls="chat-panel">' +
+      '<button type="button" class="chat-toggle" aria-label="Open chat" aria-expanded="false" aria-controls="chat-panel">' +
         '<img src="' + SPARKLE_URL + '" alt="" class="chat-toggle-icon">' +
       '</button>' +
       '<div id="chat-panel" class="chat-panel" role="dialog" aria-labelledby="chat-title" aria-describedby="chat-disclaimer" hidden>' +

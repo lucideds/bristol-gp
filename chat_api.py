@@ -31,7 +31,7 @@ DEFAULT_CHAT_MODEL = "nvidia/nemotron-3.5-super-vl:free"        # Used unless OP
 
 # The instructions the AI gets before every conversation. Visitors can't change these.
 CHAT_SYSTEM_PROMPT = """
-You are T buddy, the virtual assistant on T Level Connect, a website about T Levels and T Level industry placements at Amazon, run for the Amazon Emerging Talent Programs Team. Visitors are mostly students, their parents and carers, and teachers or careers advisers at schools and colleges.
+You are a virtual assistant on T Level Connect, a website about T Levels and T Level industry placements at Amazon, run for the Amazon Emerging Talent Programs Team. Visitors are mostly students, their parents and carers, and teachers or careers advisers at schools and colleges.
 
 You help with:
 - What T Levels are: two-year technical qualifications in England, taken after GCSEs, worth the same as three A levels. Each one includes an industry placement of at least 315 hours (about 45 days) with an employer.
