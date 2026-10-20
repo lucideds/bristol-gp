@@ -1,0 +1,337 @@
+/* Home page (Figma "Light mode" home frame, see .agents/tasks/home-figma-spec.md).
+   The route cards reuse tlevel.css (same Figma colours and theme rules); the overrides below are
+   scoped to .home-routes so the T Level page is unchanged.
+   The hero, its panel, the cards and the CTA band keep their fixed Figma fills in every theme;
+   only the light-grey band and edges change per theme. Text and min-heights are in rem so the
+   Large / Extra large text settings apply. */
+.home-page {
+  width: 100%;
+  font-family: "Atkinson Hyperlegible", "Amazon Ember", Arial, sans-serif;
+  color: var(--page-text);
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+/* Same 1200px column as the nav bar */
+.home-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  box-sizing: border-box;
+}
+
+/* ---------- Hero ---------- */
+.home-hero {
+  background: #232f3e;
+  color: #fff;
+}
+
+/* 11:9 is the spec's 55% / 45% split */
+.home-hero-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 11fr) minmax(0, 9fr);
+  gap: 48px;
+  align-items: center;
+  padding-top: 64px;
+  padding-bottom: 64px;
+}
+
+.home-hero-title {
+  margin: 0;
+  font-size: 3rem;
+  line-height: 3.5rem;
+  font-weight: 700;
+}
+
+/* #d5d9d9 on #232f3e is about 10:1 */
+.home-hero-lead {
+  margin: 16px 0 0;
+  max-width: 36rem;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  color: #d5d9d9;
+}
+
+.home-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.home-hero-panel {
+  background: #161d26;
+  border: 1.5px solid #8a96a3;
+  border-radius: 8px;
+  padding: 32px 40px;
+}
+
+.home-route-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.home-route-list li {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 1.125rem;
+  line-height: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.home-route-list img {
+  flex: none;
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+/* ---------- Pill buttons (same tokens as the sign-in primary button) ---------- */
+.home-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0 20px;
+  box-sizing: border-box;
+  border-radius: 22px;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  text-align: center;
+}
+
+.home-btn--primary {
+  background: #ff9900;
+  color: #0f1111;
+  border: 1.6px solid #a35c00;
+}
+
+.home-btn--primary:hover {
+  background: #fa8900;
+}
+
+.home-btn--outline {
+  background: transparent;
+  color: #fff;
+  border: 2px solid #fff;
+}
+
+.home-btn--outline:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.home-btn--dark {
+  background: #232f3e;
+  color: #fff;
+  border: 1.6px solid #0f1111;
+}
+
+.home-btn--dark:hover {
+  background: #131a22;
+}
+
+.home-hero .home-btn:focus-visible {
+  outline: 2px solid #ff9900;
+  outline-offset: 2px;
+}
+
+/* An orange ring would vanish on the orange band */
+.home-cta .home-btn:focus-visible {
+  outline: 2px solid #0f1111;
+  outline-offset: 2px;
+}
+
+/* ---------- Audience and route sections ---------- */
+.home-section {
+  padding: 60px 0;
+}
+
+.home-section-title {
+  margin: 0;
+  font-size: 1.75rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+}
+
+.home-section-lead {
+  margin: 8px 0 24px;
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.home-audience {
+  background: #f0f1f0;
+  color: #0f1111;
+}
+
+/* A pale grey band would glare on the navy / black pages */
+[data-theme="dark"] .home-audience {
+  background: #161d26;
+  color: #fff;
+}
+
+[data-theme="high-contrast"] .home-audience {
+  background: #000;
+  color: #fff;
+  border-top: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+}
+
+.home-audience-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+/* Same radius, title size and border as the route cards so both rows look alike */
+.home-audience-card {
+  position: relative;
+  min-height: 10.5rem;
+  box-sizing: border-box;
+  padding: 20px;
+  background: #fff;
+  color: #0f1111;
+  border: 2px solid #6f7777;
+  border-radius: 8px;
+}
+
+.home-card-title {
+  margin: 0;
+  font-size: 1.5rem;
+  line-height: 1.75rem;
+  font-weight: 700;
+}
+
+.home-card-title a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-position: from-font;
+}
+
+.home-card-title a:hover {
+  text-decoration-thickness: 3px;
+}
+
+.home-card-body {
+  margin: 12px 0 0;
+}
+
+/* Route cards on the home page: left-aligned, body pinned to the bottom */
+.home-routes .route-card {
+  position: relative;
+  text-align: left;
+}
+
+.home-routes .route-card-body {
+  margin: auto 0 0;
+}
+
+/* Stretched link: the title link covers the whole card. The ring moves to the overlay,
+   in the card's own text colour so it shows on every fill. */
+.home-card-title a::after,
+.home-routes .route-card-title a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+}
+
+.home-card-title a:focus-visible,
+.home-routes .route-card-title a:focus-visible {
+  outline: none;
+}
+
+.home-card-title a:focus-visible::after,
+.home-routes .route-card-title a:focus-visible::after {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* ---------- CTA band ---------- */
+.home-cta {
+  background: #ff9900;
+  color: #0f1111;
+}
+
+.home-cta-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 24px;
+  padding-top: 40px;
+  padding-bottom: 40px;
+}
+
+.home-cta-title {
+  margin: 0;
+  font-size: 1.625rem;
+  line-height: 2rem;
+  font-weight: 700;
+}
+
+.home-cta-lead {
+  margin: 4px 0 0;
+}
+
+/* ---------- High contrast: white edges between the fixed fills and the black page ---------- */
+[data-theme="high-contrast"] .home-hero {
+  border-bottom: 2px solid #fff;
+}
+
+[data-theme="high-contrast"] .home-hero-panel {
+  border-color: #fff;
+}
+
+[data-theme="high-contrast"] .home-cta {
+  border-top: 2px solid #fff;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1024px) {
+  .home-hero-inner {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding-top: 48px;
+    padding-bottom: 48px;
+  }
+}
+
+@media (max-width: 768px) {
+  .home-audience-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home-section {
+    padding: 40px 0;
+  }
+
+  .home-hero-panel {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .home-container {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .home-hero-title {
+    font-size: 2.25rem;
+    line-height: 2.75rem;
+  }
+
+  .home-btn {
+    width: 100%;
+  }
+}
