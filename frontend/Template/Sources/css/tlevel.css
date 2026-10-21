@@ -1,29 +1,335 @@
-/* T Level page: route cards (Figma "Route cards", node 111:309) and the pathway details.
-   Card fills are the fixed Figma colours in every theme (like the auth card and chat panel);
-   page text uses var(--page-text) so it follows the theme. Text, min-height and the grid
-   minimum are in rem so the Large / Extra large text settings apply.
-   Only --page-bg, --page-text and --accent are global tokens (the --hdr-* ones are scoped to
-   .site-header), so the other Figma fills stay as hex. */
+/* T Level page (Figma "main" frame, node 185:3): breadcrumb, vertical tabs on the left
+   ("General info" + one per route) and the selected panel on the right.
+   The route card rules further down are used by home.html.
+   Fixed Figma fills (callout, pills, button, active tab) stay the same in every theme;
+   page text uses var(--page-text) so it follows the theme. Text sizes are in rem so the
+   Large / Extra large text settings apply. Only --page-bg, --page-text and --accent are
+   global tokens, so the other Figma fills stay as hex. */
 .tlevel-page {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   box-sizing: border-box;
-  padding: 24px 24px 48px;
+  padding: 24px 24px 64px;
   color: var(--page-text);
   font-family: "Atkinson Hyperlegible", "Amazon Ember", Arial, sans-serif;
   font-size: 1rem;
   line-height: 1.5rem;
 }
 
-.tlevel-title {
+/* ---------- Breadcrumb ---------- */
+.tlevel-breadcrumb ol {
+  list-style: none;
   margin: 0 0 24px;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.tlevel-breadcrumb li + li::before {
+  content: "/";
+  padding: 0 0.375rem;
+}
+
+.tlevel-breadcrumb a {
+  color: #007185;
+  text-decoration: underline;
+}
+
+[data-theme="dark"] .tlevel-breadcrumb a,
+[data-theme="high-contrast"] .tlevel-breadcrumb a {
+  color: inherit;
+}
+
+.tlevel-breadcrumb a:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* ---------- Layout: tabs | panel ---------- */
+.tlevel-layout--tabs {
+  display: grid;
+  grid-template-columns: 16rem minmax(0, 1fr);
+  gap: 48px;
+  align-items: start;
+}
+
+.tlevel-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tlevel-tabs[hidden] {
+  display: none;
+}
+
+.tlevel-tabs [role="tab"] {
+  display: block;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 10px 12px;
+  box-sizing: border-box;
+  border: 1.5px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.9375rem;
+  line-height: 1.375rem;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tlevel-tabs [role="tab"]:hover {
+  text-decoration: underline;
+}
+
+.tlevel-tabs [role="tab"][aria-selected="true"] {
+  background: #232f3e;
+  color: #fff;
+  border-color: #0f1111;
+  text-decoration: none;
+}
+
+/* The navy active tab would match the dark page, so it turns white */
+[data-theme="dark"] .tlevel-tabs [role="tab"][aria-selected="true"] {
+  background: #fff;
+  color: #0f1111;
+  border-color: #fff;
+}
+
+[data-theme="high-contrast"] .tlevel-tabs [role="tab"][aria-selected="true"] {
+  background: #fff;
+  color: #000;
+  border-color: #fff;
+}
+
+.tlevel-tabs [role="tab"]:focus-visible {
+  outline: 2px solid #ff9900;
+  outline-offset: 2px;
+}
+
+.tlevel-panel[hidden] {
+  display: none;
+}
+
+.tlevel-panel:focus-visible {
+  outline: 2px solid #ff9900;
+  outline-offset: 8px;
+  border-radius: 2px;
+}
+
+/* ---------- General info panel ---------- */
+.tlevel-panel > p,
+.tlevel-callout {
+  max-width: 42.5rem;
+}
+
+.tlevel-title {
+  margin: 0 0 16px;
   font-size: 2rem;
   line-height: 2.5rem;
   font-weight: 700;
 }
 
-/* ---------- Route cards ---------- */
+.tlevel-panel > .tlevel-lead {
+  margin: 0 0 24px;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
+.tlevel-callout {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px;
+  box-sizing: border-box;
+  background: #e5f3f5;
+  color: #0f1111;
+  border: 2px solid #007185;
+  border-radius: 8px;
+}
+
+.tlevel-callout-icon {
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.125rem;
+  color: #007185;
+}
+
+.tlevel-callout p {
+  margin: 0;
+}
+
+.tlevel-callout-title {
+  font-weight: 700;
+}
+
+[data-theme="high-contrast"] .tlevel-callout {
+  border-color: #fff;
+}
+
+.tlevel-section-title {
+  margin: 32px 0 12px;
+  font-size: 1.625rem;
+  line-height: 2rem;
+  font-weight: 700;
+}
+
+.tlevel-panel > p {
+  margin: 0;
+}
+
+.tlevel-route-pills {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.tlevel-route-pills a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0 14px;
+  box-sizing: border-box;
+  background: #fff0d6;
+  color: #0f1111;
+  border: 1.5px solid #c45500;
+  border-radius: 16px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.tlevel-route-pills a:hover {
+  background: #ffe2b0;
+  text-decoration: underline;
+}
+
+.tlevel-route-pills a:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+[data-theme="dark"] .tlevel-route-pills a:focus-visible,
+[data-theme="high-contrast"] .tlevel-route-pills a:focus-visible {
+  outline-color: #fff;
+}
+
+/* ---------- FAQ accordion ---------- */
+.tlevel-faq {
+  border-top: 1px solid #879596;
+}
+
+.tlevel-faq details {
+  border-bottom: 1px solid #879596;
+}
+
+[data-theme="high-contrast"] .tlevel-faq,
+[data-theme="high-contrast"] .tlevel-faq details {
+  border-color: #fff;
+}
+
+.tlevel-faq summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 3.5rem;
+  padding: 12px 0;
+  box-sizing: border-box;
+  font-size: 1.0625rem;
+  line-height: 1.5rem;
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none;
+}
+
+.tlevel-faq summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Chevron: points down when closed, up when open */
+.tlevel-faq summary::after {
+  content: "";
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-right: 0.5rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-25%) rotate(45deg);
+  transition: transform 0.15s ease;
+}
+
+.tlevel-faq details[open] > summary::after {
+  transform: translateY(25%) rotate(-135deg);
+}
+
+html.a11y-reduce-motion .tlevel-faq summary::after {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tlevel-faq summary::after {
+    transition: none;
+  }
+}
+
+.tlevel-faq summary:hover {
+  text-decoration: underline;
+}
+
+.tlevel-faq summary:focus-visible {
+  outline: 2px solid #ff9900;
+  outline-offset: 2px;
+}
+
+.tlevel-faq details p {
+  margin: 0;
+  padding: 0 0 16px;
+  max-width: 42.5rem;
+}
+
+/* ---------- Register button (same tokens as the home page primary button) ---------- */
+.tlevel-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  margin-top: 32px;
+  padding: 0 24px;
+  box-sizing: border-box;
+  background: #ff9900;
+  color: #0f1111;
+  border: 1.6px solid #a35c00;
+  border-radius: 22px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.tlevel-btn:hover {
+  background: #fa8900;
+}
+
+.tlevel-btn:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+[data-theme="dark"] .tlevel-btn:focus-visible,
+[data-theme="high-contrast"] .tlevel-btn:focus-visible {
+  outline-color: #fff;
+}
+
+/* ---------- Route cards (used by home.html) ---------- */
 .route-cards-grid {
   list-style: none;
   margin: 0;
@@ -138,9 +444,61 @@ html.a11y-readable-font .route-cards-grid {
   font-style: italic;
 }
 
+.route-detail .route-detail-qualification {
+  margin-top: 8px;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
+/* With tabs only one panel shows, so the stacked-section divider goes */
+.tlevel-layout--tabs .route-detail {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.tlevel-layout--tabs .route-detail-title {
+  font-size: 2rem;
+  line-height: 2.5rem;
+}
+
+/* Without JavaScript the sections stack; space the general one from the first route */
+.tlevel-layout:not(.tlevel-layout--tabs) #general {
+  padding-bottom: 16px;
+}
+
+/* Tablet and phone: tabs become a scrollable row above the panel */
+@media (max-width: 900px) {
+  .tlevel-layout--tabs {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+
+  .tlevel-tabs {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .tlevel-tabs [role="tab"] {
+    width: auto;
+    flex: none;
+    white-space: nowrap;
+  }
+}
+
 @media (max-width: 480px) {
   .tlevel-page {
     padding-left: 16px;
     padding-right: 16px;
+  }
+
+  .tlevel-title,
+  .tlevel-layout--tabs .route-detail-title {
+    font-size: 1.75rem;
+    line-height: 2.25rem;
+  }
+
+  .tlevel-btn {
+    width: 100%;
   }
 }

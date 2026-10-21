@@ -13,111 +13,157 @@
   <link rel="stylesheet" href="Sources/css/tlevel.css">
   <script src="Sources/js/footer.js" defer></script>
   <script src="Sources/js/chatWidget.js" defer></script>
+  <script src="Sources/js/tlevelTabs.js" defer></script>
 </head>
 <body>
   <main class="tlevel-page">
-    <h1 class="tlevel-title">About T Levels</h1>
+    <nav class="tlevel-breadcrumb" aria-label="Breadcrumb">
+      <!-- tlevelTabs.js adds the selected route (e.g. Home / T Levels / Digital) -->
+      <ol id="tlevel-breadcrumb">
+        <li><a href="home.html">Home</a></li>
+        <li aria-current="page">T Levels</li>
+      </ol>
+    </nav>
 
-    <section class="route-cards" aria-labelledby="route-cards-title">
-      <h2 id="route-cards-title" class="a11y-visually-hidden">T Level routes</h2>
-      <ul class="route-cards-grid">
-        <li class="route-card route-card--digital">
-          <h3 class="route-card-title"><a href="#digital">Digital</a></h3>
-          <p class="route-card-body">T Level in Digital Production, Design and Development or Digital Support Services</p>
-        </li>
-        <li class="route-card route-card--business">
-          <h3 class="route-card-title"><a href="#business">Business</a></h3>
-          <p class="route-card-body">T Level in Management and Administration</p>
-        </li>
-        <li class="route-card route-card--media">
-          <h3 class="route-card-title"><a href="#media">Media</a></h3>
-          <p class="route-card-body">T Level in Media, Broadcast and Production</p>
-        </li>
-        <li class="route-card route-card--finance">
-          <h3 class="route-card-title"><a href="#finance">Finance</a></h3>
-          <p class="route-card-body">T Level in Accounting</p>
-        </li>
-        <li class="route-card route-card--engineering">
-          <h3 class="route-card-title"><a href="#engineering">Engineering</a></h3>
-          <p class="route-card-body">T Level in Engineering, Manufacturing, Processing and Control</p>
-        </li>
-      </ul>
-    </section>
+    <div class="tlevel-layout">
+      <!-- Shown by tlevelTabs.js. Without JavaScript every section is listed one after another. -->
+      <div class="tlevel-tabs" role="tablist" aria-label="T Level topics" aria-orientation="vertical" hidden>
+        <button type="button" role="tab" id="tab-general" aria-controls="general" aria-selected="true" tabindex="0">General info</button>
+        <button type="button" role="tab" id="tab-digital" aria-controls="digital" aria-selected="false" tabindex="-1">Digital</button>
+        <button type="button" role="tab" id="tab-business" aria-controls="business" aria-selected="false" tabindex="-1">Business</button>
+        <button type="button" role="tab" id="tab-media" aria-controls="media" aria-selected="false" tabindex="-1">Media</button>
+        <button type="button" role="tab" id="tab-finance" aria-controls="finance" aria-selected="false" tabindex="-1">Finance</button>
+        <button type="button" role="tab" id="tab-engineering" aria-controls="engineering" aria-selected="false" tabindex="-1">Engineering</button>
+      </div>
 
-    <section class="route-detail" id="digital" aria-labelledby="digital-title">
-      <h2 id="digital-title" class="route-detail-title">Digital</h2>
-      <h3>What it is</h3>
-      <p>The Digital pathway covers software development, IT infrastructure, and data, giving students hands on experience building and maintaining the systems a company like Amazon relies on, alongside the T Level Digital Production, Design and Development or Digital Support Services qualification.</p>
-      <h3>Who it is for</h3>
-      <p>Students who enjoy problem solving, logical thinking, and working with technology, even without prior coding experience, since the placement is where that skill is built.</p>
-      <h3>Future job paths</h3>
-      <ul>
-        <li>Software developer</li>
-        <li>IT support technician</li>
-        <li>Cloud infrastructure engineer</li>
-        <li>Data analyst</li>
-        <li>Progression to a degree apprenticeship in computer science or software engineering</li>
-      </ul>
-    </section>
+      <div class="tlevel-panels">
+        <section class="tlevel-panel" id="general" role="tabpanel" aria-labelledby="tab-general" tabindex="0">
+          <h1 class="tlevel-title">T Levels at Amazon</h1>
+          <p class="tlevel-lead">A T Level is a two-year technical qualification that includes a placement with an employer. Here is what that looks like at Amazon, and how to get ready.</p>
 
-    <section class="route-detail" id="business" aria-labelledby="business-title">
-      <h2 id="business-title" class="route-detail-title">Business</h2>
-      <h3>What it is</h3>
-      <p>The Business pathway covers how a large organisation actually runs day to day, including operations, project coordination, and administration, paired with the T Level in Management and Administration.</p>
-      <h3>Who it is for</h3>
-      <p>Students who are organised, enjoy working with people, and are interested in how decisions get made and projects get delivered inside a company.</p>
-      <h3>Future job paths</h3>
-      <ul>
-        <li>Business analyst</li>
-        <li>Operations coordinator</li>
-        <li>Project management apprentice</li>
-        <li>HR assistant</li>
-        <li>Progression into a business management degree or apprenticeship</li>
-      </ul>
-    </section>
+          <div class="tlevel-callout">
+            <svg class="tlevel-callout-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+              <circle cx="12" cy="12" r="9.25" fill="none" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M12 10.5v6" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+              <circle cx="12" cy="7.5" r="1.1" fill="currentColor"/>
+            </svg>
+            <div>
+              <p class="tlevel-callout-title">Good to know</p>
+              <p class="tlevel-callout-body">Placement details can change. Check this page for the latest information.</p>
+            </div>
+          </div>
 
-    <section class="route-detail" id="media" aria-labelledby="media-title">
-      <h2 id="media-title" class="route-detail-title">Media</h2>
-      <h3>What it is</h3>
-      <p>The Media pathway covers content creation, marketing, and communications, giving students experience producing the kind of material a company uses to reach customers and promote its brand, alongside the T Level in Media, Broadcast and Production.</p>
-      <h3>Who it is for</h3>
-      <p>Students who are creative, enjoy writing, design, video, or social media, and want a career that blends creativity with commercial purpose.</p>
-      <h3>Future job paths</h3>
-      <ul>
-        <li>Marketing assistant</li>
-        <li>Content creator</li>
-        <li>Social media coordinator</li>
-        <li>Junior graphic designer</li>
-        <li>Progression into a marketing or media production degree or apprenticeship</li>
-      </ul>
-    </section>
+          <h2 class="tlevel-section-title">Choose a route</h2>
+          <p>Placements run across five routes. Each has its own page with what you'll do, what you'll learn and who to ask.</p>
+          <ul class="tlevel-route-pills" aria-label="Placement routes">
+            <li><a href="#digital" data-tab-link="digital">Digital</a></li>
+            <li><a href="#business" data-tab-link="business">Business</a></li>
+            <li><a href="#media" data-tab-link="media">Media</a></li>
+            <li><a href="#finance" data-tab-link="finance">Finance</a></li>
+            <li><a href="#engineering" data-tab-link="engineering">Engineering</a></li>
+          </ul>
 
-    <section class="route-detail" id="finance" aria-labelledby="finance-title">
-      <h2 id="finance-title" class="route-detail-title">Finance</h2>
-      <h3>What it is</h3>
-      <p>The Finance pathway covers accounting, budgeting, and financial operations, giving students real exposure to how a company tracks and manages money, paired with the T Level in Accounting.</p>
-      <h3>Who it is for</h3>
-      <p>Students who are detail oriented, comfortable with numbers, and interested in how businesses make financial decisions.</p>
-      <h3>Future job paths</h3>
-      <ul>
-        <li>Accounts assistant</li>
-        <li>Finance apprentice</li>
-        <li>Payroll administrator</li>
-        <li>Trainee analyst</li>
-        <li>Progression into an accounting qualification (e.g. AAT, ACCA) or finance degree apprenticeship</li>
-      </ul>
-    </section>
+          <h2 class="tlevel-section-title">Frequently asked questions</h2>
+          <div class="tlevel-faq">
+            <details open>
+              <summary>What is a T Level?</summary>
+              <p>A T Level is a two-year technical qualification for students aged 16 to 19. It combines classroom learning with an industry placement of at least 315 hours.</p>
+            </details>
+            <details>
+              <summary>Who can apply for a placement?</summary>
+              <!-- TODO: confirm eligibility wording with the content owner -->
+              <p>Students aged 16 to 19 who are studying a T Level in one of the five routes: Digital, Business, Media, Finance or Engineering. Your school or college can help you apply.</p>
+            </details>
+            <details>
+              <summary>Can I change how this site looks?</summary>
+              <p>Yes. Open the accessibility settings from the top bar to choose a light, dark or high contrast theme, make the text larger, use a dyslexia-friendly font, reduce motion or highlight links.</p>
+            </details>
+          </div>
 
-    <section class="route-detail" id="engineering" aria-labelledby="engineering-title">
-      <h2 id="engineering-title" class="route-detail-title">Engineering</h2>
-      <h3>What it is</h3>
-      <p>The Engineering pathway covers the design, maintenance, and improvement of physical systems and equipment, such as those used in Amazon's fulfilment and logistics operations, paired with the T Level in Engineering, Manufacturing, Processing and Control.</p>
-      <h3>Who it is for</h3>
-      <p>Students who like working with their hands as well as their mind, enjoy practical problem solving, and are interested in how physical systems are built and kept running.</p>
-      <h3>Future job paths</h3>
-      <!-- TODO: Engineering future job paths pending from content owner -->
-      <p class="route-detail-pending">Coming soon</p>
-    </section>
+          <a class="tlevel-btn" href="login.html#register">Register your interest</a>
+        </section>
+
+        <section class="tlevel-panel route-detail" id="digital" role="tabpanel" aria-labelledby="tab-digital" tabindex="0">
+          <h2 class="route-detail-title">Digital</h2>
+          <p class="route-detail-qualification">T Level in Digital Production, Design and Development or Digital Support Services</p>
+          <h3>What it is</h3>
+          <p>The Digital pathway covers software development, IT infrastructure, and data, giving students hands on experience building and maintaining the systems a company like Amazon relies on, alongside the T Level Digital Production, Design and Development or Digital Support Services qualification.</p>
+          <h3>Who it is for</h3>
+          <p>Students who enjoy problem solving, logical thinking, and working with technology, even without prior coding experience, since the placement is where that skill is built.</p>
+          <h3>Future job paths</h3>
+          <ul>
+            <li>Software developer</li>
+            <li>IT support technician</li>
+            <li>Cloud infrastructure engineer</li>
+            <li>Data analyst</li>
+            <li>Progression to a degree apprenticeship in computer science or software engineering</li>
+          </ul>
+        </section>
+
+        <section class="tlevel-panel route-detail" id="business" role="tabpanel" aria-labelledby="tab-business" tabindex="0">
+          <h2 class="route-detail-title">Business</h2>
+          <p class="route-detail-qualification">T Level in Management and Administration</p>
+          <h3>What it is</h3>
+          <p>The Business pathway covers how a large organisation actually runs day to day, including operations, project coordination, and administration, paired with the T Level in Management and Administration.</p>
+          <h3>Who it is for</h3>
+          <p>Students who are organised, enjoy working with people, and are interested in how decisions get made and projects get delivered inside a company.</p>
+          <h3>Future job paths</h3>
+          <ul>
+            <li>Business analyst</li>
+            <li>Operations coordinator</li>
+            <li>Project management apprentice</li>
+            <li>HR assistant</li>
+            <li>Progression into a business management degree or apprenticeship</li>
+          </ul>
+        </section>
+
+        <section class="tlevel-panel route-detail" id="media" role="tabpanel" aria-labelledby="tab-media" tabindex="0">
+          <h2 class="route-detail-title">Media</h2>
+          <p class="route-detail-qualification">T Level in Media, Broadcast and Production</p>
+          <h3>What it is</h3>
+          <p>The Media pathway covers content creation, marketing, and communications, giving students experience producing the kind of material a company uses to reach customers and promote its brand, alongside the T Level in Media, Broadcast and Production.</p>
+          <h3>Who it is for</h3>
+          <p>Students who are creative, enjoy writing, design, video, or social media, and want a career that blends creativity with commercial purpose.</p>
+          <h3>Future job paths</h3>
+          <ul>
+            <li>Marketing assistant</li>
+            <li>Content creator</li>
+            <li>Social media coordinator</li>
+            <li>Junior graphic designer</li>
+            <li>Progression into a marketing or media production degree or apprenticeship</li>
+          </ul>
+        </section>
+
+        <section class="tlevel-panel route-detail" id="finance" role="tabpanel" aria-labelledby="tab-finance" tabindex="0">
+          <h2 class="route-detail-title">Finance</h2>
+          <p class="route-detail-qualification">T Level in Accounting</p>
+          <h3>What it is</h3>
+          <p>The Finance pathway covers accounting, budgeting, and financial operations, giving students real exposure to how a company tracks and manages money, paired with the T Level in Accounting.</p>
+          <h3>Who it is for</h3>
+          <p>Students who are detail oriented, comfortable with numbers, and interested in how businesses make financial decisions.</p>
+          <h3>Future job paths</h3>
+          <ul>
+            <li>Accounts assistant</li>
+            <li>Finance apprentice</li>
+            <li>Payroll administrator</li>
+            <li>Trainee analyst</li>
+            <li>Progression into an accounting qualification (e.g. AAT, ACCA) or finance degree apprenticeship</li>
+          </ul>
+        </section>
+
+        <section class="tlevel-panel route-detail" id="engineering" role="tabpanel" aria-labelledby="tab-engineering" tabindex="0">
+          <h2 class="route-detail-title">Engineering</h2>
+          <p class="route-detail-qualification">T Level in Engineering, Manufacturing, Processing and Control</p>
+          <h3>What it is</h3>
+          <p>The Engineering pathway covers the design, maintenance, and improvement of physical systems and equipment, such as those used in Amazon's fulfilment and logistics operations, paired with the T Level in Engineering, Manufacturing, Processing and Control.</p>
+          <h3>Who it is for</h3>
+          <p>Students who like working with their hands as well as their mind, enjoy practical problem solving, and are interested in how physical systems are built and kept running.</p>
+          <h3>Future job paths</h3>
+          <!-- TODO: Engineering future job paths pending from content owner -->
+          <p class="route-detail-pending">Coming soon</p>
+        </section>
+      </div>
+    </div>
   </main>
 </body>
 </html>
