@@ -77,12 +77,27 @@
 
 .home-route-list li {
   display: flex;
+}
+
+.home-route-list a {
+  display: inline-flex;
   align-items: center;
   gap: 16px;
   font-size: 1.125rem;
   line-height: 1.5rem;
   font-weight: 700;
   color: #fff;
+  text-decoration: none;
+}
+
+.home-route-list a:hover {
+  text-decoration: underline;
+}
+
+.home-route-list a:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 4px;
+  border-radius: 2px;
 }
 
 .home-route-list img {
