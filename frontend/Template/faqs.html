@@ -11,10 +11,109 @@
   <script src="Sources/js/topNavBar.js" defer></script>
   <link rel="stylesheet" href="Sources/css/footer.css">
   <link rel="stylesheet" href="Sources/css/chatWidget.css">
+  <link rel="stylesheet" href="Sources/css/tlevel.css">
   <script src="Sources/js/footer.js" defer></script>
   <script src="Sources/js/chatWidget.js" defer></script>
 </head>
 <body>
+  <!-- Reuses the T Level page styles (tlevel.css): breadcrumb, title, lead and FAQ accordion -->
+  <main class="tlevel-page">
+    <nav class="tlevel-breadcrumb" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="home.html">Home</a></li>
+        <li aria-current="page">FAQs</li>
+      </ol>
+    </nav>
 
+    <section class="tlevel-panel" aria-labelledby="faqs-title">
+      <h1 class="tlevel-title" id="faqs-title">Frequently asked questions</h1>
+      <p class="tlevel-lead">Answers to common questions about T Levels and industry placements at Amazon. Select a question to see the answer.</p>
+
+      <h2 class="tlevel-section-title">About T Levels</h2>
+      <div class="tlevel-faq">
+        <details open>
+          <summary>How are T Levels different from A Levels?</summary>
+          <p>A Levels focus mainly on classroom study and exams across several subjects. A T Level focuses on one technical area and combines classroom learning with an industry placement of at least 315 hours. One T Level is worth the same as three A Levels.</p>
+        </details>
+        <details>
+          <summary>Who can apply for a T Level?</summary>
+          <p>T Levels are for students aged 16 to 19, usually after finishing GCSEs. Entry requirements are set by each school or college, so check with them about the grades you need.</p>
+        </details>
+        <details>
+          <summary>What subjects are available as T Levels?</summary>
+          <p>T Levels cover many subjects, from digital and engineering to health and construction. Placements at Amazon run across five routes: Digital, Business, Media, Finance and Engineering. See the <a href="TLevel.html">T Levels page</a> for details of each route.</p>
+        </details>
+        <details>
+          <summary>Will I receive a qualification after completing a T Level?</summary>
+          <p>Yes. When you pass, you get a T Level certificate with an overall grade of Pass, Merit, Distinction or Distinction*. The certificate also shows your industry placement and the grades for each part of the course.</p>
+        </details>
+      </div>
+
+      <h2 class="tlevel-section-title">Industry placements</h2>
+      <div class="tlevel-faq">
+        <details>
+          <summary>What is an industry placement?</summary>
+          <p>An industry placement is time spent working with an employer as part of your T Level. You do real tasks, learn how a workplace runs and put what you learn in class into practice.</p>
+        </details>
+        <details>
+          <summary>How long is the T Level industry placement?</summary>
+          <p>The placement lasts at least 315 hours, which is about 45 working days. It can be done as a block or spread across your two years of study.</p>
+        </details>
+        <details>
+          <summary>How many hours are required for an industry placement?</summary>
+          <p>You need to complete at least 315 hours with your employer. Your school or college will agree a schedule with the employer and help you track your hours.</p>
+        </details>
+        <details>
+          <summary>What skills can I gain from a T Level placement?</summary>
+          <p>You build technical skills for your route as well as skills every employer looks for, such as teamwork, communication, problem solving and time management. You also learn how to work to deadlines and take feedback.</p>
+        </details>
+        <details>
+          <summary>Do I need any previous work experience to apply for a placement?</summary>
+          <p>No. The placement is where you gain work experience, so you do not need any before you apply.</p>
+        </details>
+        <details>
+          <summary>Are there opportunities to network with professionals?</summary>
+          <!-- TODO: confirm networking opportunities with the content owner -->
+          <p>Yes. During your placement you work alongside people in your team and can ask them about their roles and career paths. These contacts can help you when you look for jobs or apprenticeships later.</p>
+        </details>
+      </div>
+
+      <h2 class="tlevel-section-title">Amazon placements</h2>
+      <div class="tlevel-faq">
+        <details>
+          <summary>How can I apply for an Amazon placement?</summary>
+          <!-- TODO: confirm the application process with the content owner -->
+          <p>Start by talking to your school or college, as they arrange placements with employers. You can also <a href="login.html#register">register your interest</a> on this site to hear about placements at Amazon.</p>
+        </details>
+        <details>
+          <summary>What should I include in my placement application?</summary>
+          <p>Say which route you are studying and why it interests you. Include any projects, hobbies or school work that show your skills, and explain what you hope to learn. Keep it clear and check your spelling before you send it.</p>
+        </details>
+        <details>
+          <summary>What benefits can an Amazon placement provide?</summary>
+          <!-- TODO: confirm benefits wording with the content owner -->
+          <p>You get hands-on experience at a large global company, support from people working in your field and real work to talk about in future applications and interviews.</p>
+        </details>
+      </div>
+
+      <h2 class="tlevel-section-title">After your T Level</h2>
+      <div class="tlevel-faq">
+        <details>
+          <summary>Can I go to university after completing a T Level?</summary>
+          <p>Yes. T Levels earn UCAS points, the same as three A Levels, and many universities accept them. Check the entry requirements for the courses you are interested in.</p>
+        </details>
+        <details>
+          <summary>What opportunities are available after finishing a T Level?</summary>
+          <p>You can go into skilled work, start a higher or degree apprenticeship, or go on to university. Each route on the <a href="TLevel.html">T Levels page</a> lists example job paths.</p>
+        </details>
+        <details>
+          <summary>Who can I contact if I need more help?</summary>
+          <p>Your school or college is the best place to start. You can also get in touch with us through the <a href="contact.html">contact page</a>.</p>
+        </details>
+      </div>
+
+      <a class="tlevel-btn" href="login.html#register">Register your interest</a>
+    </section>
+  </main>
 </body>
 </html>

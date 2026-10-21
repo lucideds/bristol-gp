@@ -298,6 +298,22 @@ html.a11y-reduce-motion .tlevel-faq summary::after {
   max-width: 42.5rem;
 }
 
+/* Links inside answers (FAQs page): same treatment as the breadcrumb links */
+.tlevel-faq details a {
+  color: #007185;
+  text-decoration: underline;
+}
+
+[data-theme="dark"] .tlevel-faq details a,
+[data-theme="high-contrast"] .tlevel-faq details a {
+  color: inherit;
+}
+
+.tlevel-faq details a:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
 /* ---------- Register button (same tokens as the home page primary button) ---------- */
 .tlevel-btn {
   display: inline-flex;
