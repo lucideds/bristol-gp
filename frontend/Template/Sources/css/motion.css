@@ -1,0 +1,286 @@
+/* Subtle motion shared by every page.
+   - Colour, border and shadow changes fade instead of snapping.
+   - Movement (lifts, slides, page fades) only runs when the visitor hasn't asked
+     for reduced motion, either in their system settings or in our Accessibility popup.
+   - Everything here is progressive: browsers that don't support a feature just
+     show the change straight away, as before. */
+
+:root {
+  --motion-fast: 150ms;
+  --motion-base: 220ms;
+  --motion-slow: 320ms;
+  /* Gentle ease-out: quick start, soft landing */
+  --motion-ease: cubic-bezier(0.2, 0, 0, 1);
+  /* How far things move. Set to 0 below when motion is reduced. */
+  --motion-distance: 8px;
+  --motion-lift: -2px;
+  --motion-press: 0.98;
+}
+
+/* ---------- Smooth state changes (colour only, so they stay on with reduced motion) ---------- */
+a,
+button,
+summary,
+input,
+textarea,
+select,
+.a11y-tile-box,
+.a11y-switch {
+  transition-property: color, background-color, border-color, box-shadow,
+    text-decoration-color, text-decoration-thickness, opacity, transform;
+  transition-duration: var(--motion-fast);
+  transition-timing-function: var(--motion-ease);
+}
+
+/* The switch knob slides and changes colour together */
+.a11y-switch::after {
+  transition: left var(--motion-base) var(--motion-ease),
+    background-color var(--motion-base) var(--motion-ease);
+}
+
+/* The tick on the chosen tile fades in rather than appearing */
+.a11y-tile-check {
+  opacity: 0;
+  transition: opacity var(--motion-fast) var(--motion-ease),
+    transform var(--motion-fast) var(--motion-ease),
+    visibility var(--motion-fast);
+}
+.a11y-tile input:checked + .a11y-tile-box .a11y-tile-check {
+  opacity: 1;
+}
+
+/* ---------- Movement: only without a reduced-motion preference ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Fade between pages instead of a hard cut (Chrome, Edge, Safari 18.2+) */
+  @view-transition {
+    navigation: auto;
+  }
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: var(--motion-base);
+    animation-timing-function: var(--motion-ease);
+  }
+  /* The header and chat button are the same on every page, so they stay put */
+  .site-header {
+    view-transition-name: site-header;
+  }
+  .chat-toggle {
+    view-transition-name: chat-toggle;
+  }
+
+  /* Pill buttons lift slightly on hover and press in on click */
+  .home-btn,
+  .tlevel-btn,
+  .auth-primary,
+  .auth-secondary,
+  .a11y-done,
+  .chat-send,
+  .chat-toggle {
+    transition-property: color, background-color, border-color, box-shadow, transform;
+    transition-duration: var(--motion-fast);
+    transition-timing-function: var(--motion-ease);
+  }
+  .home-btn:hover,
+  .tlevel-btn:hover,
+  .auth-primary:hover,
+  .auth-secondary:hover,
+  .a11y-done:hover,
+  .chat-send:hover:not(:disabled),
+  .chat-toggle:hover {
+    transform: translateY(calc(var(--motion-lift) / 2));
+  }
+  .home-btn:active,
+  .tlevel-btn:active,
+  .auth-primary:active,
+  .auth-secondary:active,
+  .a11y-done:active,
+  .chat-send:active:not(:disabled),
+  .chat-toggle:active {
+    transform: scale(var(--motion-press));
+  }
+
+  /* Cards lift a little on hover or keyboard focus */
+  .home-audience-card,
+  .route-card {
+    transition: transform var(--motion-base) var(--motion-ease),
+      box-shadow var(--motion-base) var(--motion-ease),
+      background-color var(--motion-base) var(--motion-ease),
+      border-color var(--motion-base) var(--motion-ease);
+  }
+  .home-audience-card:hover,
+  .home-audience-card:has(a:focus-visible),
+  .route-card:hover,
+  .route-card:has(a:focus-visible) {
+    transform: translateY(var(--motion-lift));
+    box-shadow: 0 6px 16px rgba(15, 17, 17, 0.14);
+  }
+  [data-theme="dark"] .home-audience-card:hover,
+  [data-theme="dark"] .home-audience-card:has(a:focus-visible),
+  [data-theme="dark"] .route-card:hover,
+  [data-theme="dark"] .route-card:has(a:focus-visible) {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+  }
+  /* High contrast keeps its flat look: lift only, no soft shadow */
+  [data-theme="high-contrast"] .home-audience-card:hover,
+  [data-theme="high-contrast"] .home-audience-card:has(a:focus-visible),
+  [data-theme="high-contrast"] .route-card:hover,
+  [data-theme="high-contrast"] .route-card:has(a:focus-visible) {
+    box-shadow: none;
+  }
+
+  /* FAQ chevron turns a little more softly */
+  .tlevel-faq details > summary::after {
+    transition: transform var(--motion-base) var(--motion-ease);
+  }
+
+  /* FAQ answers slide open and closed (Chrome 131+; others open instantly) */
+  @supports (interpolate-size: allow-keywords) {
+    :root {
+      interpolate-size: allow-keywords;
+    }
+    details::details-content {
+      block-size: 0;
+      overflow: hidden;
+      transition-property: block-size, content-visibility;
+      transition-duration: var(--motion-base);
+      transition-timing-function: var(--motion-ease);
+      transition-behavior: allow-discrete;
+    }
+    details[open]::details-content {
+      block-size: auto;
+    }
+  }
+  /* Fallback for every browser: the answer fades in when opened */
+  details[open] > :not(summary) {
+    animation: motion-fade-in var(--motion-base) var(--motion-ease);
+  }
+
+  /* T Level tabs: the chosen section fades in */
+  .tlevel-layout--tabs .tlevel-panel:not([hidden]) {
+    animation: motion-fade-up var(--motion-base) var(--motion-ease);
+  }
+
+  /* Sign in / create account forms and error messages fade in */
+  .auth-card [id^="panel-"]:not([hidden]) {
+    animation: motion-fade-up var(--motion-base) var(--motion-ease);
+  }
+  .field-error:not([hidden]),
+  .auth-error-summary:not([hidden]) {
+    animation: motion-fade-in var(--motion-base) var(--motion-ease);
+  }
+
+  /* Mobile menu slides down a touch when opened */
+  @media (max-width: 768px) {
+    .nav-collapsible--open {
+      animation: motion-fade-down var(--motion-base) var(--motion-ease);
+    }
+  }
+
+  /* Chat popup: grows out of the T buddy button and fades away when closed.
+     Longhands, so browsers without allow-discrete still get the other transitions. */
+  .chat-panel {
+    transform-origin: bottom right;
+    transition-property: opacity, transform, display;
+    transition-duration: var(--motion-base);
+    transition-timing-function: var(--motion-ease);
+    transition-behavior: allow-discrete;
+  }
+  .chat-panel[hidden] {
+    opacity: 0;
+    transform: translateY(var(--motion-distance)) scale(0.98);
+  }
+  @starting-style {
+    .chat-panel:not([hidden]) {
+      opacity: 0;
+      transform: translateY(var(--motion-distance)) scale(0.98);
+    }
+  }
+
+  /* New chat messages rise in. Finished replies are not animated: they replace
+     the streaming bubble that already animated in, so they'd flash otherwise. */
+  .chat-msg--user,
+  .chat-msg--typing,
+  .chat-msg--streaming,
+  .chat-msg--error {
+    animation: motion-fade-up var(--motion-base) var(--motion-ease);
+  }
+
+  /* Accessibility popup and its backdrop fade in and out */
+  .a11y-panel {
+    transition-property: opacity, transform, overlay, display;
+    transition-duration: var(--motion-base);
+    transition-timing-function: var(--motion-ease);
+    transition-behavior: allow-discrete;
+  }
+  .a11y-panel:not([open]) {
+    opacity: 0;
+    transform: translateY(calc(var(--motion-distance) * -1));
+  }
+  @starting-style {
+    .a11y-panel[open] {
+      opacity: 0;
+      transform: translateY(calc(var(--motion-distance) * -1));
+    }
+  }
+  .a11y-panel::backdrop {
+    transition-property: background-color, overlay, display;
+    transition-duration: var(--motion-base);
+    transition-timing-function: var(--motion-ease);
+    transition-behavior: allow-discrete;
+  }
+  .a11y-panel:not([open])::backdrop {
+    background-color: transparent;
+  }
+  @starting-style {
+    .a11y-panel[open]::backdrop {
+      background-color: transparent;
+    }
+  }
+  .a11y-tile-check {
+    transform: scale(0.6);
+  }
+  .a11y-tile input:checked + .a11y-tile-box .a11y-tile-check {
+    transform: scale(1);
+  }
+}
+
+@keyframes motion-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(var(--motion-distance));
+  }
+}
+@keyframes motion-fade-down {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--motion-distance) * -0.5));
+  }
+}
+@keyframes motion-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* ---------- "Reduce motion" in the Accessibility popup ----------
+   accessibility.css already turns transitions off and shortens animations;
+   this also stops the movement itself and the page-to-page fade. */
+html.a11y-reduce-motion {
+  --motion-distance: 0px;
+  --motion-lift: 0px;
+  --motion-press: 1;
+}
+html.a11y-reduce-motion *,
+html.a11y-reduce-motion *::before,
+html.a11y-reduce-motion *::after {
+  animation-delay: 0s !important;
+}
+html.a11y-reduce-motion::view-transition-group(*),
+html.a11y-reduce-motion::view-transition-old(*),
+html.a11y-reduce-motion::view-transition-new(*) {
+  animation: none !important;
+}

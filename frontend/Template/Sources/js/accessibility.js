@@ -66,6 +66,18 @@
     root.setAttribute('data-theme', t);
     document.dispatchEvent(new CustomEvent('tlc:themechange'));
   }
+  // Same as applyTheme, but the page fades into the new colours where the browser
+  // supports it and the visitor hasn't asked for reduced motion.
+  // The change happens a moment later, so only use this when nothing reads the theme straight after.
+  function applyThemeSmoothly(t) {
+    var reduce = root.classList.contains('a11y-reduce-motion') ||
+      (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    if (document.startViewTransition && !reduce) {
+      document.startViewTransition(function () { applyTheme(t); });
+    } else {
+      applyTheme(t);
+    }
+  }
 
   // Apply the saved choices straight away (the nav bar isn't built yet, so no event).
   var settings = loadSettings();
@@ -198,7 +210,7 @@
         applySettings(settings);
         saveSettings(settings);
       } else if (el.name === 'a11y-theme') {
-        applyTheme(el.value);
+        applyThemeSmoothly(el.value);
         saveTheme(el.value);
       } else if (el.hasAttribute('data-setting')) {
         settings[el.getAttribute('data-setting')] = el.checked;
