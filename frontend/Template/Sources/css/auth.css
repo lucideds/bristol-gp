@@ -2,7 +2,7 @@
 :root,
 [data-theme="light"] {
   --auth-error: #C40000;
-  --auth-muted: #545B64;
+  --auth-muted: var(--color-ink-muted);
 }
 
 [data-theme="dark"] {
@@ -94,8 +94,8 @@
   width: 100%;
   box-sizing: border-box;
   padding: 8px;
-  background: #FFFFFF;
-  color: #16191F;
+  background: var(--color-surface);
+  color: var(--color-ink);
   font: inherit;
   border: 1px solid #879596;
   border-radius: 4px;
@@ -134,7 +134,7 @@
   margin-top: 1px;
   border-radius: 50%;
   background: var(--auth-error);
-  color: #FFFFFF;
+  color: #fff;
   font-size: 0.6875rem;
   font-weight: bold;
   line-height: 14px;
@@ -184,7 +184,7 @@
   margin-top: 6px;
   padding: 8px 12px;
   background: var(--accent);
-  color: #232F3E;
+  color: var(--color-navy);
   font: inherit;
   font-weight: bold;
   border: 1px solid #EC7211;
@@ -214,7 +214,7 @@
 .auth-alt a:hover,
 .auth-alt a:focus-visible {
   text-decoration: underline;
-  text-decoration-color: #FF9900;
+  text-decoration-color: var(--color-orange);
   text-decoration-thickness: 3px;
   text-underline-offset: 6px;
 }
@@ -248,9 +248,9 @@
   max-width: 23.75rem;
   box-sizing: border-box;
   padding: 24px;
-  background: #fff;
-  color: #0f1111;
-  border: 0.8px solid #d5d9d9;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border: 0.8px solid var(--color-divider);
   border-radius: 12px;
   box-shadow: 0 2px 4px rgba(15, 17, 17, 0.12), 0 1px 1.5px rgba(15, 17, 17, 0.2);
   font-family: "Atkinson Hyperlegible", "Amazon Ember", Arial, sans-serif;
@@ -268,14 +268,14 @@
   font-size: 1.75rem;
   line-height: 2.125rem;
   font-weight: 700;
-  color: #0f1111;
+  color: var(--color-ink);
 }
 
 .auth-card--figma .auth-subtitle {
   margin: 8px 0 0;
   font-size: 1rem;
   line-height: 1.5rem;
-  color: #565959;
+  color: var(--color-ink-muted);
 }
 
 .auth-card--figma .auth-form {
@@ -292,16 +292,16 @@
   font-size: 1rem;
   line-height: 1.5rem;
   font-weight: 700;
-  color: #0f1111;
+  color: var(--color-ink);
 }
 
 .auth-card--figma .auth-field input {
   display: block;
   height: 2.75rem;
   padding: 0 12px;
-  background: #fff;
-  color: #0f1111;
-  border: 1.6px solid #6f7777;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border: 1.6px solid var(--color-border);
   border-radius: 8px;
   font: inherit;
   font-size: 1rem;
@@ -310,7 +310,7 @@
 }
 
 .auth-card--figma .auth-field input:focus-visible {
-  outline: 2px solid #ff9900;
+  outline: 2px solid var(--color-orange);
   outline-offset: 2px;
 }
 
@@ -341,7 +341,7 @@
   font-size: 0.833rem;
   line-height: 1.05rem;
   font-weight: 700;
-  color: #007185;
+  color: var(--color-link);
   text-decoration: underline;
   cursor: pointer;
 }
@@ -362,15 +362,15 @@
   width: 1.5rem;
   height: 1.5rem;
   margin: 0;
-  background: #fff;
+  background: var(--color-surface);
   border: 1px solid #767676;
   border-radius: 5px;
   cursor: pointer;
 }
 
 .auth-card--figma .auth-check input:checked {
-  background: #0f1111 url("../assests/a11y-check.svg") center / 0.875rem 0.875rem no-repeat;
-  border-color: #0f1111;
+  background: var(--color-ink) url("../assests/a11y-check.svg") center / 0.875rem 0.875rem no-repeat;
+  border-color: var(--color-ink);
 }
 
 .auth-card--figma .auth-check label {
@@ -378,7 +378,7 @@
   font-size: 1rem;
   line-height: 1.5rem;
   font-weight: 400;
-  color: #0f1111;
+  color: var(--color-ink);
   cursor: pointer;
 }
 
@@ -389,9 +389,9 @@
   min-height: 2.75rem;
   margin: 0;
   padding: 0 16px;
-  background: #ff9900;
-  color: #0f1111;
-  border: 1.6px solid #a35c00;
+  background: var(--color-orange);
+  color: var(--color-ink);
+  border: 1.6px solid var(--color-orange-border);
   border-radius: 22px;
   font: inherit;
   font-size: 1rem;
@@ -402,7 +402,7 @@
 }
 
 .auth-card--figma .auth-primary:hover {
-  background: #fa8900;
+  background: var(--color-orange-hover);
 }
 
 .auth-card--figma .auth-link {
@@ -410,7 +410,7 @@
   margin-top: 12px;
   font-size: 0.875rem;
   line-height: 1.25rem;
-  color: #007185;
+  color: var(--color-link);
   text-decoration: underline;
 }
 
@@ -418,14 +418,14 @@
   height: 0;
   margin: 20px 0 0;
   border: 0;
-  border-top: 0.8px solid #d5d9d9;
+  border-top: 0.8px solid var(--color-divider);
 }
 
 .auth-card--figma .auth-alt-text {
   margin: 20px 0 0;
   font-size: 0.875rem;
   line-height: 1.25rem;
-  color: #0f1111;
+  color: var(--color-ink);
 }
 
 /* White pill secondary button (switches to the sign-up form) */
@@ -438,9 +438,9 @@
   min-height: 2.75rem;
   margin-top: 12px;
   padding: 0 16px;
-  background: #fff;
-  color: #0f1111;
-  border: 1.6px solid #0f1111;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border: 1.6px solid var(--color-ink);
   border-radius: 22px;
   font-size: 1rem;
   line-height: 1.5rem;
@@ -456,7 +456,7 @@
 .auth-card--figma .field-hint {
   font-size: 0.875rem;
   line-height: 1.25rem;
-  color: #565959;
+  color: var(--color-ink-muted);
 }
 
 /* Inline field error: warning triangle + bold red text */
@@ -485,7 +485,7 @@
   margin: 0 0 20px;
   padding: 16px 16px 16px 52px;
   background: #fdeae6;
-  color: #0f1111;
+  color: var(--color-ink);
   border: 1.6px solid #b12704;
   border-radius: 8px;
 }
@@ -521,7 +521,7 @@
 }
 
 .auth-card--figma .auth-error-summary-list a {
-  color: #0f1111;
+  color: var(--color-ink);
   text-decoration: underline;
 }
 
@@ -530,7 +530,7 @@
 .auth-card--figma button:focus-visible,
 .auth-card--figma .auth-check input:focus-visible,
 .auth-card--figma .auth-error-summary:focus {
-  outline: 2px solid #007185;
+  outline: 2px solid var(--color-link);
   outline-offset: 2px;
 }
 

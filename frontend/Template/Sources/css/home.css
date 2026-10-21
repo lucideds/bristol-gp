@@ -22,8 +22,8 @@
 
 /* ---------- Hero ---------- */
 .home-hero {
-  background: #232f3e;
-  color: #fff;
+  background: var(--color-navy);
+  color: var(--color-on-navy);
 }
 
 /* 11:9 is the spec's 55% / 45% split */
@@ -49,7 +49,7 @@
   max-width: 36rem;
   font-size: 1.125rem;
   line-height: 1.75rem;
-  color: #d5d9d9;
+  color: var(--color-divider);
 }
 
 .home-actions {
@@ -86,7 +86,7 @@
   font-size: 1.125rem;
   line-height: 1.5rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--color-on-navy);
   text-decoration: none;
 }
 
@@ -122,18 +122,18 @@
 }
 
 .home-btn--primary {
-  background: #ff9900;
-  color: #0f1111;
-  border: 1.6px solid #a35c00;
+  background: var(--color-orange);
+  color: var(--color-ink);
+  border: 1.6px solid var(--color-orange-border);
 }
 
 .home-btn--primary:hover {
-  background: #fa8900;
+  background: var(--color-orange-hover);
 }
 
 .home-btn--outline {
   background: transparent;
-  color: #fff;
+  color: var(--color-on-navy);
   border: 2px solid #fff;
 }
 
@@ -142,23 +142,23 @@
 }
 
 .home-btn--dark {
-  background: #232f3e;
-  color: #fff;
-  border: 1.6px solid #0f1111;
+  background: var(--color-navy);
+  color: var(--color-on-navy);
+  border: 1.6px solid var(--color-ink);
 }
 
 .home-btn--dark:hover {
-  background: #131a22;
+  background: var(--color-navy-deep);
 }
 
 .home-hero .home-btn:focus-visible {
-  outline: 2px solid #ff9900;
+  outline: 2px solid var(--color-orange);
   outline-offset: 2px;
 }
 
 /* An orange ring would vanish on the orange band */
 .home-cta .home-btn:focus-visible {
-  outline: 2px solid #0f1111;
+  outline: 2px solid var(--color-ink);
   outline-offset: 2px;
 }
 
@@ -181,8 +181,8 @@
 }
 
 .home-audience {
-  background: #f0f1f0;
-  color: #0f1111;
+  background: var(--color-surface);
+  color: var(--color-ink);
 }
 
 /* A pale grey band would glare on the navy / black pages */
@@ -213,9 +213,9 @@
   min-height: 10.5rem;
   box-sizing: border-box;
   padding: 20px;
-  background: #fff;
-  color: #0f1111;
-  border: 2px solid #6f7777;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border: 2px solid var(--color-border);
   border-radius: 8px;
 }
 
@@ -273,8 +273,8 @@
 
 /* ---------- CTA band ---------- */
 .home-cta {
-  background: #ff9900;
-  color: #0f1111;
+  background: var(--color-orange);
+  color: var(--color-ink);
 }
 
 .home-cta-inner {

@@ -17,9 +17,9 @@
   box-sizing: border-box;
   height: 44px;
   padding: 0 18px;
-  background: #232f3e;
-  color: #fff;
-  border: 1.6px solid #0f1111;
+  background: var(--color-navy);
+  color: var(--color-on-navy);
+  border: 1.6px solid var(--color-ink);
   border-radius: 22px;
   font-family: "Atkinson Hyperlegible", "Amazon Ember", Arial, sans-serif;
   font-weight: 700;
@@ -81,9 +81,9 @@
   max-height: calc(100dvh - 100px);   /* ignored where dvh is unsupported */
   display: flex;
   flex-direction: column;
-  background: #fff;
-  color: #0f1111;
-  border: 1.6px solid #0f1111;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border: 1.6px solid var(--color-ink);
   border-radius: 12px;
   box-shadow: 0 4px 16px rgba(15, 17, 17, 0.28);
   overflow: hidden;
@@ -110,8 +110,8 @@
   box-sizing: border-box;
   min-height: 49.6px;
   padding: 0 16px;
-  background: #232f3e;
-  color: #fff;
+  background: var(--color-navy);
+  color: var(--color-on-navy);
 }
 
 .chat-title {
@@ -122,7 +122,7 @@
   font-weight: 700;
   font-size: 18px;
   line-height: 24px;
-  color: #fff;
+  color: var(--color-on-navy);
 }
 
 .chat-title-icon {
@@ -139,10 +139,10 @@
   box-sizing: border-box;
   height: 25.6px;
   padding: 0 10px;
-  background: #232f3e;
-  border: 0.8px solid #0f1111;
+  background: var(--color-navy);
+  border: 0.8px solid var(--color-ink);
   border-radius: 12.8px;
-  color: #fff;
+  color: var(--color-on-navy);
   font-weight: 700;
   font-size: 13px;
   line-height: 20px;
@@ -169,7 +169,7 @@
   height: 32px;
   padding: 0;
   background: transparent;
-  color: #fff;
+  color: var(--color-on-navy);
   border: none;
   border-radius: 6px;
   font: inherit;
@@ -192,7 +192,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  background: #fff;
+  background: var(--color-surface);
 }
 
 .chat-msg {
@@ -208,9 +208,9 @@
 /* The user's messages: navy, on the right */
 .chat-msg--user {
   align-self: flex-end;
-  background: #232f3e;
-  color: #fff;
-  border: 0.8px solid #d5d9d9;
+  background: var(--color-navy);
+  color: var(--color-on-navy);
+  border: 0.8px solid var(--color-divider);
   border-radius: 12px 12px 4px 12px;
 }
 
@@ -220,9 +220,9 @@
   max-width: 80%;
   max-width: min(303px, 90%);
   padding: 12px 16px 16px;
-  background: #e7eaea;
-  color: #0f1111;
-  border: 0.8px solid #d5d9d9;
+  background: var(--color-surface-muted);
+  color: var(--color-ink);
+  border: 0.8px solid var(--color-divider);
   border-radius: 12px 12px 12px 4px;
 }
 
@@ -244,7 +244,7 @@
 .chat-msg--error {
   align-self: flex-start;
   background: #fdf3f1;
-  color: #0f1111;
+  color: var(--color-ink);
   border: 0.8px solid #d13212;
   border-radius: 12px 12px 12px 4px;
 }
@@ -301,7 +301,7 @@
 
 /* Links in the widget */
 .chat-panel a {
-  color: #007185;
+  color: var(--color-link);
   text-decoration: underline;
 }
 
@@ -311,8 +311,8 @@
   gap: 8px;
   margin: 0;
   padding: 12px 16px;
-  border-top: 0.8px solid #d5d9d9;
-  background: #fff;
+  border-top: 0.8px solid var(--color-divider);
+  background: var(--color-surface);
 }
 
 .chat-input {
@@ -321,9 +321,9 @@
   box-sizing: border-box;
   height: 44px;
   padding: 0 12px;
-  background: #fff;
-  color: #0f1111;
-  border: 1.6px solid #6f7777;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border: 1.6px solid var(--color-border);
   border-radius: 8px;
   font: inherit;
   font-size: 16px;                    /* 16px stops iOS zooming in on focus */
@@ -331,7 +331,7 @@
 }
 
 .chat-input::placeholder {
-  color: #565959;
+  color: var(--color-ink-muted);
   opacity: 1;
 }
 
@@ -344,14 +344,14 @@
   width: 75.2px;
   height: 44px;
   padding: 0;
-  background: #ff9900;
-  border: 1.6px solid #a35c00;
+  background: var(--color-orange);
+  border: 1.6px solid var(--color-orange-border);
   border-radius: 22px;
   cursor: pointer;
 }
 
 .chat-send:hover:not(:disabled) {
-  background: #fa8900;
+  background: var(--color-orange-hover);
 }
 
 /* Greyed out while waiting for a reply */
@@ -372,20 +372,20 @@
   padding: 0 16px 16px;
   font-size: 13px;
   line-height: 18px;
-  color: #565959;
-  background: #fff;
+  color: var(--color-ink-muted);
+  background: var(--color-surface);
 }
 
 /* Visible keyboard focus */
 .chat-toggle:focus-visible {
-  outline: 2px solid #ff9900;
+  outline: 2px solid var(--color-orange);
   outline-offset: 2px;
 }
 
 .chat-panel button:focus-visible,
 .chat-panel input:focus-visible,
 .chat-panel a:focus-visible {
-  outline: 2px solid #007185;
+  outline: 2px solid var(--color-link);
   outline-offset: 2px;
 }
 

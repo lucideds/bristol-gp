@@ -11,8 +11,8 @@ body {
 .site-footer {
   margin-top: auto;
   padding: 25px 40px;
-  background: #131a22;
-  color: #fff;
+  background: var(--color-navy-deep);
+  color: var(--color-on-navy);
   font-family: "Amazon Ember", Arial, sans-serif;
   font-size: 1rem;
   line-height: 1.5;
@@ -41,13 +41,13 @@ body {
 .footer-tagline {
   margin: 12px 0 0;
   max-width: 340px;
-  color: #d5dbdb;
+  color: var(--color-on-navy-muted);
   font-size: 0.875rem;
 }
 
 .footer-heading {
   margin: 0 0 14px;
-  color: #fff;
+  color: var(--color-on-navy);
   font-size: 1rem;
   font-weight: 600;
   line-height: 1.5;
@@ -63,7 +63,7 @@ body {
 }
 
 .site-footer a {
-  color: #fff;
+  color: var(--color-on-navy);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -71,12 +71,12 @@ body {
 /* Orange underline on hover and on the current page, like the nav links */
 .site-footer a:hover,
 .site-footer a[aria-current="page"] {
-  text-decoration-color: var(--accent, #FF9900);
+  text-decoration-color: var(--accent, var(--color-orange));
   text-decoration-thickness: 3px;
 }
 
 .site-footer a:focus-visible {
-  outline: 2px solid var(--accent, #FF9900);
+  outline: 2px solid var(--accent, var(--color-orange));
   outline-offset: 2px;
 }
 
@@ -84,8 +84,8 @@ body {
 .footer-bottom {
   margin: 0;
   padding-top: 16px;
-  border-top: 1px solid #d5dbdb;
-  color: #d5dbdb;
+  border-top: 1px solid var(--color-on-navy-muted);
+  color: var(--color-on-navy-muted);
   font-size: 0.875rem;
 }
 

@@ -1,21 +1,22 @@
-/* Light mode (default): white page, AWS navy nav bars */
+/* Theme variables. Colour values come from tokens.css. */
+/* Light mode (default): light grey page, navy nav bars */
 :root,
 [data-theme="light"] {
-  --accent: #FF9900;        
-  --page-bg: #FFFFFF;
-  --page-text: #16191F;
-  --nav-top-bg: #374f6e;     
-  --nav-second-bg: #161E2D;   
-  --nav-text: #FFFFFF;
+  --accent: var(--color-orange);
+  --page-bg: var(--color-page);
+  --page-text: var(--color-ink);
+  --nav-top-bg: var(--color-navy);
+  --nav-second-bg: var(--color-navy-deep);
+  --nav-text: var(--color-on-navy);
 }
 
-/* Dark mode: navy page, white nav bars */
+/* Dark mode: navy page, white text (no dark tokens yet, so these stay as before) */
 [data-theme="dark"] {
   --page-bg: #232F3E;
   --page-text: #FFFFFF;
-  --nav-top-bg: #374f6e;
-  --nav-second-bg: #161E2D;   
-  --nav-text: #ffffff;
+  --nav-top-bg: var(--color-navy);
+  --nav-second-bg: var(--color-navy-deep);
+  --nav-text: var(--color-on-navy);
 }
 
 body {
@@ -28,14 +29,14 @@ body {
 /* ---------- Site header (Figma "header") ---------- */
 /* Header-only tokens: same values in light and dark themes */
 .site-header {
-  --hdr-navy: #232f3e;
-  --hdr-dark: #131a22;
-  --hdr-ink: #0f1111;
-  --hdr-placeholder: #565959;
-  --hdr-orange: #ff9900;
-  --hdr-orange-hover: #fa8900;
-  --hdr-orange-border: #a35c00;
-  --hdr-white: #fff;
+  --hdr-navy: var(--color-navy);
+  --hdr-dark: var(--color-navy-deep);
+  --hdr-ink: var(--color-ink);
+  --hdr-placeholder: var(--color-ink-muted);
+  --hdr-orange: var(--color-orange);
+  --hdr-orange-hover: var(--color-orange-hover);
+  --hdr-orange-border: var(--color-orange-border);
+  --hdr-white: var(--color-on-navy);
   font-family: "Atkinson Hyperlegible", "Amazon Ember", Arial, sans-serif;
   color: var(--hdr-white);
 }
@@ -98,7 +99,7 @@ body {
   height: 44px;
   padding: 0 12px;
   box-sizing: border-box;
-  background: #fff;
+  background: var(--color-surface);
   color: var(--hdr-ink);
   font: inherit;
   font-size: 16px;
@@ -154,7 +155,7 @@ body {
   height: 44px;
   padding: 0 12px;
   box-sizing: border-box;
-  color: #fff;
+  color: var(--color-on-navy);
   font-weight: 700;
   font-size: 16px;
   line-height: 24px;
@@ -213,7 +214,7 @@ button.nav-tool {
   height: 44px;
   padding: 0 12px;
   box-sizing: border-box;
-  color: #fff;
+  color: var(--color-on-navy);
   font-weight: 700;
   font-size: 16px;
   line-height: 24px;
@@ -241,7 +242,7 @@ button.nav-tool {
   height: 44px;
   padding: 0 12px;
   background: transparent;
-  color: #fff;
+  color: var(--color-on-navy);
   font: inherit;
   font-weight: 700;
   font-size: 16px;
@@ -289,7 +290,7 @@ button.nav-tool {
   flex: none;
   padding: 0;
   background: transparent;
-  color: #fff;
+  color: var(--color-on-navy);
   border: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: 4px;
   font-size: 1.25rem;

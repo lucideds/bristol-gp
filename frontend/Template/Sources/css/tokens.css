@@ -1,0 +1,58 @@
+/* Design tokens from the Figma token file (core + light theme).
+   Load this before every other stylesheet. Component CSS reads the --color-* values;
+   the page themes (light / dark / high contrast) are set in topNavBar.css and
+   accessibility.css through --page-bg, --page-text and --accent.
+
+   Colours marked "assumed" were cut off in the pasted token file. Their values come from
+   the earlier Figma specs in .agents/tasks/ and should be checked against the full file. */
+
+:root {
+  /* ---------- Colour: light ---------- */
+  --color-page: #f0f2f2;           /* Page background behind cards and panels */
+  --color-surface: #ffffff;        /* Card, panel, input and table background */
+  --color-surface-muted: #e7eaea;  /* Assistant messages, icon tiles, hover rows */
+  --color-navy: #232f3e;           /* Header, hero, user chat messages, selected controls */
+  --color-navy-deep: #131a22;      /* Main navigation bar and footer */
+  --color-on-navy: #ffffff;        /* Text and icons on navy and navy-deep */
+  --color-on-navy-muted: #d5dbdb;  /* Secondary text on navy: hero lead, footer legal line */
+  --color-ink: #0f1111;            /* Body text, headings and icons on light fills */
+
+  /* Assumed (missing from the pasted file) */
+  --color-ink-muted: #565959;      /* Secondary text on light fills */
+  --color-link: #007185;           /* Links and focus rings on light fills */
+  --color-orange: #ff9900;         /* Primary buttons and active indicators */
+  --color-orange-hover: #fa8900;
+  --color-orange-border: #a35c00;
+  --color-orange-tint: #fff0d6;    /* Selected tiles, highlighted cards */
+  --color-border: #6f7777;         /* Input and card borders */
+  --color-divider: #d5d9d9;        /* Hairline dividers */
+
+  /* ---------- Font ---------- */
+  --font-sans: "Atkinson Hyperlegible", "Segoe UI", system-ui, Arial, sans-serif;
+
+  /* ---------- Space ---------- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+
+  /* ---------- Radius ---------- */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-pill: 999px;
+
+  /* ---------- Size ---------- */
+  --target-min: 44px;
+  --container-max: 1200px;
+  --reading-width: 680px;
+
+  /* ---------- Shadow ---------- */
+  --shadow-card: 0 1px 3px 0 rgba(15, 17, 17, 0.2), 0 2px 8px 0 rgba(15, 17, 17, 0.12);
+  --shadow-raised: 0 4px 16px 0 rgba(15, 17, 17, 0.28);
+}
