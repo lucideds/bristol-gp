@@ -55,14 +55,14 @@ CHAT_MAX_MESSAGE_CHARS = 4000   # Longest single message we accept.
 CHAT_MAX_BODY_BYTES = 100_000   # Biggest request body we accept (100 KB).
 CHAT_RATE_LIMIT = 10            # Each visitor (IP address) can send this many requests...
 CHAT_RATE_WINDOW = 60           # ...in this many seconds.
-CHAT_TIMEOUT = (5, 30)          # Seconds to wait for OpenRouter: (to connect, to reply).
+CHAT_TIMEOUT = (5, 90)          # Seconds to wait for OpenRouter: (to connect, to reply).
                                 # When streaming, "to reply" is the longest gap allowed between bits of the reply.
 CHAT_STREAM_MAX_SECONDS = 120   # Longest a whole streamed reply may take.
 CHAT_MAX_TOKENS = 4096          # Most tokens (roughly word pieces) the AI may use for one reply, thinking included.
 # The model "thinks" before replying. "effort": "medium" lets OpenRouter use about half of
 # CHAT_MAX_TOKENS for thinking, leaving the rest for the reply so it isn't cut off mid-sentence.
 # "exclude" makes sure the thinking is never sent back to us (or to visitors).
-CHAT_REASONING = {"effort": "medium", "exclude": True}
+CHAT_REASONING = {"effort": "low", "exclude": True}
 
 # Rate limit data: IP address -> times of that IP's recent requests.
 # It lives in memory, so it resets when the server restarts. That's fine for a basic safeguard.
