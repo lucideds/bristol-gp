@@ -13,7 +13,7 @@ body {
   padding: 25px 40px;
   background: var(--color-navy-deep);
   color: var(--color-on-navy);
-  font-family: "Amazon Ember", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 1rem;
   line-height: 1.5;
 }

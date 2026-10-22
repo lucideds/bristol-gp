@@ -1,9 +1,8 @@
-@import url("https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap");
 
 /* Chat widget, styled to the Figma "Ai assistant" frame (Light mode).
    The chat panel's colours are fixed so it looks the same in every site theme.
    The "T buddy" button is the exception: it uses the opposite colours to the page.
-   Font stack: "Atkinson Hyperlegible", "Amazon Ember", Arial, sans-serif */
+   Font: var(--font-sans) (Amazon Ember) */
 
 /* "T buddy" pill button, always in the bottom-right corner of the screen */
 .chat-toggle {
@@ -21,7 +20,7 @@
   color: var(--color-on-navy);
   border: 1.6px solid var(--color-ink);
   border-radius: 22px;
-  font-family: "Atkinson Hyperlegible", "Amazon Ember", Arial, sans-serif;
+  font-family: var(--font-sans);
   font-weight: 700;
   font-size: 16px;
   line-height: 24px;
@@ -87,7 +86,7 @@
   border-radius: 12px;
   box-shadow: 0 4px 16px rgba(15, 17, 17, 0.28);
   overflow: hidden;
-  font-family: "Atkinson Hyperlegible", "Amazon Ember", Arial, sans-serif;
+  font-family: var(--font-sans);
   z-index: 1000;
 }
 

@@ -23,7 +23,7 @@ body {
   margin: 0;
   background: var(--page-bg);
   color: var(--page-text);
-  font-family: "Amazon Ember", Arial, sans-serif;
+  font-family: var(--font-sans);
 }
 
 /* ---------- Site header (Figma "header") ---------- */
@@ -37,7 +37,7 @@ body {
   --hdr-orange-hover: var(--color-orange-hover);
   --hdr-orange-border: var(--color-orange-border);
   --hdr-white: var(--color-on-navy);
-  font-family: "Atkinson Hyperlegible", "Amazon Ember", Arial, sans-serif;
+  font-family: var(--font-sans);
   color: var(--hdr-white);
 }
 

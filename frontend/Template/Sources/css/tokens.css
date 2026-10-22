@@ -28,7 +28,7 @@
   --color-divider: #d5d9d9;        /* Hairline dividers */
 
   /* ---------- Font ---------- */
-  --font-sans: "Atkinson Hyperlegible", "Segoe UI", system-ui, Arial, sans-serif;
+  --font-sans: "Amazon Ember", Arial, sans-serif;
 
   /* ---------- Space ---------- */
   --space-1: 4px;
@@ -55,4 +55,14 @@
   /* ---------- Shadow ---------- */
   --shadow-card: 0 1px 3px 0 rgba(15, 17, 17, 0.2), 0 2px 8px 0 rgba(15, 17, 17, 0.12);
   --shadow-raised: 0 4px 16px 0 rgba(15, 17, 17, 0.28);
+}
+
+/* Every page uses Amazon Ember. Form controls don't inherit the font by default, so set them too. */
+html,
+body,
+button,
+input,
+select,
+textarea {
+  font-family: var(--font-sans);
 }
