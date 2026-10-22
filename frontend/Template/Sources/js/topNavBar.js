@@ -18,6 +18,147 @@
     { label: 'Contact', path: 'contact.html' }
   ];
 
+  // Search index used by the search bar in the top bar.
+  // Each entry is a place on the site: its title (also shown as a suggestion),
+  // the page (plus #section) to open, and extra keywords people might type.
+  // When you add a page or section, add an entry here so search can find it.
+  var SEARCH_INDEX = [
+    { title: 'Home', path: 'home.html',
+      keywords: 'home main start welcome amazon placement career' },
+    { title: 'Who are you here for?', path: 'home.html#home-audience-title',
+      keywords: 'students schools colleges teachers parents guardians audience' },
+    { title: 'Explore placement routes', path: 'home.html#home-routes-title',
+      keywords: 'routes pathways options explore' },
+
+    { title: 'T Levels at Amazon', path: 'TLevel.html',
+      keywords: 't level tlevel tlevels qualification course routes overview general' },
+    { title: 'Digital route', path: 'TLevel.html#digital',
+      keywords: 'digital it tech technology computing computer software developer programming coding cloud infrastructure data analyst support technician' },
+    { title: 'Business route', path: 'TLevel.html#business',
+      keywords: 'business analyst operations coordinator project management hr human resources assistant management' },
+    { title: 'Media route', path: 'TLevel.html#media',
+      keywords: 'media marketing content creator social graphic design designer production creative' },
+    { title: 'Finance route', path: 'TLevel.html#finance',
+      keywords: 'finance accounting accounts accountant money payroll aat acca analyst trainee' },
+    { title: 'Engineering route', path: 'TLevel.html#engineering',
+      keywords: 'engineering engineer manufacturing processing control maintenance logistics fulfilment mechanical equipment' },
+
+    { title: 'Frequently asked questions', path: 'faqs.html',
+      keywords: 'faq faqs questions answers help' },
+    { title: 'FAQ: About T Levels', path: 'faqs.html#about-t-levels',
+      keywords: 'a levels difference eligibility eligible age gcse subjects qualification certificate grade pass merit distinction' },
+    { title: 'FAQ: Industry placements', path: 'faqs.html#industry-placements',
+      keywords: 'industry placement work experience hours length long duration skills network networking 315' },
+    { title: 'FAQ: Amazon placements', path: 'faqs.html#amazon-placements',
+      keywords: 'apply application how to apply cv benefits amazon' },
+    { title: 'FAQ: After your T Level', path: 'faqs.html#after-your-t-level',
+      keywords: 'after university uni degree apprenticeship apprenticeships jobs future opportunities next steps' },
+
+    { title: 'Contact us', path: 'contact.html',
+      keywords: 'contact email message get in touch support enquiry enquiries help interested' },
+
+    { title: 'Privacy', path: 'privacy.html',
+      keywords: 'privacy policy personal data gdpr' },
+    { title: 'Privacy: What data we collect', path: 'privacy.html#data-we-collect',
+      keywords: 'data collect collected email information' },
+    { title: 'Privacy: How your password is protected', path: 'privacy.html#password-protection',
+      keywords: 'password security hashed protected' },
+    { title: 'Privacy: Data retention policy', path: 'privacy.html#data-retention',
+      keywords: 'retention delete deletion keep account' },
+    { title: 'Privacy: Your rights', path: 'privacy.html#your-rights',
+      keywords: 'rights gdpr data protection act request correct' },
+    { title: 'Privacy: Cookies', path: 'privacy.html#cookies',
+      keywords: 'cookies cookie consent analytics pecr' },
+
+    { title: 'Sign in', path: 'signin.html',
+      keywords: 'sign in signin login log in register sign up signup account create' },
+    // Opens the accessibility popup on the current page instead of navigating.
+    { title: 'Accessibility settings', path: 'home.html#accessibility', opensAccessibility: true,
+      keywords: 'accessibility a11y dark mode theme contrast high contrast text size font colour color' }
+  ];
+
+  // Words that carry no meaning for matching.
+  var STOP_WORDS = ['a', 'an', 'and', 'the', 'to', 'of', 'for', 'in', 'on', 'at', 'is', 'are',
+    'do', 'i', 'my', 'me', 'can', 'how', 'what', 'who', 'where', 'about', 'with', 'page'];
+
+  function normalise(text) {
+    return text.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+
+  function words(text) {
+    return normalise(text).split(' ').filter(function (w) {
+      return w && STOP_WORDS.indexOf(w) === -1;
+    });
+  }
+
+  // Score one entry against the query. Higher is a better match; 0 means no match.
+  function scoreEntry(entry, query) {
+    var q = normalise(query);
+    var title = normalise(entry.title);
+    if (!q) return 0;
+    if (title === q) return 1000;
+
+    // Ignore the "FAQ: " / "Privacy: " label on sections so "faq" finds the FAQ page itself.
+    var shortTitle = entry.title.replace(/^[^:]+:\s*/, '');
+    var titleWords = words(shortTitle);
+    var keywordWords = words(entry.keywords);
+    var keywordText = ' ' + normalise(entry.keywords) + ' ';
+    var score = 0;
+
+    if (normalise(shortTitle).indexOf(q) !== -1) score += 50;
+    // Multi-word keywords like "high contrast" or "sign up".
+    if (q.indexOf(' ') !== -1 && keywordText.indexOf(' ' + q + ' ') !== -1) score += 40;
+
+    words(query).forEach(function (w) {
+      if (titleWords.indexOf(w) !== -1) {
+        score += 10;
+      } else if (keywordWords.indexOf(w) !== -1) {
+        score += 6;
+      } else if (w.length >= 3) {
+        // Partial words: "eng" finds "engineering", "placements" finds "placement".
+        var partial = titleWords.concat(keywordWords).some(function (k) {
+          return k.indexOf(w) === 0 || (k.length >= 4 && w.indexOf(k) === 0);
+        });
+        if (partial) score += 3;
+      }
+    });
+    // A whole page beats one of its sections when both match equally ("faq", "privacy").
+    if (score > 0 && entry.path.indexOf('#') === -1) score += 1;
+    return score;
+  }
+
+  // Return the best matching entry, or null if nothing matches.
+  function findBestMatch(query) {
+    var best = null;
+    var bestScore = 0;
+    SEARCH_INDEX.forEach(function (entry) {
+      var s = scoreEntry(entry, query);
+      if (s > bestScore) {
+        best = entry;
+        bestScore = s;
+      }
+    });
+    return best;
+  }
+
+  function goTo(entry) {
+    var a11yButton = document.querySelector('.nav-tool--accessibility');
+    if (entry.opensAccessibility && a11yButton) {
+      a11yButton.click();
+      return;
+    }
+    var target = new URL(link(entry.path));
+    // Same page and same #section: the browser won't move, so scroll there ourselves.
+    if (target.pathname === location.pathname && target.hash && target.hash === location.hash) {
+      var el = document.getElementById(target.hash.slice(1));
+      if (el) {
+        el.scrollIntoView();
+        return;
+      }
+    }
+    location.href = target.href;
+  }
+
   //checking if the links have loaded on the page
   function isCurrent(href) {
     return new URL(href).pathname === location.pathname;
@@ -46,8 +187,13 @@
             '<a class="brand" href="' + link('home.html') + '">' +
               '<img src="' + link('Sources/assests/amazon_logo.png') + '" alt="Home" width="102" height="34">' +
             '</a>' +
-            '<form class="nav-search" role="search">' +
-              '<input type="search" name="q" placeholder="Search T Levels and placements" aria-label="Search the site">' +
+            '<form class="nav-search" role="search" action="' + link('home.html') + '">' +
+              '<input type="search" name="q" placeholder="Search T Levels and placements" aria-label="Search the site"' +
+                ' list="nav-search-suggestions" autocomplete="off" aria-describedby="nav-search-status">' +
+              '<datalist id="nav-search-suggestions">' +
+                SEARCH_INDEX.map(function (entry) { return '<option value="' + entry.title + '">'; }).join('') +
+              '</datalist>' +
+              '<p class="nav-search-status" id="nav-search-status" role="status"></p>' +
               '<button type="submit" aria-label="Search">' +
                 '<img src="' + link('Sources/assests/nav-search.svg') + '" alt="" width="24" height="24">' +
               '</button>' +
@@ -92,11 +238,33 @@
       })
       .catch(function () {});
 
-    // Search is not working yet: stop the form from reloading the page.
-    document.querySelector('.nav-search').addEventListener('submit', function (e) {
+    // Search: find the best matching page or section and go there.
+    var searchForm = document.querySelector('.nav-search');
+    var searchInput = searchForm.querySelector('input');
+    var searchStatus = document.getElementById('nav-search-status');
+
+    searchForm.addEventListener('submit', function (e) {
       e.preventDefault();
-      // TODO: add real search here (read e.target.q.value).
+      var query = searchInput.value.trim();
+      if (!query) {
+        searchStatus.textContent = 'Type a word to search, for example "digital" or "apply".';
+        searchInput.focus();
+        return;
+      }
+      var match = findBestMatch(query);
+      if (!match) {
+        searchStatus.textContent = 'No results for "' + query + '". Try "T Levels", "placement" or "contact".';
+        searchInput.focus();
+        return;
+      }
+      searchStatus.textContent = '';
+      searchInput.value = '';
+      goTo(match);
     });
+
+    // Clear the message as soon as the user changes the search or leaves the box.
+    searchInput.addEventListener('input', function () { searchStatus.textContent = ''; });
+    searchInput.addEventListener('blur', function () { searchStatus.textContent = ''; });
 
     // The accessibility popup changed the theme: refresh the button text.
     document.addEventListener('tlc:themechange', function () { updateToggle(toggle); });

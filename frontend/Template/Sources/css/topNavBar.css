@@ -85,11 +85,34 @@ body {
 
 /* Search: white input joined to an orange button (visual only for now) */
 .nav-search {
+  position: relative;
   display: flex;
   flex: 0 1 560px;
   min-width: 0;
   height: 44px;
   margin: 0 0 0 40px;
+}
+
+/* "No results" message shown just under the search box */
+.nav-search-status {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  margin: 0;
+  padding: 8px 12px;
+  background: var(--color-surface);
+  color: var(--hdr-ink);
+  border: 1px solid var(--hdr-orange-border);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.nav-search-status:empty {
+  display: none;
 }
 
 .nav-search input {
