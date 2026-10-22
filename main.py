@@ -41,6 +41,18 @@ from werkzeug.security import check_password_hash, generate_password_hash
 # The AI chat API (/api/chat and /api/chat/stream) used by the chat widget.
 from chat_api import chat_bp
 
+# The Slack bot (bot/bot.py) posts each contact form message to Slack.
+# If slack_bolt isn't installed, the site still works and just skips Slack.
+try:
+    from bot.bot import is_configured as is_slack_configured, send_to_slack, start_in_background as start_slack_bot
+except ImportError:
+    print("WARNING: slack_bolt is not installed, so contact messages won't be sent to Slack. "
+          "Run: pip install -r requirements.txt")
+    def is_slack_configured():
+        return False
+    def start_slack_bot():
+        pass
+
 # The folder this file lives in, so the database is always created next to app.py
 # no matter which folder you run the program from.
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -293,6 +305,11 @@ def contact():
             )
             db.commit()                                           # Save it.
             success = True                                        # Tell the page to show the thank-you message.
+            if is_slack_configured():                             # Also post it to Slack, if Slack is set up.
+                try:
+                    send_to_slack({"name": name, "email": email, "message": message})
+                except Exception as e:                            # Slack being down mustn't break the form;
+                    print("Could not send message to Slack:", e)  # the message is already saved in the database.
 
     # Show the contact page, passing in error and success so the HTML can display them.
     return render_template("contact.html", error=error, success=success)
@@ -487,5 +504,9 @@ def too_large(e):
 init_db()                                                  # Make sure the database tables exist before anything else.
 
 if __name__ == "__main__":                                 # Only true when you run "python app.py" directly.
-    app.run(debug=DEBUG)                                   # Start the web server. Debug mode is only on if
+    # Start the Slack bot so its buttons work. In debug mode Flask runs this file twice
+    # (once to watch for changes, once to serve); only the serving copy starts the bot.
+    if not DEBUG or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+        start_slack_bot()
+    app.run(debug=DEBUG)                                 # Start the web server. Debug mode is only on if
                                                            # FLASK_DEBUG=1 is set, so it can't be left on by mistake.
