@@ -12,10 +12,222 @@
   <script src="Sources/js/topNavBar.js" defer></script>
   <link rel="stylesheet" href="Sources/css/footer.css">
   <link rel="stylesheet" href="Sources/css/chatWidget.css">
+  <link rel="stylesheet" href="Sources/css/tlevel.css">
+  <link rel="stylesheet" href="Sources/css/advice.css">
   <script src="Sources/js/footer.js" defer></script>
   <script src="Sources/js/chatWidget.js" defer></script>
+  <script src="Sources/js/advice.js" defer></script>
 </head>
 <body>
+  <!-- Reuses tlevel.css for the breadcrumb, title, callout, FAQ accordion and button; advice.css adds the rest -->
+  <main class="tlevel-page advice-page">
+    <nav class="tlevel-breadcrumb" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="home.html">Home</a></li>
+        <li aria-current="page">Advice</li>
+      </ol>
+    </nav>
 
+    <h1 class="tlevel-title">Advice</h1>
+    <p class="advice-lead">Thinking about a T Level, in Year 10 or later? Here is why it could be right for you, how to apply for a placement, and where it can lead.</p>
+
+    <div class="advice-layout">
+      <!-- advice.js marks the link for the section in view with aria-current -->
+      <nav class="advice-nav" aria-label="On this page">
+        <ul>
+          <li><a href="#why-choose">Why choose a T Level</a></li>
+          <li><a href="#how-to-apply">How to apply for a placement</a></li>
+          <li><a href="#where-it-leads">Where it can lead</a></li>
+          <li><a href="#common-worries">Common worries</a></li>
+        </ul>
+        <p class="advice-nav-label" id="advice-other-label">Advice for someone else?</p>
+        <!-- TODO: point these at the parents/carers and schools/colleges pages once they exist -->
+        <ul aria-labelledby="advice-other-label">
+          <li><a href="contact.html">Parents and carers</a></li>
+          <li><a href="contact.html">Schools and colleges</a></li>
+        </ul>
+      </nav>
+
+      <div class="advice-content">
+        <section id="why-choose" class="advice-section" aria-labelledby="why-choose-title">
+          <h2 class="advice-section-title" id="why-choose-title">Why choose a T Level</h2>
+          <p>T Levels start after your GCSEs, so you don't need to decide in Year 10. But it helps to know what they are now, while you are choosing what to do next.</p>
+
+          <ul class="advice-benefits">
+            <li class="advice-card">
+              <h3>You learn by doing</h3>
+              <p>Lessons are practical and built around a career, not only exams.</p>
+            </li>
+            <li class="advice-card">
+              <h3>You get a real placement</h3>
+              <p>Spend at least 315 hours with an employer. You learn what the job is really like and build contacts.</p>
+            </li>
+            <li class="advice-card">
+              <h3>It counts like three A levels</h3>
+              <p>A T Level is worth the same as three A levels, so it is a serious qualification.</p>
+            </li>
+            <li class="advice-card">
+              <h3>It keeps doors open</h3>
+              <p>After a T Level you can go to university, start an apprenticeship or go straight into work.</p>
+            </li>
+          </ul>
+
+          <div class="tlevel-callout advice-callout">
+            <svg class="tlevel-callout-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+              <circle cx="12" cy="12" r="9.25" fill="none" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M12 10.5v6" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+              <circle cx="12" cy="7.5" r="1.1" fill="currentColor"/>
+            </svg>
+            <div>
+              <p class="tlevel-callout-title">In Year 10 now?</p>
+              <p class="tlevel-callout-body">You can explore the five routes, talk to your careers adviser, and register your interest so we can keep you updated. Nothing is locked in.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="how-to-apply" class="advice-section" aria-labelledby="how-to-apply-title">
+          <h2 class="advice-section-title" id="how-to-apply-title">How to apply for a placement</h2>
+          <p>Placements are for students on a T Level course. These are the steps, in order.</p>
+
+          <ol class="advice-steps">
+            <li>
+              <h3>Pick a T Level</h3>
+              <p>Choose a T Level course at a school or college near you. Ask your careers adviser which courses they offer.</p>
+            </li>
+            <li>
+              <h3>Register your interest</h3>
+              <p>Tell us which routes you like. We'll email you when applications open. You can change your answers later.</p>
+            </li>
+            <li>
+              <h3>Talk to your school or college</h3>
+              <p>They organise placements for their students. Ask who to speak to and what they need from you.</p>
+            </li>
+            <li>
+              <h3>Apply when it opens</h3>
+              <p>Applications open on set dates. Check the dates below and send your application before it closes.</p>
+            </li>
+            <li>
+              <h3>Prepare for the interview</h3>
+              <p>Practise answering questions about why you chose the route. Our workshop pack has a CV template and practice questions.</p>
+            </li>
+          </ol>
+
+          <!-- TODO: replace the placeholder with the real application dates and eligibility from the content owner -->
+          <div class="advice-warning">
+            <svg class="advice-warning-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+              <path d="M12 3.5 2.75 20h18.5L12 3.5Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+              <path d="M12 10v4.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+              <circle cx="12" cy="17" r="1.1" fill="currentColor"/>
+            </svg>
+            <div>
+              <p class="advice-warning-title">Dates and eligibility</p>
+              <p>Add the real application dates and who can apply here. Placeholder: [opening date] to [closing date].</p>
+            </div>
+          </div>
+
+          <a class="tlevel-btn advice-register" href="login.html#register">Register your interest</a>
+        </section>
+
+        <section id="where-it-leads" class="advice-section" aria-labelledby="where-it-leads-title">
+          <h2 class="advice-section-title" id="where-it-leads-title">Where it can lead</h2>
+          <p>A T Level can lead to university, an apprenticeship or work. These are example jobs in each route. They depend on what you study and where you work.</p>
+
+          <!-- Card colours come from the route card rules in tlevel.css -->
+          <ul class="advice-routes">
+            <li class="route-card route-card--digital advice-route">
+              <h3>Digital</h3>
+              <ul>
+                <li>Software developer</li>
+                <li>Data analyst</li>
+                <li>Cyber security analyst</li>
+                <li>Cloud engineer</li>
+              </ul>
+            </li>
+            <li class="route-card route-card--business advice-route">
+              <h3>Business</h3>
+              <ul>
+                <li>Project manager</li>
+                <li>Business analyst</li>
+                <li>Operations manager</li>
+                <li>HR adviser</li>
+              </ul>
+            </li>
+            <li class="route-card route-card--media advice-route">
+              <h3>Media</h3>
+              <ul>
+                <li>Content producer</li>
+                <li>Video editor</li>
+                <li>Social media manager</li>
+                <li>Marketing executive</li>
+              </ul>
+            </li>
+            <li class="route-card route-card--finance advice-route">
+              <h3>Finance</h3>
+              <ul>
+                <li>Accountant</li>
+                <li>Financial analyst</li>
+                <li>Payroll specialist</li>
+                <li>Auditor</li>
+              </ul>
+            </li>
+            <li class="route-card route-card--engineering advice-route">
+              <h3>Engineering</h3>
+              <ul>
+                <li>Mechanical engineer</li>
+                <li>Electrical engineer</li>
+                <li>Maintenance technician</li>
+                <li>Quality engineer</li>
+              </ul>
+            </li>
+          </ul>
+        </section>
+
+        <section id="common-worries" class="advice-section" aria-labelledby="common-worries-title">
+          <h2 class="advice-section-title" id="common-worries-title">Common worries</h2>
+          <div class="tlevel-faq">
+            <details open>
+              <summary>What if I've never worked in a team like this?</summary>
+              <p>That is normal. A placement is for learning. Ask questions and say when you are unsure.</p>
+            </details>
+            <!-- TODO: the design shows these three closed, so their answers are drafts. Confirm wording with the content owner -->
+            <details>
+              <summary>What if I need adjustments?</summary>
+              <p>Tell your school or college and your placement contact what you need before you start. They can plan support, such as changes to your hours, equipment or how tasks are explained.</p>
+            </details>
+            <details>
+              <summary>What if I change my mind about the route?</summary>
+              <p>Talk to your careers adviser as early as you can. You can change the routes you have registered interest in at any time.</p>
+            </details>
+            <details>
+              <summary>Can my parent or carer help me prepare?</summary>
+              <p>Yes. They can help you practise interview questions, check your application and plan how you will get to your placement.</p>
+            </details>
+          </div>
+
+          <div class="advice-card advice-unsure">
+            <h3>Still unsure?</h3>
+            <p>Ask the assistant for a quick answer, or send a message to the team. You can also read our guide for students.</p>
+            <div class="advice-actions">
+              <!-- advice.js shows this button and opens the chat widget; it needs JavaScript -->
+              <button type="button" class="advice-action" data-open-chat hidden>
+                <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
+                  <path d="M8 2l1.333 4 4 1.333-4 1.334L8 12.667 6.667 8.667l-4-1.334 4-1.333L8 2Z" fill="none" stroke="currentColor" stroke-width="1.333" stroke-linejoin="round"/>
+                </svg>
+                Ask a question
+              </button>
+              <a class="advice-action" href="contact.html">Contact us</a>
+              <!-- TODO: link the real student guide PDF once it exists -->
+              <a class="advice-action" href="#">
+                <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
+                  <path d="M8 2.5v7.5M4.75 7 8 10.25 11.25 7M3 13.5h10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Student guide (PDF)
+              </a>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
 </body>
 </html>

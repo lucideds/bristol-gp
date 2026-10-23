@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contact</title>
+  <title>Contact us – T Level Connect</title>
   <link rel="stylesheet" href="Sources/css/tokens.css">
   <link rel="stylesheet" href="Sources/css/topNavBar.css">
   <link rel="stylesheet" href="Sources/css/accessibility.css">
@@ -18,14 +18,21 @@
 </head>
 <body>
   <main class="auth-page">
-    <section class="auth-card" aria-labelledby="contact-title">
+    <section class="auth-card auth-card--figma" aria-labelledby="contact-title">
+      {% if error %}
+      <div class="auth-error-summary" role="alert">
+        <p class="auth-error-summary-title">There is a problem</p>
+        <ul class="auth-error-summary-list"><li>{{ error }}</li></ul>
+      </div>
+      {% endif %}
       <h1 id="contact-title" class="auth-title">Contact us</h1>
       {% if success %}
+        <p class="auth-subtitle">We'll reply to the email address you gave us.</p>
         <p class="form-message form-message--success" role="status">Thanks, your message has been sent.</p>
       {% else %}
+        <p class="auth-subtitle">Send us a message and we'll get back to you by email</p>
         <form class="auth-form" method="post" action="/contact">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-          {% if error %}<p class="form-message form-message--error" role="alert">{{ error }}</p>{% endif %}
           <div class="auth-field">
             <label for="contact-name">Name</label>
             <input id="contact-name" name="name" type="text" autocomplete="name" maxlength="100" required

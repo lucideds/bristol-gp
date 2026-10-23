@@ -309,6 +309,32 @@
   box-shadow: none;
 }
 
+/* Contact form message box, matching the inputs */
+.auth-card--figma .auth-field textarea {
+  display: block;
+  min-height: 8rem;
+  padding: 10px 12px;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border: 1.6px solid var(--color-border);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  resize: vertical;
+}
+/* "Message sent" confirmation on the contact card */
+.auth-card--figma .form-message--success {
+  margin: 20px 0 0;
+  padding: 16px;
+  background: #e9f5e6;
+  color: var(--color-ink);
+  border: 1.6px solid #1d8102;
+  border-radius: 8px;
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+.auth-card--figma .auth-field textarea:focus-visible,
 .auth-card--figma .auth-field input:focus-visible {
   outline: 2px solid var(--color-orange);
   outline-offset: 2px;
