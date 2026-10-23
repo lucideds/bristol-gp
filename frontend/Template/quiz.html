@@ -1,17 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="Sources/css/tokens.css">
-    <link rel="stylesheet" href="Sources/css/chatWidget.css">
-    <link rel="stylesheet" href="Sources/css/accessibility.css">
-    <link rel="stylesheet" href="Sources/css/motion.css">
-    <script src="Sources/js/accessibility.js"></script>
-    <script src="Sources/js/chatWidget.js" defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Which T Level suits you? Quiz</title>
+  <link rel="stylesheet" href="Sources/css/tokens.css">
+  <link rel="stylesheet" href="Sources/css/topNavBar.css">
+  <link rel="stylesheet" href="Sources/css/accessibility.css">
+  <link rel="stylesheet" href="Sources/css/motion.css">
+  <script src="Sources/js/accessibility.js"></script>
+  <script src="Sources/js/topNavBar.js" defer></script>
+  <link rel="stylesheet" href="Sources/css/footer.css">
+  <link rel="stylesheet" href="Sources/css/chatWidget.css">
+  <link rel="stylesheet" href="Sources/css/tlevel.css">
+  <link rel="stylesheet" href="Sources/css/quiz.css">
+  <script src="Sources/js/footer.js" defer></script>
+  <script src="Sources/js/chatWidget.js" defer></script>
+  <script src="Sources/js/quiz.js" defer></script>
 </head>
 <body>
-    
+  <!-- Reuses tlevel.css for the breadcrumb, title, button and route card colours; quiz.css adds the rest -->
+  <main class="tlevel-page quiz-page">
+    <nav class="tlevel-breadcrumb" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="home.html">Home</a></li>
+        <li><a href="advice.html">Advice</a></li>
+        <li aria-current="page">Quiz</li>
+      </ol>
+    </nav>
+
+    <h1 class="tlevel-title">Which T Level suits you?</h1>
+    <p class="quiz-lead">Answer five quick questions. Pick the answer that sounds most like you. There are no wrong answers.</p>
+
+    <!-- Each answer's value is the route it points to. quiz.js counts them and shows the result. -->
+    <form class="quiz-form" id="quiz-form" novalidate>
+      <fieldset class="quiz-question">
+        <legend>1. How would you describe yourself?</legend>
+        <label><input type="radio" name="q1" value="digital"> Curious. You always want to know how things work.</label>
+        <label><input type="radio" name="q1" value="business"> Confident. You are good at getting people on board.</label>
+        <label><input type="radio" name="q1" value="media"> Creative. You are full of ideas.</label>
+        <label><input type="radio" name="q1" value="finance"> Reliable. You never miss a detail.</label>
+        <label><input type="radio" name="q1" value="engineering"> Practical. You are the first to get stuck in.</label>
+      </fieldset>
+
+      <fieldset class="quiz-question">
+        <legend>2. When you get stuck on something, what do you usually do?</legend>
+        <label><input type="radio" name="q2" value="media"> Look at it from a completely different angle</label>
+        <label><input type="radio" name="q2" value="engineering"> Have a go and learn by trying</label>
+        <label><input type="radio" name="q2" value="digital"> Break it into small steps and work through them</label>
+        <label><input type="radio" name="q2" value="finance"> Go back over it carefully to find what went wrong</label>
+        <label><input type="radio" name="q2" value="business"> Talk it through with other people</label>
+      </fieldset>
+
+      <fieldset class="quiz-question">
+        <legend>3. When you work in a group, you are usually the one who...</legend>
+        <label><input type="radio" name="q3" value="business"> keeps everyone organised and on time</label>
+        <label><input type="radio" name="q3" value="finance"> checks everything is correct before it is handed in</label>
+        <label><input type="radio" name="q3" value="engineering"> gets on with the hands-on jobs</label>
+        <label><input type="radio" name="q3" value="media"> comes up with the big ideas</label>
+        <label><input type="radio" name="q3" value="digital"> works out the tricky bits nobody else can</label>
+      </fieldset>
+
+      <fieldset class="quiz-question">
+        <legend>4. What makes you feel most proud?</legend>
+        <label><input type="radio" name="q4" value="finance"> Getting something exactly right</label>
+        <label><input type="radio" name="q4" value="digital"> Solving a puzzle that took ages</label>
+        <label><input type="radio" name="q4" value="media"> Making something other people enjoy</label>
+        <label><input type="radio" name="q4" value="business"> Helping a team reach its goal</label>
+        <label><input type="radio" name="q4" value="engineering"> Fixing something that was broken</label>
+      </fieldset>
+
+      <fieldset class="quiz-question">
+        <legend>5. What kind of day suits you best?</legend>
+        <label><input type="radio" name="q5" value="engineering"> A busy day on your feet, using your hands</label>
+        <label><input type="radio" name="q5" value="media"> A day that is different every time, with room to be creative</label>
+        <label><input type="radio" name="q5" value="business"> A day full of meeting and talking to people</label>
+        <label><input type="radio" name="q5" value="digital"> A quiet day to focus on one tricky problem</label>
+        <label><input type="radio" name="q5" value="finance"> A day with a clear plan, so you know what to expect</label>
+      </fieldset>
+
+      <p class="quiz-error" id="quiz-error" role="alert" hidden></p>
+
+      <div class="quiz-buttons">
+        <button type="submit" class="tlevel-btn quiz-submit">See my result</button>
+        <button type="reset" class="quiz-reset">Start again</button>
+      </div>
+    </form>
+
+    <!-- quiz.js fills in the two cards (best match first) and moves focus to the heading -->
+    <section class="quiz-result" id="quiz-result" aria-labelledby="quiz-result-title" hidden>
+      <h2 class="quiz-result-title" id="quiz-result-title" tabindex="-1">Your top two matches</h2>
+      <ol class="quiz-matches">
+        <li class="route-card quiz-result-card" data-match>
+          <p class="quiz-match-rank">Best match</p>
+          <h3 class="quiz-match-name"></h3>
+          <p class="quiz-match-text"></p>
+          <a class="quiz-match-link" href="TLevel.html"></a>
+        </li>
+        <li class="route-card quiz-result-card" data-match>
+          <p class="quiz-match-rank">Also a good fit</p>
+          <h3 class="quiz-match-name"></h3>
+          <p class="quiz-match-text"></p>
+          <a class="quiz-match-link" href="TLevel.html"></a>
+        </li>
+      </ol>
+      <p class="quiz-result-also" id="quiz-result-also" hidden></p>
+      <p class="quiz-result-note">This is only a starting point. Talk to your careers adviser before you choose.</p>
+    </section>
+  </main>
 </body>
 </html>

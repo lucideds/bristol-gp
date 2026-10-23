@@ -1,0 +1,195 @@
+/* Quiz page. Load after tlevel.css, which supplies the breadcrumb, title,
+   button and route card colours. White cards keep dark text in every theme. */
+.quiz-page > .quiz-lead {
+  max-width: 42.5rem;
+  margin: 0 0 32px;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
+.quiz-form {
+  max-width: 42.5rem;
+}
+
+/* ---------- Questions ---------- */
+.quiz-question {
+  margin: 0 0 24px;
+  padding: 20px;
+  box-sizing: border-box;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border: 1px solid var(--color-divider);
+  border-radius: 8px;
+  box-shadow: var(--shadow-card);
+}
+[data-theme="high-contrast"] .quiz-question {
+  border: 2px solid #fff;
+}
+.quiz-question--missing {
+  border: 2px solid #b12704;
+}
+
+.quiz-question legend {
+  float: left;           /* keeps the legend inside the card padding */
+  width: 100%;
+  margin: 0 0 12px;
+  padding: 0;
+  font-size: 1.0625rem;
+  line-height: 1.5rem;
+  font-weight: 700;
+}
+
+.quiz-question label {
+  clear: left;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: var(--target-min);
+  padding: 8px 12px;
+  box-sizing: border-box;
+  border: 1.5px solid var(--color-divider);
+  border-radius: 6px;
+  cursor: pointer;
+}
+.quiz-question label + label {
+  margin-top: 8px;
+}
+.quiz-question label:hover {
+  background: var(--color-surface-muted);
+}
+.quiz-question label:has(input:checked) {
+  background: var(--color-orange-tint);
+  border-color: var(--color-ink);
+}
+
+.quiz-question input[type="radio"] {
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin: 0;
+  accent-color: var(--color-navy);
+}
+.quiz-question input[type="radio"]:focus-visible {
+  outline: 2px solid var(--color-link);
+  outline-offset: 2px;
+}
+
+/* ---------- Error and buttons ---------- */
+.quiz-error {
+  margin: 0 0 16px;
+  font-weight: 700;
+}
+.quiz-error[hidden] {
+  display: none;
+}
+
+.quiz-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+}
+.quiz-buttons .tlevel-btn {
+  margin-top: 0;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.quiz-reset {
+  min-height: var(--target-min);
+  padding: 0 18px;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border: 1.5px solid var(--color-ink);
+  border-radius: 22px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.quiz-reset:hover {
+  background: var(--color-surface-muted);
+  text-decoration: underline;
+}
+.quiz-reset:focus-visible {
+  outline: 2px solid var(--color-link);
+  outline-offset: 2px;
+}
+
+/* ---------- Result ---------- */
+.quiz-result {
+  max-width: 42.5rem;
+  margin-top: 48px;
+}
+.quiz-result[hidden] {
+  display: none;
+}
+.quiz-result-title {
+  margin: 0 0 16px;
+  font-size: 1.625rem;
+  line-height: 2rem;
+  font-weight: 700;
+}
+.quiz-result-title:focus {
+  outline: none;
+}
+
+.quiz-matches {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
+  gap: 16px;
+}
+
+/* Keeps the route colours from .route-card but not its centred, fixed-height tile layout */
+.quiz-result-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  text-align: left;
+  padding: 24px;
+  border-radius: 8px;
+}
+.quiz-result-card p {
+  margin: 0;
+}
+.quiz-match-rank {
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.quiz-match-name {
+  margin: 4px 0 8px;
+  font-size: 1.5rem;
+  line-height: 1.75rem;
+  font-weight: 700;
+}
+/* Link in the card's own text colour so it shows on every route fill */
+.quiz-match-link {
+  margin-top: auto;
+  padding-top: 16px;
+  color: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+}
+.quiz-match-link:hover {
+  text-decoration-thickness: 3px;
+}
+.quiz-match-link:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.quiz-result-also {
+  margin: 16px 0 0;
+}
+.quiz-result-also[hidden] {
+  display: none;
+}
+.quiz-result-note {
+  margin: 16px 0 0;
+}
