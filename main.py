@@ -13,7 +13,12 @@ import sqlite3     # Python's built-in library for SQLite databases (a database 
 from functools import wraps  # Helper used when writing decorators, keeps the original function's name.
 from urllib.parse import urlparse  # Splits a URL into parts so we can check where a redirect goes.
 
-from dotenv import load_dotenv  # Reads settings like SECRET_KEY and OPENROUTER_API_KEY from a .env file.
+from dotenv import dotenv_values, load_dotenv  # Reads settings like SECRET_KEY and OPENROUTER_API_KEY from a .env file.
+
+try:
+    import fcntl   # Locks a file so two processes can't write to it at once (Linux and macOS only).
+except ImportError:  # Windows doesn't have it; the lock is skipped there.
+    fcntl = None
 
 # Flask tools used in this file:
 #   Flask           - the class that creates the web app
@@ -63,7 +68,8 @@ DATABASE = os.path.join(BASE_DIR, "site.db")
 # Load settings from the .env file next to this file (if there is one).
 # Real environment variables always win over values in .env.
 # This runs before any os.environ.get() below, so .env can set them all.
-load_dotenv(os.path.join(BASE_DIR, ".env"))
+ENV_FILE = os.path.join(BASE_DIR, ".env")
+load_dotenv(ENV_FILE)
 
 # Debug mode is only switched on if the FLASK_DEBUG environment variable is "1".
 # This way it can't accidentally be left on when the site goes live.
@@ -91,15 +97,42 @@ app = Flask(
 )
 
 # The secret key is used to sign the session cookie so users can't fake being signed in.
-# It reads SECRET_KEY from the environment. If it isn't set, a random key is made each
-# time the app starts: still secure, but everyone gets signed out when the app restarts.
-# Set SECRET_KEY before putting the site online.
-secret_key = os.environ.get("SECRET_KEY")
-if not secret_key:
-    print("WARNING: SECRET_KEY is not set, using a random key. "
-          "Users will be signed out whenever the app restarts.")
-    secret_key = secrets.token_hex(32)
-app.config["SECRET_KEY"] = secret_key
+# It must stay the same between restarts, or everyone gets signed out (on EC2 that's every
+# restart or deploy). So if SECRET_KEY isn't set, a random one is made once and saved to
+# .env, and every restart after that reuses it. .env is git-ignored, so the key never
+# ends up in the repo.
+
+def load_or_create_secret_key():
+    """Returns SECRET_KEY from the environment or .env, creating and saving one if there isn't one."""
+    secret_key = os.environ.get("SECRET_KEY", "").strip()
+    if secret_key:
+        return secret_key
+    try:
+        # Create .env readable by this user only, if it doesn't exist yet.
+        fd = os.open(ENV_FILE, os.O_RDWR | os.O_CREAT, 0o600)
+        with os.fdopen(fd, "r+", encoding="utf-8") as env_file:
+            if fcntl:
+                # Lock the file, so if several server processes start at once only one makes a key
+                # and the rest use that one.
+                fcntl.flock(env_file, fcntl.LOCK_EX)
+            secret_key = (dotenv_values(ENV_FILE).get("SECRET_KEY") or "").strip()
+            if not secret_key:                         # Still no key, so make one and save it.
+                secret_key = secrets.token_hex(32)
+                existing = env_file.read()
+                if existing and not existing.endswith("\n"):
+                    env_file.write("\n")              # Start on a new line.
+                env_file.write(f"SECRET_KEY={secret_key}\n")
+                print("SECRET_KEY was not set, so a new one was made and saved to .env.")
+    except OSError as e:                               # e.g. the folder is read-only.
+        print(f"WARNING: SECRET_KEY is not set and couldn't be saved to .env ({e}). "
+              "Using a random key, so users will be signed out whenever the app restarts. "
+              "Set a fixed SECRET_KEY in .env.")
+        secret_key = secrets.token_hex(32)
+    os.environ["SECRET_KEY"] = secret_key              # So Flask's reloader process uses the same key.
+    return secret_key
+
+
+app.config["SECRET_KEY"] = load_or_create_secret_key()
 # Re-read an HTML page when its file changes, so edits show up without restarting the server.
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
