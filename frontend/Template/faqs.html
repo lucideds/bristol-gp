@@ -13,8 +13,10 @@
   <link rel="stylesheet" href="Sources/css/footer.css">
   <link rel="stylesheet" href="Sources/css/chatWidget.css">
   <link rel="stylesheet" href="Sources/css/tlevel.css">
+  <link rel="stylesheet" href="Sources/css/advice.css">
   <script src="Sources/js/footer.js" defer></script>
   <script src="Sources/js/chatWidget.js" defer></script>
+  <script src="Sources/js/advice.js" defer></script>
 </head>
 <body>
   <!-- Reuses the T Level page styles (tlevel.css): breadcrumb, title, lead and FAQ accordion -->
@@ -28,21 +30,23 @@
 
     <section class="tlevel-panel" aria-labelledby="faqs-title">
       <h1 class="tlevel-title" id="faqs-title">Frequently asked questions</h1>
-      <p class="tlevel-lead">Answers to common questions about T Levels and industry placements at Amazon. Select a question to see the answer.</p>
+      <p class="tlevel-lead">Answers to common questions about T Levels and industry placements.</p>
+      <p class="tlevel-lead">Select a question to see the answer.</p>
 
       <h2 class="tlevel-section-title" id="about-t-levels">About T Levels</h2>
       <div class="tlevel-faq">
-        <details open>
+        <details>
           <summary>How are T Levels different from A Levels?</summary>
           <p>A Levels focus mainly on classroom study and exams across several subjects. A T Level focuses on one technical area and combines classroom learning with an industry placement of at least 315 hours. One T Level is worth the same as three A Levels.</p>
         </details>
         <details>
           <summary>Who can apply for a T Level?</summary>
-          <p>T Levels are for students aged 16 to 19, usually after finishing GCSEs. Entry requirements are set by each school or college, so check with them about the grades you need.</p>
+          <p>Students who are 16 - 19 years old when starting the course. Most providers look for a minimum of 5 GCSEs at grade 4 or above, including English and maths. Exact requirements are set individually by local schools and colleges and vary depending on the specific subject.</p>
         </details>
         <details>
           <summary>What subjects are available as T Levels?</summary>
-          <p>T Levels cover many subjects, from digital and engineering to health and construction. Placements at Amazon run across five routes: Digital, Business, Media, Finance and Engineering. See the <a href="TLevel.html">T Levels page</a> for details of each route.</p>
+          <p>T levels have 11 different categories of study. However Amazon only accepts five for their work placement including Digital, Business, Media, Finance and Engineering.</p>
+          <p>See the <a href="TLevel.html">T Levels page</a> for details of each route.</p>
         </details>
         <details>
           <summary>Will I receive a qualification after completing a T Level?</summary>
@@ -54,11 +58,11 @@
       <div class="tlevel-faq">
         <details>
           <summary>What is an industry placement?</summary>
-          <p>An industry placement is time spent working with an employer as part of your T Level. You do real tasks, learn how a workplace runs and put what you learn in class into practice.</p>
+          <p>An industry placement is time spent working with an employer as part of your T Level. You do real tasks, learn how a workplace runs and put what you learn in class into practice. You will have to work for at least 315 hours.</p>
         </details>
         <details>
           <summary>How long is the T Level industry placement?</summary>
-          <p>The placement lasts at least 315 hours, which is about 45 working days. It can be done as a block or spread across your two years of study.</p>
+          <p>The placement lasts at least 315 hours, which is about 45 working days. This can be done across multiple diffrent places.</p>
         </details>
         <details>
           <summary>How many hours are required for an industry placement?</summary>
@@ -85,10 +89,11 @@
           <summary>How can I apply for an Amazon placement?</summary>
           <!-- TODO: confirm the application process with the content owner -->
           <p>Start by talking to your school or college, as they arrange placements with employers. You can also <a href="login.html#register">register your interest</a> on this site to hear about placements at Amazon.</p>
+          <p>Find out more on the <a href="https://www.aboutamazon.co.uk/amazon-for-schools/online-hub-offerings/t-level-placements">Amazon T Level placements page</a>.</p>
         </details>
         <details>
           <summary>What should I include in my placement application?</summary>
-          <p>Say which route you are studying and why it interests you. Include any projects, hobbies or school work that show your skills, and explain what you hope to learn. Keep it clear and check your spelling before you send it.</p>
+          <p>Say which route you are studying and why it interests you. Include any projects, hobbies or school work that show your skills, and explain what you hope to learn. Keep it clear and check your spelling before you send it. Make sure to add your CV too.</p>
         </details>
         <details>
           <summary>What benefits can an Amazon placement provide?</summary>
@@ -113,7 +118,23 @@
         </details>
       </div>
 
-      <a class="tlevel-btn" href="login.html#register">Register your interest</a>
+      <!-- Same "Still unsure?" card as the advice page (advice.css), without the student guide link -->
+      <div class="advice-card advice-unsure">
+        <h3>Still unsure?</h3>
+        <p>Ask the assistant for a quick answer, or send a message to the team.</p>
+        <div class="advice-actions">
+          <!-- advice.js shows this button and opens the chat widget; it needs JavaScript -->
+          <button type="button" class="advice-action" data-open-chat hidden>
+            <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
+              <path d="M8 2l1.333 4 4 1.333-4 1.334L8 12.667 6.667 8.667l-4-1.334 4-1.333L8 2Z" fill="none" stroke="currentColor" stroke-width="1.333" stroke-linejoin="round"/>
+            </svg>
+            Ask a question
+          </button>
+          <a class="advice-action" href="contact.html">Contact us</a>
+        </div>
+      </div>
+
+      <a class="tlevel-btn advice-register" href="login.html#register">Register your interest</a>
     </section>
   </main>
 </body>

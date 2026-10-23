@@ -98,7 +98,8 @@
   margin: 0 0 24px;
 }
 
-.advice-section h3 {
+.advice-section h3,
+.advice-unsure > h3 {
   margin: 0 0 4px;
   font-size: 1.0625rem;
   line-height: 1.5rem;
