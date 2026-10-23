@@ -32,8 +32,10 @@
     <h1 class="tlevel-title">Which T Level suits you?</h1>
     <p class="quiz-lead">Answer five quick questions. Pick the answer that sounds most like you. There are no wrong answers.</p>
 
-    <!-- Each answer's value is the route it points to. quiz.js counts them and shows the result. -->
+    <!-- Each answer's value is the route it points to. quiz.js counts them and shows the result.
+         quiz.js also shows one question at a time; without JavaScript all five show. -->
     <form class="quiz-form" id="quiz-form" novalidate>
+      <p class="quiz-progress" id="quiz-progress" hidden></p>
       <fieldset class="quiz-question">
         <legend>1. How would you describe yourself?</legend>
         <label><input type="radio" name="q1" value="digital"> Curious. You always want to know how things work.</label>
@@ -82,7 +84,9 @@
       <p class="quiz-error" id="quiz-error" role="alert" hidden></p>
 
       <div class="quiz-buttons">
-        <button type="submit" class="tlevel-btn quiz-submit">See my result</button>
+        <button type="button" class="quiz-reset quiz-back" id="quiz-back" hidden>Back</button>
+        <button type="button" class="tlevel-btn quiz-next" id="quiz-next" hidden>Next question</button>
+        <button type="submit" class="tlevel-btn quiz-submit" id="quiz-submit">See my result</button>
         <button type="reset" class="quiz-reset">Start again</button>
       </div>
     </form>
@@ -106,6 +110,9 @@
       </ol>
       <p class="quiz-result-also" id="quiz-result-also" hidden></p>
       <p class="quiz-result-note">This is only a starting point. Talk to your careers adviser before you choose.</p>
+      <div class="quiz-buttons quiz-result-buttons">
+        <button type="button" class="quiz-reset" id="quiz-restart">Take the quiz again</button>
+      </div>
     </section>
   </main>
 </body>

@@ -1,83 +1,130 @@
 /* Quiz page. Load after tlevel.css, which supplies the breadcrumb, title,
    button and route card colours. White cards keep dark text in every theme. */
+/* Everything except the breadcrumb sits in a centred column */
+.quiz-page > .tlevel-title,
 .quiz-page > .quiz-lead {
   max-width: 42.5rem;
-  margin: 0 0 32px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+.quiz-page > .quiz-lead {
+  margin-top: 0;
+  margin-bottom: 32px;
   font-size: 1.125rem;
   line-height: 1.75rem;
 }
 
 .quiz-form {
   max-width: 42.5rem;
+  margin: 0 auto;
+}
+
+.quiz-progress {
+  margin: 0 0 12px;
+  color: inherit;
+  font-weight: 700;
+  text-align: center;
+}
+.quiz-progress[hidden],
+.quiz-buttons [hidden] {
+  display: none;
 }
 
 /* ---------- Questions ---------- */
+/* Each question sits on the page background; each answer is its own white tile */
 .quiz-question {
-  margin: 0 0 24px;
-  padding: 20px;
-  box-sizing: border-box;
-  background: var(--color-surface);
-  color: var(--color-ink);
-  border: 1px solid var(--color-divider);
-  border-radius: 8px;
-  box-shadow: var(--shadow-card);
-}
-[data-theme="high-contrast"] .quiz-question {
-  border: 2px solid #fff;
-}
-.quiz-question--missing {
-  border: 2px solid #b12704;
+  margin: 0 0 32px;
+  padding: 0;
+  border: 0;
+  min-width: 0;
 }
 
 .quiz-question legend {
-  float: left;           /* keeps the legend inside the card padding */
+  float: left;           /* lets the first tile clear the legend cleanly */
   width: 100%;
-  margin: 0 0 12px;
+  margin: 0 0 10px;
   padding: 0;
-  font-size: 1.0625rem;
-  line-height: 1.5rem;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
   font-weight: 700;
 }
 
+/* Answer tiles: white with a grey border; dark text in every theme */
 .quiz-question label {
   clear: left;
   display: flex;
   align-items: center;
-  gap: 12px;
-  min-height: var(--target-min);
-  padding: 8px 12px;
+  gap: 20px;
+  min-height: 72px;
+  padding: 16px 24px;
   box-sizing: border-box;
-  border: 1.5px solid var(--color-divider);
-  border-radius: 6px;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border: 3px solid var(--color-border);
+  border-radius: 10px;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
   cursor: pointer;
 }
 .quiz-question label + label {
-  margin-top: 8px;
+  margin-top: 14px;
 }
 .quiz-question label:hover {
-  background: var(--color-surface-muted);
+  border-color: var(--color-ink);
 }
 .quiz-question label:has(input:checked) {
   background: var(--color-orange-tint);
   border-color: var(--color-ink);
 }
+.quiz-question--missing label {
+  border-color: #b12704;
+}
 
+/* Custom radio: grey ring, teal ring and dot when selected */
 .quiz-question input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
   flex: none;
-  width: 1.25rem;
-  height: 1.25rem;
+  display: grid;
+  place-content: center;
+  width: 32px;
+  height: 32px;
   margin: 0;
-  accent-color: var(--color-navy);
+  background: var(--color-surface);
+  border: 2px solid #767676;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.quiz-question input[type="radio"]::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-link);
+  transform: scale(0);
+}
+.quiz-question input[type="radio"]:checked {
+  border-color: var(--color-link);
+}
+.quiz-question input[type="radio"]:checked::before {
+  transform: scale(1);
 }
 .quiz-question input[type="radio"]:focus-visible {
   outline: 2px solid var(--color-link);
-  outline-offset: 2px;
+  outline-offset: 3px;
+}
+@media (forced-colors: active) {
+  .quiz-question input[type="radio"]::before {
+    background: CanvasText;
+  }
 }
 
 /* ---------- Error and buttons ---------- */
 .quiz-error {
   margin: 0 0 16px;
   font-weight: 700;
+  text-align: center;
 }
 .quiz-error[hidden] {
   display: none;
@@ -87,6 +134,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: 16px;
 }
 .quiz-buttons .tlevel-btn {
@@ -119,7 +167,13 @@
 /* ---------- Result ---------- */
 .quiz-result {
   max-width: 42.5rem;
-  margin-top: 48px;
+  margin: 0 auto;
+}
+.quiz-form[hidden] {
+  display: none;
+}
+.quiz-result-buttons {
+  margin-top: 32px;
 }
 .quiz-result[hidden] {
   display: none;
@@ -129,6 +183,7 @@
   font-size: 1.625rem;
   line-height: 2rem;
   font-weight: 700;
+  text-align: center;
 }
 .quiz-result-title:focus {
   outline: none;
@@ -184,6 +239,10 @@
   outline-offset: 2px;
 }
 
+.quiz-result-also,
+.quiz-result-note {
+  text-align: center;
+}
 .quiz-result-also {
   margin: 16px 0 0;
 }

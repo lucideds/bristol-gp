@@ -240,6 +240,28 @@ select,
       background-color: transparent;
     }
   }
+  /* Quiz: each time a question shows, its heading fades in and the choices
+     rise in one after another. Re-runs because quiz.js un-hides the fieldset. */
+  .quiz-question:not([hidden]) legend {
+    animation: motion-fade-in var(--motion-base) var(--motion-ease) both;
+  }
+  .quiz-question:not([hidden]) label {
+    animation: motion-fade-up var(--motion-slow) var(--motion-ease) both;
+  }
+  .quiz-question:not([hidden]) label:nth-of-type(1) { animation-delay: 40ms; }
+  .quiz-question:not([hidden]) label:nth-of-type(2) { animation-delay: 90ms; }
+  .quiz-question:not([hidden]) label:nth-of-type(3) { animation-delay: 140ms; }
+  .quiz-question:not([hidden]) label:nth-of-type(4) { animation-delay: 190ms; }
+  .quiz-question:not([hidden]) label:nth-of-type(5) { animation-delay: 240ms; }
+  /* The result screen rises in when it replaces the questions */
+  .quiz-result:not([hidden]) {
+    animation: motion-fade-up var(--motion-slow) var(--motion-ease) both;
+  }
+  /* The chosen dot grows in rather than appearing */
+  .quiz-question input[type="radio"]::before {
+    transition: transform var(--motion-fast) var(--motion-ease);
+  }
+
   .a11y-tile-check {
     transform: scale(0.6);
   }

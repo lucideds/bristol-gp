@@ -34,6 +34,63 @@
   var also = document.getElementById('quiz-result-also');
   var matchCards = result.querySelectorAll('[data-match]');
   var questions = form.querySelectorAll('.quiz-question');
+  var progress = document.getElementById('quiz-progress');
+  var backBtn = document.getElementById('quiz-back');
+  var nextBtn = document.getElementById('quiz-next');
+  var submitBtn = document.getElementById('quiz-submit');
+  var current = 0;
+
+  // Show one question at a time. moveFocus is false on first load so the page doesn't jump.
+  function showStep(index, moveFocus) {
+    current = index;
+    questions.forEach(function (question, i) {
+      question.hidden = i !== index;
+    });
+    var last = index === questions.length - 1;
+    progress.textContent = 'Question ' + (index + 1) + ' of ' + questions.length;
+    progress.hidden = false;
+    backBtn.hidden = index === 0;
+    nextBtn.hidden = last;
+    submitBtn.hidden = !last;
+    if (moveFocus) {
+      var target = questions[index].querySelector('input:checked') || questions[index].querySelector('input');
+      target.focus();
+    }
+  }
+
+  function showError(message) {
+    error.textContent = message;
+    error.hidden = false;
+  }
+
+  nextBtn.addEventListener('click', function () {
+    var question = questions[current];
+    if (!question.querySelector('input:checked')) {
+      question.classList.add('quiz-question--missing');
+      showError('Please choose an answer to carry on.');
+      question.querySelector('input').focus();
+      return;
+    }
+    question.classList.remove('quiz-question--missing');
+    error.hidden = true;
+    showStep(current + 1, true);
+  });
+
+  backBtn.addEventListener('click', function () {
+    error.hidden = true;
+    showStep(current - 1, true);
+  });
+
+  // Clear the "missing" warning as soon as an answer is picked
+  form.addEventListener('change', function (event) {
+    var question = event.target.closest('.quiz-question');
+    if (question && question.classList.contains('quiz-question--missing')) {
+      question.classList.remove('quiz-question--missing');
+      error.hidden = true;
+    }
+  });
+
+  showStep(0, false);
 
   function joinNames(keys) {
     var names = keys.map(function (key) { return ROUTES[key].name; });
@@ -43,6 +100,12 @@
 
   form.addEventListener('submit', function (event) {
     event.preventDefault();
+
+    // Pressing Enter before the last question acts as "Next question"
+    if (current < questions.length - 1) {
+      nextBtn.click();
+      return;
+    }
 
     var counts = {};
     var firstUnanswered = null;
@@ -60,9 +123,8 @@
 
     if (firstUnanswered) {
       result.hidden = true;
-      error.textContent = 'Please answer every question to see your result.';
-      error.hidden = false;
-      firstUnanswered.querySelector('input').focus();
+      showStep(Array.prototype.indexOf.call(questions, firstUnanswered), true);
+      showError('Please choose an answer to see your result.');
       return;
     }
     error.hidden = true;
@@ -93,15 +155,26 @@
       also.hidden = true;
     }
 
+    // The result replaces the questions, like moving to a new page
+    form.hidden = true;
     result.hidden = false;
-    title.focus();
+    window.scrollTo(0, 0);
+    title.focus({ preventScroll: true });
+  });
+
+  document.getElementById('quiz-restart').addEventListener('click', function () {
+    form.hidden = false;
+    form.reset();
   });
 
   form.addEventListener('reset', function () {
+    form.hidden = false;
     result.hidden = true;
     error.hidden = true;
     questions.forEach(function (question) {
       question.classList.remove('quiz-question--missing');
     });
+    // Runs before the browser clears the answers; focusing then is harmless
+    showStep(0, true);
   });
 })();
