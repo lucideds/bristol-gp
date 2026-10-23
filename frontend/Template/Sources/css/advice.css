@@ -175,39 +175,6 @@
   font-size: 0.875rem;
 }
 
-/* ---------- Warning callout ---------- */
-.advice-warning {
-  display: flex;
-  gap: 12px;
-  max-width: 42.5rem;
-  padding: 16px 20px;
-  box-sizing: border-box;
-  background: var(--color-orange-tint);
-  color: var(--color-ink);
-  border: 2px solid var(--color-orange-border);
-  border-radius: 8px;
-}
-
-[data-theme="high-contrast"] .advice-warning {
-  border-color: #fff;
-}
-
-.advice-warning p {
-  margin: 0;
-}
-
-.advice-warning-title {
-  font-weight: 700;
-}
-
-.advice-warning-icon {
-  flex: none;
-  width: 1.25rem;
-  height: 1.25rem;
-  margin-top: 0.125rem;
-  color: var(--color-orange-border);
-}
-
 .advice-register {
   margin-top: 24px;
 }
