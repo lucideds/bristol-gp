@@ -456,6 +456,17 @@ html.a11y-readable-font .route-cards-grid {
   padding-left: 1.5rem;
 }
 
+/* "Learn more" box: keep the advice page's card spacing over the panel's h3 and p rules */
+.route-detail .advice-unsure > h3 {
+  margin: 0 0 4px;
+  font-size: 1.0625rem;
+  line-height: 1.5rem;
+}
+
+.route-detail .advice-unsure > h3 + p {
+  margin: 0 0 16px;
+}
+
 .route-detail-pending {
   font-style: italic;
 }
