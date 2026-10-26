@@ -24,10 +24,10 @@ body {
   margin: 0 auto;
 }
 
-/* Brand column takes about 40%, the three link columns share the rest */
+/* Brand column takes about 40%, the two link columns share the rest */
 .footer-top {
   display: grid;
-  grid-template-columns: 4fr 2fr 2fr 2fr;
+  grid-template-columns: 4fr 3fr 3fr;
   gap: 32px;
   padding-bottom: 25px;
 }
@@ -107,7 +107,7 @@ body {
 /* Tablets: brand on its own row, link columns below */
 @media (max-width: 768px) {
   .footer-top {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .footer-brand {

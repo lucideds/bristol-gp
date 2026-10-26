@@ -190,6 +190,7 @@
 }
 
 .advice-route.route-card {
+  position: relative;
   min-height: 0;
   text-align: left;
 }
@@ -198,6 +199,34 @@
   margin-bottom: 12px;
   font-size: 1.25rem;
   line-height: 1.75rem;
+}
+
+/* The title link covers the whole card, like the home page route cards.
+   Text stays in the card's own colour so it shows on every fill. */
+.advice-route h3 a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.advice-route h3 a:hover {
+  text-decoration-thickness: 3px;
+}
+
+.advice-route h3 a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.advice-route h3 a:focus-visible {
+  outline: none;
+}
+
+.advice-route h3 a:focus-visible::after {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
 }
 
 .advice-route ul {

@@ -17,11 +17,6 @@
       { label: 'Placements', path: null },
       { label: 'Resources', path: 'advice.html' }
     ] },
-    { heading: 'Get involved', links: [
-      { label: 'Register your interest', path: 'login.html#register' },
-      { label: 'For schools', path: null },
-      { label: 'For parents and carers', path: 'faqs.html' }
-    ] },
     { heading: 'Help', links: [
       { label: 'Accessibility statement', path: null },
       { label: 'Privacy notice', path: 'privacy.html' },
@@ -54,7 +49,7 @@
           '<div class="footer-top">' +
             '<div class="footer-brand">' +
               '<img src="' + link('Sources/assests/amazon_logo.png') + '" alt="T Level placements at Amazon" width="150" height="70">' +
-              '<p class="footer-tagline">Information, advice and support for T Level students, schools and the people around them.</p>' +
+              '<p class="footer-tagline">Information, advice and support for T Level students.</p>' +
             '</div>' +
             COLUMNS.map(footerColumn).join('') +
           '</div>' +
