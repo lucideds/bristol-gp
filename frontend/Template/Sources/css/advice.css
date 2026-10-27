@@ -9,6 +9,15 @@
   line-height: 1.75rem;
 }
 
+/* Quiz link under the lead; tlevel.css supplies the button styles */
+.advice-page > .advice-lead:has(+ .advice-quiz-link) {
+  margin-bottom: 20px;
+}
+
+.advice-page > .advice-quiz-link {
+  margin: 0 0 40px;
+}
+
 /* ---------- Layout: nav | content ---------- */
 .advice-layout {
   display: grid;

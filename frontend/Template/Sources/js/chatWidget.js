@@ -8,7 +8,7 @@
   var SPARKLE_URL = new URL('../assests/chat-ai-sparkle.svg', script.src).href;              // Header + launcher icon.
   var SPARKLE_SMALL_URL = new URL('../assests/chat-ai-sparkle-small.svg', script.src).href;  // "AI-generated" badge icon.
   var SEND_ICON_URL = new URL('../assests/chat-send.svg', script.src).href;                  // Send button icon.
-  var LEARN_MORE_URL = new URL('../../faqs.html', script.src).href;                           // Disclaimer link.
+  var LEARN_MORE_URL = new URL('../../privacy.html#AI-data', script.src).href;                // Disclaimer link: AI privacy notice section.
 
   var MAX_HISTORY = 12;          // Most recent messages sent to the server each time.
   var MAX_STORED_REPLY = 4000;   // Long replies are shortened in the history (not on screen).
