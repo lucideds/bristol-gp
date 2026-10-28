@@ -24,7 +24,7 @@ from dotenv import load_dotenv  # Reads settings like SECRET_KEY and OPENROUTER_
 #   request         - holds everything about the incoming request (form data, method, URL)
 #   session         - a secure cookie that remembers who is signed in between pages
 #   url_for         - builds a URL from a function name, e.g. url_for("home") gives "/"
-from flask import Flask, g, redirect, render_template, request, session, url_for
+from flask import Flask, abort, g, redirect, render_template, request, send_from_directory, session, url_for
 
 # Flask-WTF adds CSRF protection: every form must include a secret token that only
 # our own pages know, so other websites can't submit our forms on someone's behalf.
@@ -60,6 +60,11 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Full path to the database file, e.g. ".../tlevels-site/site.db".
 DATABASE = os.path.join(BASE_DIR, "site.db")
+
+# Members-only downloads (the T Level spec PDFs). This folder is deliberately NOT inside
+# frontend/Template/Sources, because Flask serves everything in there to anyone. Files in here
+# can only be fetched through the /download/<name> route, which checks the visitor is signed in.
+DOWNLOADS_DIR = os.path.join(BASE_DIR, "resources", "specs")
 
 # Load settings from the .env file next to this file (if there is one).
 # Real environment variables always win over values in .env.
@@ -483,6 +488,35 @@ def try_login(form):
     session.clear()                                        # Wipe any old session data.
     session["user_id"] = user["id"]                        # Sign them in by saving their id in the session.
     return None                                            # No error.
+
+
+# ---------- Members-only downloads ----------
+
+# Every file that can be downloaded, by the name used in its /download/<name> URL.
+# Only names in this list work, so the URL can never be used to read any other file on the server.
+DOWNLOADS = {
+    "digital-production-design-development-spec": "digital-production-design-development-spec.pdf",
+    "digital-support-services-spec": "digital-support-services-spec.pdf",
+    "management-administration-spec": "management-administration-spec.pdf",
+    "media-broadcast-production-spec": "media-broadcast-production-spec.pdf",
+    "accounting-spec": "accounting-spec.pdf",
+    "engineering-manufacturing-processing-control-spec": "engineering-manufacturing-processing-control-spec.pdf",
+}
+
+
+@app.route("/download/<name>")                             # URL: e.g. /download/accounting-spec
+@limiter.limit("30 per minute")                            # Stops anyone scraping the files in bulk.
+def download(name):
+    """Sends a members-only file. Visitors who aren't signed in are sent to the sign-in page,
+    and come back to the T Levels page afterwards."""
+    if g.user is None:                                     # Not signed in? No file.
+        return redirect(url_for("login", next=url_for("t_levels")))
+    filename = DOWNLOADS.get(name)                         # Look the name up in the list above.
+    if filename is None:                                   # Not in the list?
+        abort(404)                                         # Show the normal "page not found" page.
+    response = send_from_directory(DOWNLOADS_DIR, filename, as_attachment=True)  # as_attachment = download, don't open.
+    response.headers["Cache-Control"] = "private, no-store"  # Don't let shared caches keep a members-only copy.
+    return response
 
 
 @app.route("/account.html")

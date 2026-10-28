@@ -43,6 +43,10 @@ Accounts use email and password, and Flask's signed session cookie remembers who
 
 The sign-in and sign-up forms are both on login.html. Each posts to its own route (/login or /register), and both show login.html again if there's an error.
 
+## Members-only downloads
+
+The T Level spec PDFs live in resources/specs, outside frontend/Template/Sources, because Flask serves everything in Sources to anyone. GET /download/<name> is the only way to get them. Signed-out visitors are redirected to /login?next=/t-levels, and the T Levels page shows them a greyed-out "Log in to download" button that comes back to the same tab after sign-in. Only names in the DOWNLOADS dict in main.py work, so the URL can't be used to read other files. Responses are attachments with Cache-Control: private, no-store, and the route allows 30 a minute. This is a simpler version of the planned resources design (algorithm 4): no resources table and no public files yet. To add a file, put it in resources/specs and add a line to DOWNLOADS.
+
 ## Contact form
 
 POST /contact checks the fields (all required, name up to 100 characters, a valid email, message up to 2000 characters) and saves the message to the messages table. The form shows the error or a thank-you on the same page.

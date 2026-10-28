@@ -19,6 +19,34 @@
   <script src="Sources/js/tlevelTabs.js" defer></script>
 </head>
 <body>
+  {#- Spec download buttons. Signed in: a normal download button. Signed out: a greyed-out
+      "Log in to download" button that goes to the sign-in page and comes back to this tab.
+      The /download route in main.py checks sign-in too, so the lock can't be skipped. -#}
+  {%- macro download_link(name, label, tab) -%}
+    {%- if current_user -%}
+              <a class="advice-action" href="{{ url_for('download', name=name) }}">
+                <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
+                  <path d="M8 2.5v7.5M4.75 7 8 10.25 11.25 7M3 13.5h10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                {{ label }}
+              </a>
+    {%- else -%}
+              <a class="advice-action advice-action-locked" href="{{ url_for('login', next=url_for('t_levels') ~ '#' ~ tab) }}">
+                <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
+                  <path d="M5 7V5a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  <rect x="3" y="7" width="10" height="7" rx="1.5" fill="currentColor"/>
+                </svg>
+                Log in to download {{ label }}
+              </a>
+    {%- endif -%}
+  {%- endmacro -%}
+  {%- macro download_note(tab) -%}
+    {%- if not current_user -%}
+            <p class="download-note">This resource is free, you just need an account.
+              <a href="{{ url_for('login', next=url_for('t_levels') ~ '#' ~ tab) }}">Log in</a> or
+              <a href="{{ url_for('login') }}#register">sign up</a> to download.</p>
+    {%- endif -%}
+  {%- endmacro %}
   <main class="tlevel-page">
     <nav class="tlevel-breadcrumb" aria-label="Breadcrumb">
       <!-- tlevelTabs.js adds the selected route (e.g. Home / T Levels / Digital) -->
@@ -118,25 +146,15 @@
               <p>Digital Production, Design and Development suits you if you want to build software. Digital Support Services suits you if you are more interested in IT support, networks or keeping systems running. Your school or college can help you decide.</p>
             </details>
           </div>
-          <!-- Same box as "Still unsure?" on the advice page (advice.css).
-               TODO: add the spec PDFs to frontend/Template/Sources/specs/. Flask serves that folder at /Sources/. -->
+          <!-- Same box as "Still unsure?" on the advice page (advice.css). The PDFs are members only (see download_link above). -->
           <div class="advice-card advice-unsure">
             <h3>Learn more</h3>
             <p>Read the course specifications to see what each Digital T Level covers.</p>
             <div class="advice-actions">
-              <a class="advice-action" href="Sources/specs/digital-production-design-development-spec.pdf" download>
-                <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
-                  <path d="M8 2.5v7.5M4.75 7 8 10.25 11.25 7M3 13.5h10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                Digital Production, Design and Development spec (PDF)
-              </a>
-              <a class="advice-action" href="Sources/specs/digital-support-services-spec.pdf" download>
-                <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
-                  <path d="M8 2.5v7.5M4.75 7 8 10.25 11.25 7M3 13.5h10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                Digital Support Services spec (PDF)
-              </a>
+              {{ download_link("digital-production-design-development-spec", "Digital Production, Design and Development spec (PDF)", "digital") }}
+              {{ download_link("digital-support-services-spec", "Digital Support Services spec (PDF)", "digital") }}
             </div>
+            {{ download_note("digital") }}
           </div>
         </section>
 
@@ -171,19 +189,14 @@
               <p>Being organised, managing your time, writing clearly and working well with other people all help. You build these skills further during your placement.</p>
             </details>
           </div>
-          <!-- Same box as "Still unsure?" on the advice page (advice.css).
-               TODO: add the spec PDFs to frontend/Template/Sources/specs/. Flask serves that folder at /Sources/. -->
+          <!-- Same box as "Still unsure?" on the advice page (advice.css). The PDFs are members only (see download_link above). -->
           <div class="advice-card advice-unsure">
             <h3>Learn more</h3>
             <p>Read the course specification to see what the Management and Administration T Level covers.</p>
             <div class="advice-actions">
-              <a class="advice-action" href="Sources/specs/management-administration-spec.pdf" download>
-                <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
-                  <path d="M8 2.5v7.5M4.75 7 8 10.25 11.25 7M3 13.5h10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                Course specification (PDF)
-              </a>
+              {{ download_link("management-administration-spec", "Course specification (PDF)", "business") }}
             </div>
+            {{ download_note("business") }}
           </div>
         </section>
 
@@ -218,19 +231,14 @@
               <p>No. Any equipment or software you need for your placement work is provided.</p>
             </details>
           </div>
-          <!-- Same box as "Still unsure?" on the advice page (advice.css).
-               TODO: add the spec PDFs to frontend/Template/Sources/specs/. Flask serves that folder at /Sources/. -->
+          <!-- Same box as "Still unsure?" on the advice page (advice.css). The PDFs are members only (see download_link above). -->
           <div class="advice-card advice-unsure">
             <h3>Learn more</h3>
             <p>Read the course specification to see what the Media, Broadcast and Production T Level covers.</p>
             <div class="advice-actions">
-              <a class="advice-action" href="Sources/specs/media-broadcast-production-spec.pdf" download>
-                <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
-                  <path d="M8 2.5v7.5M4.75 7 8 10.25 11.25 7M3 13.5h10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                Course specification (PDF)
-              </a>
+              {{ download_link("media-broadcast-production-spec", "Course specification (PDF)", "media") }}
             </div>
+            {{ download_note("media") }}
           </div>
         </section>
 
@@ -265,19 +273,14 @@
               <p>Yes. Many students go on to study for qualifications such as AAT or ACCA, often through an apprenticeship where you earn while you learn.</p>
             </details>
           </div>
-          <!-- Same box as "Still unsure?" on the advice page (advice.css).
-               TODO: add the spec PDFs to frontend/Template/Sources/specs/. Flask serves that folder at /Sources/. -->
+          <!-- Same box as "Still unsure?" on the advice page (advice.css). The PDFs are members only (see download_link above). -->
           <div class="advice-card advice-unsure">
             <h3>Learn more</h3>
             <p>Read the course specification to see what the Accounting T Level covers.</p>
             <div class="advice-actions">
-              <a class="advice-action" href="Sources/specs/accounting-spec.pdf" download>
-                <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
-                  <path d="M8 2.5v7.5M4.75 7 8 10.25 11.25 7M3 13.5h10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                Course specification (PDF)
-              </a>
+              {{ download_link("accounting-spec", "Course specification (PDF)", "finance") }}
             </div>
+            {{ download_note("finance") }}
           </div>
         </section>
 
@@ -307,19 +310,14 @@
               <p>On site you may need to wear safety clothing, such as safety boots or a high-visibility vest. You will be told what you need and get safety training before you start.</p>
             </details>
           </div>
-          <!-- Same box as "Still unsure?" on the advice page (advice.css).
-               TODO: add the spec PDFs to frontend/Template/Sources/specs/. Flask serves that folder at /Sources/. -->
+          <!-- Same box as "Still unsure?" on the advice page (advice.css). The PDFs are members only (see download_link above). -->
           <div class="advice-card advice-unsure">
             <h3>Learn more</h3>
             <p>Read the course specification to see what the Engineering, Manufacturing, Processing and Control T Level covers.</p>
             <div class="advice-actions">
-              <a class="advice-action" href="Sources/specs/engineering-manufacturing-processing-control-spec.pdf" download>
-                <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
-                  <path d="M8 2.5v7.5M4.75 7 8 10.25 11.25 7M3 13.5h10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                Course specification (PDF)
-              </a>
+              {{ download_link("engineering-manufacturing-processing-control-spec", "Course specification (PDF)", "engineering") }}
             </div>
+            {{ download_note("engineering") }}
           </div>
         </section>
       </div>

@@ -583,3 +583,34 @@ html.a11y-readable-font .route-cards-grid {
     width: 100%;
   }
 }
+
+/* ---------- Members-only spec downloads ---------- */
+
+/* Signed-out version of the download button: greyed out with a lock, links to sign-in */
+.advice-action.advice-action-locked {
+  background: var(--color-surface-muted);
+  color: var(--color-ink-muted);
+  border-color: transparent;
+  border-radius: var(--radius-lg);
+}
+
+.advice-action.advice-action-locked:hover {
+  background: var(--color-divider);
+  color: var(--color-ink);
+}
+
+/* "This resource is free, you just need an account" line under the buttons */
+.download-note {
+  margin: 16px 0 0;
+  font-size: 0.875rem;
+  color: var(--color-ink-muted);
+}
+
+.download-note a {
+  color: var(--color-orange-border);  /* Darker orange, so the links stay readable on white */
+  font-weight: 700;
+}
+
+.download-note a:hover {
+  color: var(--color-ink);
+}
