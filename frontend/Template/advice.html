@@ -38,6 +38,7 @@
         <ul>
           <li><a href="#why-choose">Why choose a T Level?</a></li>
           <li><a href="#how-to-apply">How to apply for a placement</a></li>
+          <li><a href="#your-path">Your path</a></li>
           <li><a href="#where-it-leads">Where it can lead</a></li>
           <li><a href="#common-worries">Common worries</a></li>
         </ul>
@@ -114,6 +115,148 @@
           </ol>
 
           <a class="tlevel-btn advice-register" href="login.html#register">Register your interest</a>
+        </section>
+
+        <section id="your-path" class="advice-section path-section" aria-labelledby="your-path-title">
+          <h2 class="advice-section-title" id="your-path-title">Your path</h2>
+          <p>From Year 10 to your first job. See what happens when, and what to do at each step.</p>
+
+          <!-- advice.js shows the year picker and marks the step for the chosen year; it needs JavaScript -->
+          <div class="path-finder" hidden>
+            <fieldset class="path-picker">
+              <legend>Where are you now?</legend>
+              <div class="path-years">
+                <label><input type="radio" name="path-year" value="10">Year 10</label>
+                <label><input type="radio" name="path-year" value="11" checked>Year 11</label>
+                <label><input type="radio" name="path-year" value="12">Year 12</label>
+                <label><input type="radio" name="path-year" value="13">Year 13</label>
+              </div>
+            </fieldset>
+            <p class="path-status" aria-live="polite"></p>
+          </div>
+
+          <div class="path-stage" role="group" aria-labelledby="path-stage-choose">
+            <div class="path-stage-head">
+              <p class="path-eyebrow">Years 10 and 11</p>
+              <h3 class="path-stage-title" id="path-stage-choose">Choose your T Level</h3>
+            </div>
+            <ol class="path-timeline">
+              <li class="path-step" id="step-explore" data-year="10">
+                <div class="path-step-body">
+                  <p class="path-step-when">Year 10</p>
+                  <h4>Explore your options</h4>
+                  <p>Find out what T Levels are and how they compare with A levels and apprenticeships. Our quiz suggests which of the five routes might suit you.</p>
+                  <a class="path-link" href="quiz.html">Take the quiz</a>
+                </div>
+              </li>
+              <li class="path-step" id="step-adviser">
+                <div class="path-step-body">
+                  <p class="path-step-when">Year 10 or 11</p>
+                  <h4>Talk to your careers adviser</h4>
+                  <p>They know which schools and colleges near you offer T Levels, and what each one asks for. Take your quiz result with you.</p>
+                </div>
+              </li>
+              <li class="path-step" id="step-apply" data-year="11">
+                <div class="path-step-body">
+                  <p class="path-step-when">Year 11, usually from the autumn</p>
+                  <h4>Apply to a school or college</h4>
+                  <p>Apply for the T Level course you want. Entry requirements vary, so check them early. Many ask for five GCSEs at grade 4 or above, including English and maths.</p>
+                  <a class="path-link" href="https://www.tlevels.gov.uk/students/find">Find a T Level course</a>
+                </div>
+              </li>
+              <li class="path-step" id="step-gcse">
+                <div class="path-step-body">
+                  <p class="path-step-when">Summer, Year 11</p>
+                  <h4>Get your GCSE results</h4>
+                  <p>Your school or college confirms your place. If your results are not what you hoped for, talk to them about your options.</p>
+                </div>
+              </li>
+            </ol>
+          </div>
+
+          <div class="path-stage" role="group" aria-labelledby="path-stage-study">
+            <div class="path-stage-head">
+              <p class="path-eyebrow">Years 12 and 13</p>
+              <h3 class="path-stage-title" id="path-stage-study">Study and do your placement</h3>
+            </div>
+            <ol class="path-timeline" start="5">
+              <li class="path-step" id="step-start" data-year="12">
+                <div class="path-step-body">
+                  <p class="path-step-when">September, Year 12</p>
+                  <h4>Start your T Level</h4>
+                  <p>Most of your time is spent learning at your school or college, through practical lessons and projects.</p>
+                </div>
+              </li>
+              <li class="path-step" id="step-register">
+                <div class="path-step-body">
+                  <p class="path-step-when">Year 12</p>
+                  <h4>Register your interest</h4>
+                  <p>Tell us which routes you like. We'll email you when Amazon placements open. You can change your answers later.</p>
+                  <a class="path-link" href="login.html#register">Register your interest</a>
+                </div>
+              </li>
+              <li class="path-step" id="step-school">
+                <div class="path-step-body">
+                  <p class="path-step-when">Year 12</p>
+                  <h4>Apply through your school or college</h4>
+                  <p>They organise placements for their students. Ask who to speak to, and send your application before the closing date.</p>
+                </div>
+              </li>
+              <li class="path-step" id="step-interview">
+                <div class="path-step-body">
+                  <p class="path-step-when">Year 12</p>
+                  <h4>Have a short interview</h4>
+                  <p>A conversation about why you chose the route. There are no trick questions. Ask your school or college if they run a workshop where you can practise.</p>
+                </div>
+              </li>
+              <li class="path-step" id="step-placement" data-year="13">
+                <div class="path-step-body">
+                  <p class="path-step-when">Year 12 or 13</p>
+                  <h4>Do your placement</h4>
+                  <p>Spend at least 315 hours, about 45 days, with an Amazon team. It might be one block, or a day or two each week.</p>
+                </div>
+              </li>
+              <li class="path-step" id="step-finish">
+                <div class="path-step-body">
+                  <p class="path-step-when">Summer, Year 13</p>
+                  <h4>Finish your T Level</h4>
+                  <p>You get an overall grade: Pass, Merit, Distinction or Distinction*. You need to complete your placement to pass.</p>
+                </div>
+              </li>
+            </ol>
+          </div>
+
+          <div class="path-stage" role="group" aria-labelledby="path-stage-next">
+            <div class="path-stage-head">
+              <p class="path-eyebrow">After your T Level</p>
+              <h3 class="path-stage-title" id="path-stage-next">Choose your next step</h3>
+            </div>
+            <ul class="path-next">
+              <li class="path-next-card">
+                <h4>Apprenticeship</h4>
+                <p>Earn a wage while you train on the job. Amazon offers apprenticeships too.</p>
+                <a class="path-link" href="https://amazonapprenticeships.co.uk/our-programmes">Amazon apprenticeships</a>
+              </li>
+              <li class="path-next-card">
+                <h4>University</h4>
+                <p>T Levels carry UCAS points. A Distinction* is worth the same as three A* grades at A level.</p>
+                <a class="path-link" href="faqs.html#after-your-t-level">How T Levels count for university</a>
+              </li>
+              <li class="path-next-card">
+                <h4>Work</h4>
+                <p>Go straight into a job, using the skills and contacts from your placement.</p>
+                <a class="path-link" href="#where-it-leads">Example jobs by route</a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="path-end">
+            <p class="path-note">Dates vary between schools and colleges. Ask yours for the exact dates.</p>
+            <div class="path-end-actions">
+              <a class="tlevel-btn" href="login.html#register">Register your interest</a>
+              <a class="advice-action" href="quiz.html">Take the quiz</a>
+            </div>
+          </div>
         </section>
 
         <section id="where-it-leads" class="advice-section" aria-labelledby="where-it-leads-title">
@@ -200,13 +343,6 @@
                 Ask a question
               </button>
               <a class="advice-action" href="contact.html">Contact us</a>
-              <!-- TODO: link the real student guide PDF once it exists -->
-              <a class="advice-action" href="#">
-                <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
-                  <path d="M8 2.5v7.5M4.75 7 8 10.25 11.25 7M3 13.5h10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                Student guide (PDF)
-              </a>
             </div>
           </div>
         </section>
