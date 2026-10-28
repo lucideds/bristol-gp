@@ -118,7 +118,11 @@
       'register-email': checkEmail,
       'register-password': function (input) {
         if (!input.value) return 'Enter your password';
+        // Same rules as try_register() in main.py, which checks them again on the server.
         if (input.value.length < 8) return 'Passwords must be at least 8 characters';
+        if (!/[A-Z]/.test(input.value)) return 'Passwords must include a capital letter';
+        if (!/[0-9]/.test(input.value)) return 'Passwords must include a number';
+        if (!/[^A-Za-z0-9\s]/.test(input.value)) return 'Passwords must include a special character, such as ! ? # or @';
         return '';
       },
       'register-confirm': function (input) {

@@ -1,0 +1,241 @@
+/* Error pages (404 / 500). Colours come from the theme variables in topNavBar.css,
+   so light mode is a white page and dark mode is a navy page. */
+
+/* Page area between nav and footer; bottom padding clears the chat button */
+.error-page {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 48px 24px 96px;
+  text-align: center;
+}
+
+.error-card {
+  max-width: 480px;
+}
+
+/* Large orange status code. Decorative only: the heading below says what happened. */
+.error-code {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 7rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--accent);
+}
+
+/* Each digit pops up in turn, then floats gently, staggered so they bob like a wave */
+.error-code span {
+  display: inline-block;
+  animation:
+    digit-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both,
+    digit-float 3s ease-in-out 0.8s infinite;
+}
+
+.error-code span:nth-child(2) {
+  animation-delay: 0.1s, 1.2s;
+}
+
+.error-code span:nth-child(3) {
+  animation-delay: 0.2s, 1.6s;
+}
+
+@keyframes digit-pop {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes digit-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* Compass shaped like the font's own 0 (same height, oval and stroke thickness)
+   so it sits evenly next to the real 0; the orange comes from currentColor */
+.error-compass {
+  width: 0.59em;
+  max-width: none;   /* topNavBar.css caps svg at max-width: 100%, which squashed it */
+  height: 0.76em;
+  margin: 0 0.03em;  /* same side spacing the font gives its digits */
+  vertical-align: -0.01em;
+}
+
+/* The needle swings about as if it can't find north */
+.compass-needle {
+  transform-box: view-box;
+  transform-origin: 50% 50%;
+  animation: needle-search 4s ease-in-out infinite;
+}
+
+@keyframes needle-search {
+  0%, 100% {
+    transform: rotate(-30deg);
+  }
+  30% {
+    transform: rotate(35deg);
+  }
+  55% {
+    transform: rotate(-10deg);
+  }
+  75% {
+    transform: rotate(25deg);
+  }
+}
+
+/* No movement for people who have turned on "reduce motion" on their device */
+@media (prefers-reduced-motion: reduce) {
+  .error-code span {
+    animation: none;
+  }
+
+  .compass-needle {
+    animation: none;
+    transform: rotate(20deg);
+  }
+}
+
+.error-title {
+  margin: 20px 0 8px;
+  font-size: 1.75rem;
+  color: var(--page-text);
+}
+
+.error-text {
+  max-width: 400px;
+  margin: 0 auto 28px;
+  line-height: 1.5;
+  color: var(--page-text);
+}
+
+/* The address the visitor tried, shown like a small tag so typos stand out */
+.error-path {
+  padding: 1px 6px;
+  font-family: Menlo, Consolas, monospace;
+  font-size: 0.875em;
+  overflow-wrap: anywhere;
+  background: rgba(135, 149, 150, 0.2);
+  border-radius: 4px;
+}
+
+/* "Did you mean...?" line, with the link underlined in orange like the nav links */
+.error-suggestion {
+  margin: -12px 0 28px;
+  font-weight: bold;
+  color: var(--page-text);
+}
+
+.error-suggestion a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 5px;
+}
+
+.error-suggestion a:hover {
+  color: var(--accent);
+}
+
+.error-suggestion a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Orange button with navy text, same as the sign in button */
+.error-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 0 20px;
+  box-sizing: border-box;
+  background: var(--accent);
+  color: #232F3E;
+  font-weight: bold;
+  text-decoration: none;
+  border: 1px solid #EC7211;
+  border-radius: 4px;
+  transition: background-color 0.15s ease;
+}
+
+.error-button:hover {
+  background: #EC7211;
+}
+
+.error-button:focus-visible {
+  outline: 2px solid var(--page-text);
+  outline-offset: 2px;
+}
+
+/* Go back button: reset <button> defaults so it matches the links */
+button.error-button {
+  font: inherit;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Three equal-width buttons in a row; stacked full width on phones */
+.error-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+@media (max-width: 480px) {
+  .error-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Popular pages under the button, with the same orange underline as the nav links */
+.error-links {
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid #879596;
+}
+
+.error-links-title {
+  margin: 0 0 12px;
+  font-size: 0.875rem;
+  color: var(--page-text);
+}
+
+.error-links ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.error-links a {
+  color: var(--page-text);
+  text-decoration: none;
+}
+
+.error-links a:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 6px;
+}
+
+.error-links a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
