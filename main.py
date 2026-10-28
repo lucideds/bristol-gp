@@ -74,6 +74,14 @@ MAX_NAME_LENGTH = 100
 MAX_EMAIL_LENGTH = 254          # The longest a real email address can be.
 MAX_MESSAGE_LENGTH = 2000
 MAX_PASSWORD_LENGTH = 128
+MIN_PASSWORD_LENGTH = 8
+
+# Password rules: at least one capital letter, one number and one special character.
+# A special character is anything that isn't a letter, a number or a space (e.g. ! ? # @ £).
+# auth.js checks the same rules in the browser, so keep the two in step.
+PASSWORD_CAPITAL = re.compile(r"[A-Z]")
+PASSWORD_NUMBER = re.compile(r"[0-9]")
+PASSWORD_SPECIAL = re.compile(r"[^A-Za-z0-9\s]")
 
 # A simple pattern for an email: some text, an @, some text, a dot, some text, no spaces.
 EMAIL_PATTERN = re.compile(r"[^@\s]+@[^@\s]+\.[^@\s]+")
@@ -119,6 +127,44 @@ csrf = CSRFProtect(app)
 
 # Rate limiter: counts requests per IP address, stored in memory.
 limiter = Limiter(get_remote_address, app=app, storage_uri="memory://")
+
+
+# ---------- Security headers ----------
+# Extra instructions sent to the browser with every response (pages, CSS/JS files and error pages).
+#
+# Content-Security-Policy (CSP) - a list of where the page may load things from. Only our own site
+#   ('self') is allowed, plus Google Fonts for the accessibility font. Inline <script>, <style> and
+#   onclick="" are blocked too, so if someone sneaks a script into a page the browser won't run it.
+#   That's why all scripts and styles live in Sources/js and Sources/css.
+CONTENT_SECURITY_POLICY = "; ".join([
+    "default-src 'self'",                               # Anything not listed below: our site only.
+    "script-src 'self'",                                # JavaScript files from Sources/js only.
+    "style-src 'self' https://fonts.googleapis.com",    # Our CSS, plus the Google Fonts stylesheet.
+    "font-src 'self' https://fonts.gstatic.com",        # Where Google Fonts serves the font files.
+    "img-src 'self' data:",                             # Our images (data: covers small inline icons).
+    "connect-src 'self'",                               # fetch() may only call our own server (the chat API).
+    "object-src 'none'",                                # No plugins like Flash.
+    "base-uri 'self'",                                  # Stops a planted <base> tag redirecting relative links.
+    "form-action 'self'",                               # Forms can only submit to our site.
+    "frame-ancestors 'none'",                           # No other site can show our pages in a frame.
+])
+
+
+@app.after_request                                      # Runs on every response, just before it's sent.
+def set_security_headers(response):
+    """Adds the security headers to every response."""
+    response.headers["Content-Security-Policy"] = CONTENT_SECURITY_POLICY
+    # Older browsers' version of frame-ancestors 'none': stops clickjacking.
+    response.headers["X-Frame-Options"] = "DENY"
+    # Trust the Content-Type we send, don't guess (stops a text file being run as a script).
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    # When a visitor clicks a link to another site, only tell it our domain, not the full URL.
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    # HSTS: "always use HTTPS for this site for the next year". Only sent when HTTPS=1 (the same
+    # switch as SESSION_COOKIE_SECURE), so local http:// testing isn't affected.
+    if os.environ.get("HTTPS") == "1":
+        response.headers["Strict-Transport-Security"] = "max-age=31536000"
+    return response
 
 
 # ---------- Database ----------
@@ -330,10 +376,16 @@ def try_register(form):
         return f"Name must be {MAX_NAME_LENGTH} characters or fewer."
     if not is_valid_email(email):                          # Email doesn't look real?
         return "Please enter a valid email address."
-    if len(password) < 8:                                  # Password too short?
-        return "Password must be at least 8 characters."
+    if len(password) < MIN_PASSWORD_LENGTH:                # Password too short?
+        return f"Password must be at least {MIN_PASSWORD_LENGTH} characters."
     if len(password) > MAX_PASSWORD_LENGTH:                # Password too long?
         return f"Password must be {MAX_PASSWORD_LENGTH} characters or fewer."
+    if not PASSWORD_CAPITAL.search(password):              # No capital letter?
+        return "Password must include a capital letter."
+    if not PASSWORD_NUMBER.search(password):               # No number?
+        return "Password must include a number."
+    if not PASSWORD_SPECIAL.search(password):              # No special character?
+        return "Password must include a special character, such as ! ? # or @."
     if password != confirm:                                # The two passwords don't match?
         return "Passwords do not match."
 
