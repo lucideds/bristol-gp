@@ -66,7 +66,7 @@ If it works you're sent to /account. If not, the page reloads with the error. Th
 
 ### POST /login
 
-This signs you in. Send email, password and csrf_token. If it works you're sent to /account, or back to the ?next= page if it's on this site. If it doesn't, you'll see "Incorrect email or password." That message is the same whichever one is wrong, so it doesn't give away which emails have accounts. The limit is 10 a minute.
+This signs you in. Send email, password and csrf_token. If it works you're sent to /account, or back to the ?next= page if it's on this site. If it doesn't, you'll see "Incorrect email or password (attempt x out of 3)." That message is the same whichever one is wrong, so it doesn't give away which emails have accounts. After the 3rd wrong attempt that email is locked for 15 minutes, and every sign-in for it is refused (even with the right password) until the lock ends. The limit is 10 a minute.
 
 If you're already signed in, both login and register just send you to /account.
 

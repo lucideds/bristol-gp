@@ -10,6 +10,7 @@ import os          # Lets us work with file paths and read environment variables
 import re          # Regular expressions, used to check that an email looks valid.
 import secrets     # Makes secure random values (used for a fallback secret key).
 import sqlite3     # Python's built-in library for SQLite databases (a database stored in one file).
+import time       # Gives the current time, used to work out when a locked account unlocks.
 from functools import wraps  # Helper used when writing decorators, keeps the original function's name.
 from urllib.parse import urlparse  # Splits a URL into parts so we can check where a redirect goes.
 
@@ -82,6 +83,12 @@ MIN_PASSWORD_LENGTH = 8
 PASSWORD_CAPITAL = re.compile(r"[A-Z]")
 PASSWORD_NUMBER = re.compile(r"[0-9]")
 PASSWORD_SPECIAL = re.compile(r"[^A-Za-z0-9\s]")
+
+# Account lockout: after this many wrong passwords in a row, sign-in for that email is locked
+# for LOCKOUT_MINUTES. It's a timed lock (not permanent) because there's no password reset yet,
+# and a permanent lock would let anyone lock a real user out for good just by knowing their email.
+MAX_LOGIN_ATTEMPTS = 3
+LOCKOUT_MINUTES = 15
 
 # A simple pattern for an email: some text, an @, some text, a dot, some text, no spaces.
 EMAIL_PATTERN = re.compile(r"[^@\s]+@[^@\s]+\.[^@\s]+")
@@ -206,6 +213,15 @@ def init_db():
             email TEXT NOT NULL,                       -- Sender's email.
             message TEXT NOT NULL,                     -- The message itself.
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP  -- When the message was sent.
+        );
+
+        -- Failed sign-in attempts, one row per email typed into the sign-in form.
+        -- Kept by email (not user id) so an email with no account counts and locks the same way,
+        -- which stops attackers using the lockout to find out which emails are registered.
+        CREATE TABLE IF NOT EXISTS login_attempts (
+            email TEXT PRIMARY KEY,                    -- The email typed in, lower-cased.
+            failed_count INTEGER NOT NULL DEFAULT 0,   -- Wrong passwords in a row since the last success or lock.
+            locked_until REAL NOT NULL DEFAULT 0       -- Unix time when the lock ends (0 = not locked).
         );
         """
     )
@@ -405,20 +421,65 @@ def try_register(form):
     return None                                            # None means "no error, it worked".
 
 
+def record_failed_login(db, email):
+    """Counts one wrong password for this email, locks it on the last attempt,
+    and returns the error message showing which attempt this was."""
+    # Add 1 to the count (making the row if it's the first try). An old lock that has
+    # run out is treated as a fresh start, so the count goes back to 1.
+    db.execute(
+        """
+        INSERT INTO login_attempts (email, failed_count, locked_until) VALUES (?, 1, 0)
+        ON CONFLICT(email) DO UPDATE SET
+            failed_count = CASE WHEN locked_until > 0 THEN 1 ELSE failed_count + 1 END,
+            locked_until = 0
+        """,
+        (email,),
+    )
+    attempt = db.execute(
+        "SELECT failed_count FROM login_attempts WHERE email = ?", (email,)
+    ).fetchone()["failed_count"]
+
+    if attempt >= MAX_LOGIN_ATTEMPTS:                      # That was the last attempt: lock the account.
+        db.execute(
+            "UPDATE login_attempts SET locked_until = ? WHERE email = ?",
+            (time.time() + LOCKOUT_MINUTES * 60, email),
+        )
+        db.commit()
+        return (f"Incorrect email or password (attempt {MAX_LOGIN_ATTEMPTS} out of {MAX_LOGIN_ATTEMPTS}). "
+                f"This account is now locked for {LOCKOUT_MINUTES} minutes.")
+    db.commit()
+    return f"Incorrect email or password (attempt {attempt} out of {MAX_LOGIN_ATTEMPTS})."
+
+
 def try_login(form):
     """Signs a user in. Returns an error message, or None if it worked."""
     email = form.get("email", "").strip().lower()          # Read the email box.
     password = form.get("password", "")                    # Read the password box.
+    if not email or not password:                          # Empty boxes don't count as an attempt.
+        return "Incorrect email or password."
+    db = get_db()
 
-    user = get_db().execute(                               # Look for a user with that email.
+    # Is this email locked? If so, stop here without even checking the password.
+    attempts = db.execute(
+        "SELECT failed_count, locked_until FROM login_attempts WHERE email = ?", (email,)
+    ).fetchone()
+    now = time.time()
+    if attempts is not None and attempts["locked_until"] > now:
+        minutes_left = int((attempts["locked_until"] - now) // 60) + 1   # Round up, so it never says 0.
+        return (f"Too many failed attempts. This account is locked. "
+                f"Try again in {minutes_left} minute{'s' if minutes_left != 1 else ''}.")
+
+    user = db.execute(                                     # Look for a user with that email.
         "SELECT * FROM users WHERE email = ?", (email,)
     ).fetchone()                                           # The matching user, or None if there isn't one.
 
     # Fail if there's no such user OR the password doesn't match the stored hash.
     # The same message is used for both, so attackers can't tell which emails are registered.
     if user is None or not check_password_hash(user["password_hash"], password):
-        return "Incorrect email or password."
+        return record_failed_login(db, email)
 
+    db.execute("DELETE FROM login_attempts WHERE email = ?", (email,))  # Success: start counting from 0 again.
+    db.commit()
     session.clear()                                        # Wipe any old session data.
     session["user_id"] = user["id"]                        # Sign them in by saving their id in the session.
     return None                                            # No error.
