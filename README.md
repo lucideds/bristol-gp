@@ -31,7 +31,7 @@ Settings are read from environment variables. `main.py` and `bot/bot.py` also lo
 
 | Variable | Required | Purpose |
 |---|---|---|
-| `SECRET_KEY` | Yes, for any shared or live site | Signs the session cookie. If it is unset, a random key is generated on each start and everyone is signed out when the app restarts. |
+| `SECRET_KEY` | No | Signs the session cookie. If it is unset, the app generates one on first start and saves it to `.env`, so restarts keep everyone signed in. If `.env` can't be written, a random key is used for that run and everyone is signed out when the app restarts. |
 | `OPENROUTER_API_KEY` | For the chat widget | OpenRouter API key. Without it, the chat API returns 503 and the rest of the site still works. |
 | `OPENROUTER_MODEL` | No | Model ID. Defaults to `nvidia/nemotron-3.5-super-vl:free`. |
 | `OPENROUTER_SITE_URL` | No | Public URL of the site, sent to OpenRouter as the `HTTP-Referer` header. Defaults to the request's host URL. |
@@ -272,7 +272,7 @@ There is no automated test suite. Before committing, check by hand:
 
 Before the site is reachable by anyone else:
 
-- Set a long random `SECRET_KEY`, for example from `python -c "import secrets; print(secrets.token_hex(32))"`.
+- Make sure `SECRET_KEY` stays fixed: either let the app save one to `.env` on first start, or set a long random one yourself, for example from `python -c "import secrets; print(secrets.token_hex(32))"`. Never reuse a value from the repo.
 - Leave `FLASK_DEBUG` unset.
 - Serve over HTTPS and set `HTTPS=1`.
 - Run under a production WSGI server instead of `python main.py`. Note that the Slack bot is only started from `main.py`'s `__main__` block, so a WSGI server needs it started separately (for example with `python -m bot.bot`).

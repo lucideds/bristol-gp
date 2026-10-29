@@ -14,7 +14,12 @@ import time
 from functools import wraps
 from urllib.parse import urlparse
 
-from dotenv import load_dotenv
+try:
+    import fcntl  # Used to lock .env while writing SECRET_KEY. Not on Windows, where the lock is skipped.
+except ImportError:
+    fcntl = None
+
+from dotenv import dotenv_values, load_dotenv
 from flask import Flask, abort, g, jsonify, redirect, render_template, request, send_from_directory, session, url_for
 from flask_wtf.csrf import CSRFError, CSRFProtect
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -45,7 +50,8 @@ DATABASE = os.path.join(BASE_DIR, "site.db")
 DOWNLOADS_DIR = os.path.join(BASE_DIR, "resources", "specs")
 
 # Real environment variables win over .env. Must run before the os.environ.get() calls below.
-load_dotenv(os.path.join(BASE_DIR, ".env"))
+ENV_FILE = os.path.join(BASE_DIR, ".env")
+load_dotenv(ENV_FILE)
 
 DEBUG = os.environ.get("FLASK_DEBUG") == "1"
 # Turns on the secure cookie and HSTS. Off by default because local testing uses http://,
@@ -100,12 +106,36 @@ app = Flask(
     static_url_path="/Sources",
 )
 
-# Without SECRET_KEY a random key is used, which signs everyone out whenever the app restarts.
-secret_key = os.environ.get("SECRET_KEY")
-if not secret_key:
-    log.warning("SECRET_KEY is not set, using a random key. Users will be signed out whenever the app restarts.")
-    secret_key = secrets.token_hex(32)
-app.config["SECRET_KEY"] = secret_key
+# SECRET_KEY signs the session cookie, so it must stay the same between restarts or everyone
+# gets signed out (on EC2 that's every restart or deploy). If it isn't set, one is made once and
+# saved to .env, which is git-ignored, so the key never ends up in the repo.
+def load_or_create_secret_key():
+    secret_key = os.environ.get("SECRET_KEY", "").strip()
+    if secret_key:
+        return secret_key
+    try:
+        fd = os.open(ENV_FILE, os.O_RDWR | os.O_CREAT, 0o600)  # Readable by this user only.
+        with os.fdopen(fd, "r+", encoding="utf-8") as env_file:
+            if fcntl:
+                # If several server processes start at once, only one makes a key; the rest reuse it.
+                fcntl.flock(env_file, fcntl.LOCK_EX)
+            secret_key = (dotenv_values(ENV_FILE).get("SECRET_KEY") or "").strip()
+            if not secret_key:
+                secret_key = secrets.token_hex(32)
+                existing = env_file.read()
+                if existing and not existing.endswith("\n"):
+                    env_file.write("\n")
+                env_file.write(f"SECRET_KEY={secret_key}\n")
+                log.warning("SECRET_KEY was not set, so a new one was made and saved to .env.")
+    except OSError as e:  # e.g. the folder is read-only.
+        log.warning("SECRET_KEY is not set and couldn't be saved to .env (%s). Using a random key, so "
+                    "users will be signed out whenever the app restarts. Set SECRET_KEY in .env.", e)
+        secret_key = secrets.token_hex(32)
+    os.environ["SECRET_KEY"] = secret_key  # So Flask's reloader process uses the same key.
+    return secret_key
+
+
+app.config["SECRET_KEY"] = load_or_create_secret_key()
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["SESSION_COOKIE_SECURE"] = HTTPS
