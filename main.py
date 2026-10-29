@@ -1,4 +1,4 @@
-"""Flask backend for the T Level Connect site.
+"""Flask backend for the T Level placements at Amazon site.
 
 Serves the pages, stores accounts and contact messages in SQLite, and handles signing in
 and out. The chat widget's API lives in chat_api.py.

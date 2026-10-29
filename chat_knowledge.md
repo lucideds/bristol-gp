@@ -1,4 +1,4 @@
-# T Level Connect: reference information for the chat assistant
+# Reference information for the chat assistant
 
 This file is added to the chat assistant's instructions by chat_api.py (it is loaded once, when the server starts).
 Keep it in step with the website: if a page's wording changes, update the matching section here and restart the server.

@@ -1,6 +1,6 @@
 # AGENTS.md
 
-T Level Connect: a Flask + SQLite site about Amazon T Level placements, built by a six-person T Level team for Amazon Emerging Talent Programs. Read `README.md` first for setup, routes, layout, the database, the chat API, the Slack bot and styling conventions. This file only covers what the README doesn't.
+A Flask + SQLite site about Amazon T Level placements, built by a six-person T Level team for Amazon Emerging Talent Programs. Read `README.md` first for setup, routes, layout, the database, the chat API, the Slack bot and styling conventions. This file only covers what the README doesn't.
 
 ## Project tracking
 

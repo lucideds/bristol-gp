@@ -153,7 +153,7 @@
     if (modeReady) hideSummary();
 
     heading.textContent = TITLES[mode];
-    document.title = TITLES[mode] + ' – T Level Connect';
+    document.title = TITLES[mode] + ' – T Level placements at Amazon';
 
     // Update the URL without reloading or adding a history entry.
     history.replaceState(null, '', mode === 'register' ? '#register' : location.pathname + location.search);

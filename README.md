@@ -1,6 +1,6 @@
-# T Level Connect
+# T Level placements at Amazon
 
-T Level Connect is a website about T Levels and T Level industry placements at Amazon, built for the Amazon Emerging Talent Programs team. Its audience is students, parents and carers, and teachers or careers advisers.
+This is a website about T Levels and T Level industry placements at Amazon, built for the Amazon Emerging Talent Programs team. Its audience is students, parents and carers, and teachers or careers advisers.
 
 The site is a small Flask app. It serves HTML pages, stores user accounts and contact form messages in SQLite, runs an AI chat assistant through OpenRouter, and can post contact form messages to a Slack channel.
 

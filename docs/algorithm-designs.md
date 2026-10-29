@@ -2,7 +2,7 @@
 
 Last updated 23 October 2026. Owners: Shea Palin and Leeam.
 
-This is Brief Task 1, Activity B. It sets out five of the more complex problems on T Level Connect as pseudocode. Designs 1, 2 and 5 match the code as it is now (main.py, chat_api.py and topNavBar.js). Designs 3 and 4 haven't been built yet, so they're the plan for building them.
+This is Brief Task 1, Activity B. It sets out five of the more complex problems on the site as pseudocode. Designs 1, 2 and 5 match the code as it is now (main.py, chat_api.py and topNavBar.js). Designs 3 and 4 haven't been built yet, so they're the plan for building them.
 
 Pseudocode conventions: <- means assignment, and blocks close with END IF, END FOR and so on. RETURN ends the algorithm. RESPOND sends an HTTP status and body back to the browser. Text in quotes is the message the user sees.
 

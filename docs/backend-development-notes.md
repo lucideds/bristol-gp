@@ -2,7 +2,7 @@
 
 Last updated 23 October 2026
 
-These notes cover how the T Level Connect backend was built and the decisions behind it. For the request and response details of each route, see "Endpoint structures and schemas".
+These notes cover how the site's backend was built and the decisions behind it. For the request and response details of each route, see "Endpoint structures and schemas".
 
 ## Overview
 

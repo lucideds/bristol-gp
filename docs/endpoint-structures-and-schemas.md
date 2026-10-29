@@ -2,7 +2,7 @@
 
 Last updated 23 October 2026
 
-This is a quick guide to the routes on the T Level Connect backend, so anyone building against it knows what to send and what they'll get back. Most of it is already built. The interest and resources routes at the end aren't yet, so treat those as the plan for now.
+This is a quick guide to the routes on the site's backend, so anyone building against it knows what to send and what they'll get back. Most of it is already built. The interest and resources routes at the end aren't yet, so treat those as the plan for now.
 
 ## Before you start
 

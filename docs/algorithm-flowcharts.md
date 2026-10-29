@@ -2,7 +2,7 @@
 
 Last updated 28 October 2026.
 
-This is Brief Task 1, Activity B. It shows five of the more complex things T Level Connect does as simple flowcharts for a non-technical audience. The detailed versions, with every rule and limit, are the pseudocode in [algorithm-designs.md](algorithm-designs.md).
+This is Brief Task 1, Activity B. It shows five of the more complex things the site does as simple flowcharts for a non-technical audience. The detailed versions, with every rule and limit, are the pseudocode in [algorithm-designs.md](algorithm-designs.md).
 
 For presenting or printing, use [algorithm-flowcharts.pdf](algorithm-flowcharts.pdf): a key page, then one chart per A4 page.
 
