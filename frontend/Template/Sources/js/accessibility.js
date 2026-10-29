@@ -4,8 +4,8 @@
   // (document.currentScript only works here at the top level, not in callbacks.)
   // The script lives in Template/Sources/js/, so the icons are one folder up in assests/.
   var script = document.currentScript;
-  var CLOSE_ICON_URL = new URL('../assests/a11y-close.svg', script.src).href;
-  var CHECK_ICON_URL = new URL('../assests/a11y-check.svg', script.src).href; // Tick used by accessibility.css.
+  var CLOSE_ICON_URL = new URL('../assests/a11y-close.svg', script.src).href; // Cross mask used by accessibility.css.
+  var CHECK_ICON_URL = new URL('../assests/a11y-check.svg', script.src).href; // Tick mask used by accessibility.css.
 
   var THEME_KEY = 'tlc-theme';     // Shared with the light / dark button in topNavBar.js.
   var SETTINGS_KEY = 'tlc-a11y';   // Everything else, as one JSON object.
@@ -167,7 +167,7 @@
           '<div class="a11y-head">' +
             '<h2 id="a11y-title" class="a11y-title">Accessibility</h2>' +
             '<button type="button" class="a11y-close" aria-label="Close accessibility settings">' +
-              '<img src="' + CLOSE_ICON_URL + '" alt="" width="24" height="24">' +
+              '<span class="a11y-close-icon" aria-hidden="true"></span>' +
             '</button>' +
           '</div>' +
           '<fieldset class="a11y-section">' +
@@ -199,7 +199,8 @@
 
     document.body.insertAdjacentHTML('beforeend', html);
     dialog = document.getElementById('a11y-panel');
-    // Load the tick now, so it's ready the first time the popup opens.
+    // Load the icons now, so they're ready the first time the popup opens.
+    new Image().src = CLOSE_ICON_URL;
     new Image().src = CHECK_ICON_URL;
 
     // Changes apply and save straight away; the buttons only close the popup.

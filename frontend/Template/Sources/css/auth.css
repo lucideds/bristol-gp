@@ -1,14 +1,4 @@
-/* Sign in / sign up page tokens: error red and muted helper text */
-:root,
-[data-theme="light"] {
-  --auth-error: #C40000;
-  --auth-muted: var(--color-ink-muted);
-}
-
-[data-theme="dark"] {
-  --auth-error: #FF5D64;
-  --auth-muted: #D5DBDB;
-}
+/* Sign in, sign up and account pages. Colours are tokens from tokens.css, so they follow the theme. */
 
 /* Page area between nav and footer; bottom padding clears the chat button */
 .auth-page {
@@ -25,9 +15,9 @@
   max-width: 360px;
   box-sizing: border-box;
   padding: 24px 26px;
-  background: var(--page-bg);
-  color: var(--page-text);
-  border: 1px solid #292a2a;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border: var(--card-border-width) solid var(--color-border-subtle);
   border-radius: 8px;
 }
 
@@ -43,7 +33,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   margin-bottom: 20px;
-  border: 1px solid #879596;
+  border: 1px solid var(--color-border-control);
   border-radius: 4px;
   overflow: hidden;
 }
@@ -58,14 +48,14 @@
 }
 
 .auth-switch [role="tab"][aria-selected="true"] {
-  background: var(--nav-top-bg);
-  color: var(--nav-text);
+  background: var(--color-selected);
+  color: var(--color-on-selected);
   font-weight: bold;
 }
 
 /* Orange underline on the unselected tab, like the nav links */
 .auth-switch [role="tab"][aria-selected="false"]:hover {
-  box-shadow: inset 0 -3px 0 var(--accent);
+  box-shadow: inset 0 -3px 0 var(--color-orange);
 }
 
 /* Inset focus ring so overflow: hidden on the switch doesn't clip it */
@@ -97,20 +87,20 @@
   background: var(--color-surface);
   color: var(--color-ink);
   font: inherit;
-  border: 1px solid #879596;
+  border: 1px solid var(--color-border-control);
   border-radius: 4px;
 }
 
 .auth-field input[aria-invalid="true"] {
-  border-color: var(--auth-error);
-  box-shadow: 0 0 0 1px var(--auth-error);
+  border-color: var(--color-danger);
+  box-shadow: 0 0 0 1px var(--color-danger);
 }
 
 /* Helper text under a field */
 .field-hint {
   margin: 4px 0 0;
   font-size: 0.8125rem;
-  color: var(--auth-muted);
+  color: var(--color-ink-muted);
 }
 
 /* Inline error: red text with a small round alert marker */
@@ -120,7 +110,7 @@
   align-items: flex-start;
   margin: 4px 0 0;
   font-size: 0.8125rem;
-  color: var(--auth-error);
+  color: var(--color-danger);
 }
 
 .field-error[hidden] {
@@ -133,8 +123,8 @@
   height: 14px;
   margin-top: 1px;
   border-radius: 50%;
-  background: var(--auth-error);
-  color: #fff;
+  background: var(--color-danger);
+  color: var(--color-surface);
   font-size: 0.6875rem;
   font-weight: bold;
   line-height: 14px;
@@ -151,11 +141,11 @@
 }
 
 .form-message--error {
-  color: var(--auth-error);
+  color: var(--color-danger);
 }
 
 .form-message--success {
-  color: #1D8102;
+  color: var(--color-success);
 }
 
 /* Multi-line box on the contact form, styled like the inputs */
@@ -171,7 +161,7 @@
 
 .account-details dt {
   font-size: 0.8125rem;
-  color: var(--auth-muted);
+  color: var(--color-ink-muted);
 }
 
 .account-details dd {
@@ -183,24 +173,24 @@
   width: 100%;
   margin-top: 6px;
   padding: 8px 12px;
-  background: var(--accent);
-  color: var(--color-navy);
+  background: var(--color-orange);
+  color: var(--color-on-orange);
   font: inherit;
   font-weight: bold;
-  border: 1px solid #EC7211;
+  border: 1px solid var(--color-orange-edge);
   border-radius: 4px;
   cursor: pointer;
 }
 
 .auth-primary:hover {
-  background: #EC7211;
+  background: var(--color-orange-hover);
 }
 
 /* Alternate action under the form, separated by a thin line */
 .auth-alt {
   margin: 20px 0 0;
   padding-top: 16px;
-  border-top: 1px solid #879596;
+  border-top: 1px solid var(--color-border-subtle);
   text-align: center;
   font-size: 0.875rem;
 }
@@ -223,7 +213,7 @@
 .auth-card a:focus-visible,
 .auth-card button:focus-visible,
 .auth-card input:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
 }
 
@@ -239,20 +229,17 @@
 }
 
 /* Sign in card, styled to the Figma "Signin" frame (node 7:1363).
-   Fixed light colours in every theme, like the chat panel and accessibility popup;
-   text sizes in rem so the larger-text settings still apply. */
+   Text sizes in rem so the larger-text settings still apply. */
 .auth-card--figma {
-  --auth-error: #b12704;
-  --auth-muted: #565959;
   width: 100%;
   max-width: 23.75rem;
   box-sizing: border-box;
   padding: 24px;
   background: var(--color-surface);
   color: var(--color-ink);
-  border: 0.8px solid var(--color-divider);
+  border: var(--card-border-width) solid var(--color-border-subtle);
   border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(15, 17, 17, 0.12), 0 1px 1.5px rgba(15, 17, 17, 0.2);
+  box-shadow: var(--shadow-card);
   font-family: var(--font-sans);
   font-size: 1rem;
   line-height: 1.5rem;
@@ -301,7 +288,7 @@
   padding: 0 12px;
   background: var(--color-surface);
   color: var(--color-ink);
-  border: 1.6px solid var(--color-border);
+  border: 1.6px solid var(--color-border-control);
   border-radius: 8px;
   font: inherit;
   font-size: 1rem;
@@ -316,7 +303,7 @@
   padding: 10px 12px;
   background: var(--color-surface);
   color: var(--color-ink);
-  border: 1.6px solid var(--color-border);
+  border: 1.6px solid var(--color-border-control);
   border-radius: 8px;
   font: inherit;
   font-size: 1rem;
@@ -327,21 +314,21 @@
 .auth-card--figma .form-message--success {
   margin: 20px 0 0;
   padding: 16px;
-  background: #e9f5e6;
+  background: var(--color-success-bg);
   color: var(--color-ink);
-  border: 1.6px solid #1d8102;
+  border: 1.6px solid var(--color-success);
   border-radius: 8px;
   font-size: 1rem;
   line-height: 1.5rem;
 }
 .auth-card--figma .auth-field textarea:focus-visible,
 .auth-card--figma .auth-field input:focus-visible {
-  outline: 2px solid var(--color-orange);
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
 }
 
 .auth-card--figma .auth-field input[aria-invalid="true"] {
-  border-color: #b12704;
+  border-color: var(--color-danger);
   box-shadow: none;
 }
 
@@ -385,18 +372,30 @@
   appearance: none;
   -webkit-appearance: none;
   flex: none;
+  display: grid;
+  place-content: center;
   width: 1.5rem;
   height: 1.5rem;
   margin: 0;
   background: var(--color-surface);
-  border: 1px solid #767676;
+  border: 1px solid var(--color-border-control);
   border-radius: 5px;
   cursor: pointer;
 }
 
 .auth-card--figma .auth-check input:checked {
-  background: var(--color-ink) url("../assests/a11y-check.svg") center / 0.875rem 0.875rem no-repeat;
+  background: var(--color-ink);
   border-color: var(--color-ink);
+}
+
+/* The tick is a mask in the surface colour, so it shows on the ink fill in every theme */
+.auth-card--figma .auth-check input:checked::before {
+  content: "";
+  width: 0.875rem;
+  height: 0.875rem;
+  background-color: var(--color-surface);
+  -webkit-mask: url("../assests/a11y-check.svg") center / contain no-repeat;
+  mask: url("../assests/a11y-check.svg") center / contain no-repeat;
 }
 
 .auth-card--figma .auth-check label {
@@ -416,8 +415,8 @@
   margin: 0;
   padding: 0 16px;
   background: var(--color-orange);
-  color: var(--color-ink);
-  border: 1.6px solid var(--color-orange-border);
+  color: var(--color-on-orange);
+  border: 1.6px solid var(--color-orange-edge);
   border-radius: 22px;
   font: inherit;
   font-size: 1rem;
@@ -444,7 +443,7 @@
   height: 0;
   margin: 20px 0 0;
   border: 0;
-  border-top: 0.8px solid var(--color-divider);
+  border-top: 0.8px solid var(--color-border-subtle);
 }
 
 .auth-card--figma .auth-alt-text {
@@ -454,7 +453,7 @@
   color: var(--color-ink);
 }
 
-/* White pill secondary button (switches to the sign-up form) */
+/* Secondary pill button (switches to the sign-up form) */
 .auth-card--figma .auth-secondary {
   display: flex;
   align-items: center;
@@ -476,7 +475,7 @@
 }
 
 .auth-card--figma .auth-secondary:hover {
-  background: #f7fafa;
+  background: var(--color-surface-muted);
 }
 
 .auth-card--figma .field-hint {
@@ -493,15 +492,18 @@
   font-size: 0.875rem;
   line-height: 1.25rem;
   font-weight: 700;
-  color: #b12704;
+  color: var(--color-danger);
 }
 
+/* Icons are masks in the danger colour, so they follow the theme */
 .auth-card--figma .field-error-icon {
   width: 1.25rem;
   height: 1.25rem;
   margin: 0;
   border-radius: 0;
-  background: url("../assests/signin-field-error.svg") center / contain no-repeat;
+  background: var(--color-danger);
+  -webkit-mask: url("../assests/signin-field-error.svg") center / contain no-repeat;
+  mask: url("../assests/signin-field-error.svg") center / contain no-repeat;
   font-size: 0;
 }
 
@@ -510,9 +512,9 @@
   position: relative;
   margin: 0 0 20px;
   padding: 16px 16px 16px 52px;
-  background: #fdeae6;
+  background: var(--color-danger-bg);
   color: var(--color-ink);
-  border: 1.6px solid #b12704;
+  border: 1.6px solid var(--color-danger);
   border-radius: 8px;
 }
 
@@ -527,7 +529,9 @@
   top: 16px;
   width: 1.5rem;
   height: 1.5rem;
-  background: url("../assests/signin-alert-error.svg") center / contain no-repeat;
+  background: var(--color-danger);
+  -webkit-mask: url("../assests/signin-alert-error.svg") center / contain no-repeat;
+  mask: url("../assests/signin-alert-error.svg") center / contain no-repeat;
 }
 
 .auth-card--figma .auth-error-summary-title {
@@ -551,12 +555,12 @@
   text-decoration: underline;
 }
 
-/* Visible keyboard focus (teal ring, readable on white and on the orange button) */
+/* Visible keyboard focus */
 .auth-card--figma a:focus-visible,
 .auth-card--figma button:focus-visible,
 .auth-card--figma .auth-check input:focus-visible,
 .auth-card--figma .auth-error-summary:focus {
-  outline: 2px solid var(--color-link);
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
 }
 
@@ -565,9 +569,4 @@
   .auth-card--figma {
     padding: 24px;
   }
-}
-
-/* High contrast: keep the white card edge defined on the black page */
-[data-theme="high-contrast"] .auth-card--figma {
-  border-color: #fff;
 }

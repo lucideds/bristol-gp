@@ -1,0 +1,358 @@
+/* Contact page, laid out like the design system's ContactPage template: breadcrumb, title and
+   lead, then the form panel beside an aside of quicker ways to get help.
+   Colours are tokens from tokens.css, so the page and its panels follow the theme.
+   Text sizes are in rem so the Large / Extra large text settings apply. */
+.contact-page {
+  flex: 1;
+  width: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  box-sizing: border-box;
+  /* Bottom padding clears the chat button */
+  padding: 24px 24px 96px;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+/* ---------- Breadcrumb, title and lead ---------- */
+.contact-breadcrumb ol {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.contact-breadcrumb li + li::before {
+  content: "/";
+  padding: 0 0.375rem;
+}
+
+.contact-breadcrumb a {
+  color: var(--color-link);
+  text-decoration: underline;
+}
+
+.contact-breadcrumb a:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+.contact-title {
+  margin: 24px 0 8px;
+  font-size: 2.25rem;
+  line-height: 2.625rem;
+  font-weight: 700;
+}
+
+.contact-lead {
+  max-width: var(--reading-width);
+  margin: 0 0 24px;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  color: var(--color-ink-muted);
+}
+
+/* ---------- Layout: form | aside ---------- */
+.contact-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 22rem;
+  gap: 48px;
+  align-items: start;
+}
+
+/* One column on narrow screens, and earlier at Extra large text, where 22rem gets wide */
+@media (max-width: 860px) {
+  .contact-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+}
+
+@media (max-width: 1100px) {
+  html[data-text-size="extra-large"] .contact-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+}
+
+/* Gap rather than margins, so the panels' own margin: 0 can't cancel the spacing */
+.contact-aside {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ---------- Panels ---------- */
+.contact-panel {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 24px;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border: var(--card-border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.contact-panel[hidden] {
+  display: none;
+}
+
+.contact-panel-title {
+  margin: 0 0 8px;
+  font-size: 1.125rem;
+  line-height: 1.5rem;
+  font-weight: 700;
+}
+
+.contact-small {
+  margin: 0 0 12px;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.contact-small:last-child {
+  margin-bottom: 0;
+}
+
+.contact-panel a {
+  color: var(--color-link);
+  text-decoration: underline;
+}
+
+.contact-panel a:focus-visible,
+.contact-panel button:focus-visible,
+.contact-panel [tabindex="-1"]:focus {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+/* ---------- Form fields ---------- */
+.contact-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0 0 20px;
+}
+
+.contact-label {
+  font-weight: 700;
+}
+
+.contact-hint {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--color-ink-muted);
+}
+
+.contact-input {
+  display: block;
+  width: 100%;
+  min-height: var(--target-min);
+  box-sizing: border-box;
+  padding: 8px 12px;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border: 2px solid var(--color-border-control);
+  border-radius: var(--radius-md);
+  font: inherit;
+}
+
+.contact-input:hover {
+  border-color: var(--color-ink);
+}
+
+textarea.contact-input {
+  min-height: 9rem;
+  resize: vertical;
+}
+
+.contact-input:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+.contact-field--error .contact-input {
+  border-color: var(--color-danger);
+}
+
+/* Inline error: warning triangle and bold red text */
+.contact-error {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 700;
+  color: var(--color-danger);
+}
+
+/* Status icons are masks painted in the status colour, so they follow the theme */
+.contact-error-icon {
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  background: var(--color-danger);
+  -webkit-mask: url("../assests/signin-field-error.svg") center / contain no-repeat;
+  mask: url("../assests/signin-field-error.svg") center / contain no-repeat;
+}
+
+.contact-privacy {
+  margin: 0 0 20px;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+/* ---------- Alerts (error summary and "Message sent") ---------- */
+.contact-alert {
+  position: relative;
+  margin: 0 0 20px;
+  padding: 16px 16px 16px 52px;
+  color: var(--color-ink);
+  border: 2px solid;
+  border-radius: var(--radius-md);
+}
+
+.contact-alert::before {
+  content: "";
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  width: 1.5rem;
+  height: 1.5rem;
+  -webkit-mask: var(--alert-icon) center / contain no-repeat;
+  mask: var(--alert-icon) center / contain no-repeat;
+}
+
+.contact-alert--danger {
+  --alert-icon: url("../assests/signin-alert-error.svg");
+  background: var(--color-danger-bg);
+  border-color: var(--color-danger);
+}
+
+.contact-alert--danger::before {
+  background-color: var(--color-danger);
+}
+
+.contact-alert--success {
+  --alert-icon: url("../assests/contact-success.svg");
+  background: var(--color-success-bg);
+  border-color: var(--color-success);
+}
+
+.contact-alert--success::before {
+  background-color: var(--color-success);
+}
+
+.contact-alert-title {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 700;
+}
+
+.contact-alert p {
+  margin: 0;
+}
+
+.contact-alert-list {
+  margin: 8px 0 0;
+  padding-left: 1.25rem;
+}
+
+.contact-panel .contact-alert-list a {
+  color: var(--color-ink);
+}
+
+.contact-again {
+  margin: 0;
+}
+
+/* ---------- Buttons ---------- */
+.contact-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-sizing: border-box;
+  min-height: var(--target-min);
+  margin: 0;
+  padding: 8px 24px;
+  border: 2px solid transparent;
+  border-radius: var(--radius-pill);
+  font: inherit;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.contact-btn--primary {
+  background: var(--color-orange);
+  color: var(--color-on-orange);
+  border-color: var(--color-orange-edge);
+}
+
+.contact-btn--primary:hover {
+  background: var(--color-orange-hover);
+}
+
+/* Secondary buttons fill the width of their aside panel */
+.contact-panel .contact-btn--secondary {
+  display: flex;
+  width: 100%;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border-color: var(--color-ink);
+  text-decoration: none;
+}
+
+.contact-panel .contact-btn--secondary:hover {
+  background: var(--color-surface-muted);
+}
+
+/* The sparkle is a mask, so it takes the button's text colour in every theme */
+.contact-btn-icon {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  background-color: currentColor;
+  -webkit-mask: url("../assests/chat-ai-sparkle-small.svg") center / contain no-repeat;
+  mask: url("../assests/chat-ai-sparkle-small.svg") center / contain no-repeat;
+}
+
+/* ---------- Helpers ---------- */
+.contact-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Narrow screens: tighter padding */
+@media (max-width: 480px) {
+  .contact-page {
+    padding: 16px 16px 96px;
+  }
+
+  .contact-title {
+    font-size: 1.75rem;
+    line-height: 2.125rem;
+  }
+
+  .contact-panel {
+    padding: 20px 16px;
+  }
+}

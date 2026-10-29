@@ -1,17 +1,15 @@
 /* T Level page (Figma "main" frame, node 185:3): breadcrumb, vertical tabs on the left
    ("General info" + one per route) and the selected panel on the right.
    The route card rules further down are used by home.html.
-   Fixed Figma fills (callout, pills, button, active tab) stay the same in every theme;
-   page text uses var(--page-text) so it follows the theme. Text sizes are in rem so the
-   Large / Extra large text settings apply. Only --page-bg, --page-text and --accent are
-   global tokens, so the other Figma fills stay as hex. */
+   Every colour is a token from tokens.css, so the page follows the theme.
+   Text sizes are in rem so the Large / Extra large text settings apply. */
 .tlevel-page {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   box-sizing: border-box;
   padding: 24px 24px 64px;
-  color: var(--page-text);
+  color: var(--color-ink);
   font-family: var(--font-sans);
   font-size: 1rem;
   line-height: 1.5rem;
@@ -38,13 +36,8 @@
   text-decoration: underline;
 }
 
-[data-theme="dark"] .tlevel-breadcrumb a,
-[data-theme="high-contrast"] .tlevel-breadcrumb a {
-  color: inherit;
-}
-
 .tlevel-breadcrumb a:focus-visible {
-  outline: 2px solid currentColor;
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
 }
 
@@ -89,27 +82,14 @@
 }
 
 .tlevel-tabs [role="tab"][aria-selected="true"] {
-  background: var(--color-navy);
-  color: var(--color-on-navy);
+  background: var(--color-selected);
+  color: var(--color-on-selected);
   border-color: var(--color-ink);
   text-decoration: none;
 }
 
-/* The navy active tab would match the dark page, so it turns white */
-[data-theme="dark"] .tlevel-tabs [role="tab"][aria-selected="true"] {
-  background: #fff;
-  color: #0f1111;
-  border-color: #fff;
-}
-
-[data-theme="high-contrast"] .tlevel-tabs [role="tab"][aria-selected="true"] {
-  background: #fff;
-  color: #000;
-  border-color: #fff;
-}
-
 .tlevel-tabs [role="tab"]:focus-visible {
-  outline: 2px solid var(--color-orange);
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
 }
 
@@ -118,7 +98,7 @@
 }
 
 .tlevel-panel:focus-visible {
-  outline: 2px solid var(--color-orange);
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 8px;
   border-radius: 2px;
 }
@@ -147,7 +127,7 @@
   gap: 12px;
   padding: 16px 20px;
   box-sizing: border-box;
-  background: #e5f3f5;
+  background: var(--color-info-bg);
   color: var(--color-ink);
   border: 2px solid var(--color-link);
   border-radius: 8px;
@@ -167,10 +147,6 @@
 
 .tlevel-callout-title {
   font-weight: 700;
-}
-
-[data-theme="high-contrast"] .tlevel-callout {
-  border-color: #fff;
 }
 
 .tlevel-section-title {
@@ -201,7 +177,7 @@
   box-sizing: border-box;
   background: var(--color-orange-tint);
   color: var(--color-ink);
-  border: 1.5px solid #c45500;
+  border: 1.5px solid var(--color-orange-text);
   border-radius: 16px;
   font-size: 0.875rem;
   font-weight: 700;
@@ -209,32 +185,22 @@
 }
 
 .tlevel-route-pills a:hover {
-  background: #ffe2b0;
+  border-color: var(--color-ink);
   text-decoration: underline;
 }
 
 .tlevel-route-pills a:focus-visible {
-  outline: 2px solid currentColor;
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
-}
-
-[data-theme="dark"] .tlevel-route-pills a:focus-visible,
-[data-theme="high-contrast"] .tlevel-route-pills a:focus-visible {
-  outline-color: #fff;
 }
 
 /* ---------- FAQ accordion ---------- */
 .tlevel-faq {
-  border-top: 1px solid #879596;
+  border-top: 1px solid var(--color-border-control);
 }
 
 .tlevel-faq details {
-  border-bottom: 1px solid #879596;
-}
-
-[data-theme="high-contrast"] .tlevel-faq,
-[data-theme="high-contrast"] .tlevel-faq details {
-  border-color: #fff;
+  border-bottom: 1px solid var(--color-border-control);
 }
 
 .tlevel-faq summary {
@@ -288,7 +254,7 @@ html.a11y-reduce-motion .tlevel-faq summary::after {
 }
 
 .tlevel-faq summary:focus-visible {
-  outline: 2px solid var(--color-orange);
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
 }
 
@@ -304,13 +270,8 @@ html.a11y-reduce-motion .tlevel-faq summary::after {
   text-decoration: underline;
 }
 
-[data-theme="dark"] .tlevel-faq details a,
-[data-theme="high-contrast"] .tlevel-faq details a {
-  color: inherit;
-}
-
 .tlevel-faq details a:focus-visible {
-  outline: 2px solid currentColor;
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
 }
 
@@ -324,8 +285,8 @@ html.a11y-reduce-motion .tlevel-faq summary::after {
   padding: 0 24px;
   box-sizing: border-box;
   background: var(--color-orange);
-  color: var(--color-ink);
-  border: 1.6px solid var(--color-orange-border);
+  color: var(--color-on-orange);
+  border: 1.6px solid var(--color-orange-edge);
   border-radius: 22px;
   font-weight: 700;
   text-decoration: none;
@@ -336,13 +297,8 @@ html.a11y-reduce-motion .tlevel-faq summary::after {
 }
 
 .tlevel-btn:focus-visible {
-  outline: 2px solid currentColor;
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
-}
-
-[data-theme="dark"] .tlevel-btn:focus-visible,
-[data-theme="high-contrast"] .tlevel-btn:focus-visible {
-  outline-color: #fff;
 }
 
 /* ---------- Route cards (used by home.html) ---------- */
@@ -405,19 +361,19 @@ html.a11y-readable-font .route-cards-grid {
 }
 
 .route-card--digital     { background: var(--color-navy); color: var(--color-on-navy); }
-.route-card--business    { background: #007185; color: #fff; }
-.route-card--media       { background: var(--accent); color: var(--color-ink); }
+.route-card--business    { background: var(--color-link); color: var(--color-on-link); }
+.route-card--media       { background: var(--color-orange); color: var(--color-on-orange); }
 .route-card--finance     { background: var(--color-orange-tint); color: var(--color-ink); }
-.route-card--engineering { background: var(--color-surface); color: var(--color-ink); border-color: var(--color-border); }
+.route-card--engineering { background: var(--color-surface); color: var(--color-ink); border-color: var(--color-border-control); }
 
-/* Dark: the navy Digital card matches the page, so give it an edge */
+/* Dark: the navy Digital card is close to the page, so give it an edge */
 [data-theme="dark"] .route-card--digital {
-  border-color: #8a96a3;
+  border-color: var(--color-border-control);
 }
 
-/* High contrast: define every card edge on the black page, like the auth card */
+/* High contrast: several fills are black like the page, so every card gets an edge */
 [data-theme="high-contrast"] .route-card {
-  border-color: #fff;
+  border-color: var(--color-ink);
 }
 /* Route icon in the top-right corner of every route card (home, advice, quiz results).
    Drawn as a mask so it takes the card's text colour; Digital uses the orange accent like the Figma. */
@@ -447,7 +403,7 @@ html.a11y-readable-font .route-cards-grid {
   --route-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 7l-5 5 5 5M15 7l5 5-5 5'/%3E%3C/svg%3E");
 }
 .route-card.route-card--digital::before {
-  background-color: var(--accent);
+  background-color: var(--color-orange);
 }
 .route-card--business {
   --route-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 20h16M7 16v-5M12 16V6M17 16V9'/%3E%3C/svg%3E");
@@ -478,12 +434,8 @@ html.a11y-readable-font .route-cards-grid {
 .route-detail {
   margin-top: 48px;
   padding-top: 24px;
-  border-top: 1px solid #879596;
+  border-top: 1px solid var(--color-border-subtle);
   scroll-margin-top: 16px;
-}
-
-[data-theme="high-contrast"] .route-detail {
-  border-top-color: #fff;
 }
 
 .route-detail-title {
@@ -595,7 +547,8 @@ html.a11y-readable-font .route-cards-grid {
 }
 
 .advice-action.advice-action-locked:hover {
-  background: var(--color-divider);
+  background: var(--color-surface);
+  border-color: var(--color-ink);
   color: var(--color-ink);
 }
 
@@ -607,7 +560,7 @@ html.a11y-readable-font .route-cards-grid {
 }
 
 .download-note a {
-  color: var(--color-orange-border);  /* Darker orange, so the links stay readable on white */
+  color: var(--color-orange-text);  /* The text shade of orange, readable on the page in every theme */
   font-weight: 700;
 }
 

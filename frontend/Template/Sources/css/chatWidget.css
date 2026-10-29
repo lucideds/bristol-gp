@@ -1,7 +1,6 @@
 
-/* Chat widget, styled to the Figma "Ai assistant" frame (Light mode).
-   The chat panel's colours are fixed so it looks the same in every site theme.
-   The "T buddy" button is the exception: it uses the opposite colours to the page.
+/* Chat widget, styled to the Figma "Ai assistant" frame.
+   Colours are tokens from tokens.css, so the button and panel follow the site theme.
    Font: var(--font-sans) (Amazon Ember) */
 
 /* "T buddy" pill button, always in the bottom-right corner of the screen */
@@ -24,41 +23,13 @@
   font-weight: 700;
   font-size: 16px;
   line-height: 24px;
-  box-shadow: 0 4px 16px rgba(15, 17, 17, 0.28);
+  box-shadow: var(--shadow-raised);
   cursor: pointer;
 }
 
+/* The ink edge keeps the navy button visible on the dark and black pages */
 .chat-toggle:hover {
-  background: #37475a;
-}
-
-/* The button takes the opposite colours to the page: dark on the light
-   theme (above), light on the dark and high contrast themes. */
-[data-theme="dark"] .chat-toggle {
-  background: #ffffff;
-  color: #232f3e;
-  border-color: #ffffff;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
-}
-
-[data-theme="dark"] .chat-toggle:hover {
-  background: #eaeded;
-}
-
-[data-theme="high-contrast"] .chat-toggle {
-  background: #ffffff;
-  color: #000000;
-  border-color: #ffffff;
-}
-
-[data-theme="high-contrast"] .chat-toggle:hover {
-  background: #eaeded;
-}
-
-/* The sparkle icon is drawn in white, so turn it black on the light button */
-[data-theme="dark"] .chat-toggle-icon,
-[data-theme="high-contrast"] .chat-toggle-icon {
-  filter: brightness(0);
+  background: var(--color-navy-deep);
 }
 
 .chat-toggle-icon {
@@ -84,7 +55,7 @@
   color: var(--color-ink);
   border: 1.6px solid var(--color-ink);
   border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(15, 17, 17, 0.28);
+  box-shadow: var(--shadow-raised);
   overflow: hidden;
   font-family: var(--font-sans);
   z-index: 1000;
@@ -178,7 +149,7 @@
 }
 
 .chat-close:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--color-navy-deep);
 }
 
 /* Scrollable message list */
@@ -209,7 +180,7 @@
   align-self: flex-end;
   background: var(--color-navy);
   color: var(--color-on-navy);
-  border: 0.8px solid var(--color-divider);
+  border: 0.8px solid var(--color-border-subtle);
   border-radius: 12px 12px 4px 12px;
 }
 
@@ -221,7 +192,7 @@
   padding: 12px 16px 16px;
   background: var(--color-surface-muted);
   color: var(--color-ink);
-  border: 0.8px solid var(--color-divider);
+  border: 0.8px solid var(--color-border-subtle);
   border-radius: 12px 12px 12px 4px;
 }
 
@@ -242,9 +213,9 @@
 /* Friendly error messages */
 .chat-msg--error {
   align-self: flex-start;
-  background: #fdf3f1;
+  background: var(--color-danger-bg);
   color: var(--color-ink);
-  border: 0.8px solid #d13212;
+  border: 0.8px solid var(--color-danger);
   border-radius: 12px 12px 12px 4px;
 }
 
@@ -310,7 +281,7 @@
   gap: 8px;
   margin: 0;
   padding: 12px 16px;
-  border-top: 0.8px solid var(--color-divider);
+  border-top: 0.8px solid var(--color-border-subtle);
   background: var(--color-surface);
 }
 
@@ -322,7 +293,7 @@
   padding: 0 12px;
   background: var(--color-surface);
   color: var(--color-ink);
-  border: 1.6px solid var(--color-border);
+  border: 1.6px solid var(--color-border-control);
   border-radius: 8px;
   font: inherit;
   font-size: 16px;                    /* 16px stops iOS zooming in on focus */
@@ -344,7 +315,7 @@
   height: 44px;
   padding: 0;
   background: var(--color-orange);
-  border: 1.6px solid var(--color-orange-border);
+  border: 1.6px solid var(--color-orange-edge);
   border-radius: 22px;
   cursor: pointer;
 }
@@ -377,20 +348,19 @@
 
 /* Visible keyboard focus */
 .chat-toggle:focus-visible {
-  outline: 2px solid var(--color-orange);
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
 }
 
 .chat-panel button:focus-visible,
 .chat-panel input:focus-visible,
 .chat-panel a:focus-visible {
-  outline: 2px solid var(--color-link);
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
 }
 
 /* On the navy header, and kept inside the panel so overflow:hidden doesn't clip it */
 .chat-close:focus-visible {
-  outline-color: #fff;
   outline-offset: -2px;
 }
 

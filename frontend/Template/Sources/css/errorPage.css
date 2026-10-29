@@ -1,5 +1,4 @@
-/* Error pages (404 / 500). Colours come from the theme variables in topNavBar.css,
-   so light mode is a white page and dark mode is a navy page. */
+/* Error pages (404 / 500). Colours are tokens from tokens.css, so they follow the theme. */
 
 /* Page area between nav and footer; bottom padding clears the chat button */
 .error-page {
@@ -15,14 +14,15 @@
   max-width: 480px;
 }
 
-/* Large orange status code. Decorative only: the heading below says what happened. */
+/* Large orange status code. Decorative only (aria-hidden): the heading below says what happened.
+   It is still text, so it uses the text shade of orange rather than the fill orange. */
 .error-code {
   margin: 0;
   font-family: var(--font-sans);
   font-size: 7rem;
   font-weight: 800;
   line-height: 1;
-  color: var(--accent);
+  color: var(--color-orange-text);
 }
 
 /* Each digit pops up in turn, then floats gently, staggered so they bob like a wave */
@@ -108,14 +108,14 @@
 .error-title {
   margin: 20px 0 8px;
   font-size: 1.75rem;
-  color: var(--page-text);
+  color: var(--color-ink);
 }
 
 .error-text {
   max-width: 400px;
   margin: 0 auto 28px;
   line-height: 1.5;
-  color: var(--page-text);
+  color: var(--color-ink);
 }
 
 /* The address the visitor tried, shown like a small tag so typos stand out */
@@ -124,7 +124,7 @@
   font-family: Menlo, Consolas, monospace;
   font-size: 0.875em;
   overflow-wrap: anywhere;
-  background: rgba(135, 149, 150, 0.2);
+  background: var(--color-surface-muted);
   border-radius: 4px;
 }
 
@@ -132,27 +132,27 @@
 .error-suggestion {
   margin: -12px 0 28px;
   font-weight: bold;
-  color: var(--page-text);
+  color: var(--color-ink);
 }
 
 .error-suggestion a {
   color: inherit;
   text-decoration: underline;
-  text-decoration-color: var(--accent);
+  text-decoration-color: var(--color-orange);
   text-decoration-thickness: 3px;
   text-underline-offset: 5px;
 }
 
 .error-suggestion a:hover {
-  color: var(--accent);
+  color: var(--color-link-hover);
 }
 
 .error-suggestion a:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
 }
 
-/* Orange button with navy text, same as the sign in button */
+/* Orange button, same tokens as the primary buttons on the other pages */
 .error-button {
   display: inline-flex;
   align-items: center;
@@ -160,21 +160,21 @@
   height: 40px;
   padding: 0 20px;
   box-sizing: border-box;
-  background: var(--accent);
-  color: #232F3E;
+  background: var(--color-orange);
+  color: var(--color-on-orange);
   font-weight: bold;
   text-decoration: none;
-  border: 1px solid #EC7211;
+  border: 1px solid var(--color-orange-edge);
   border-radius: 4px;
   transition: background-color 0.15s ease;
 }
 
 .error-button:hover {
-  background: #EC7211;
+  background: var(--color-orange-hover);
 }
 
 .error-button:focus-visible {
-  outline: 2px solid var(--page-text);
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
 }
 
@@ -204,13 +204,13 @@ button.error-button {
 .error-links {
   margin-top: 32px;
   padding-top: 20px;
-  border-top: 1px solid #879596;
+  border-top: 1px solid var(--color-border-subtle);
 }
 
 .error-links-title {
   margin: 0 0 12px;
   font-size: 0.875rem;
-  color: var(--page-text);
+  color: var(--color-ink);
 }
 
 .error-links ul {
@@ -224,18 +224,18 @@ button.error-button {
 }
 
 .error-links a {
-  color: var(--page-text);
+  color: var(--color-ink);
   text-decoration: none;
 }
 
 .error-links a:hover {
   text-decoration: underline;
-  text-decoration-color: var(--accent);
+  text-decoration-color: var(--color-orange);
   text-decoration-thickness: 3px;
   text-underline-offset: 6px;
 }
 
 .error-links a:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
 }

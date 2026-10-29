@@ -7,7 +7,7 @@ body {
   min-height: 100vh;
 }
 
-/* Dark Amazon footer: the same fixed colours in light and dark themes */
+/* Dark Amazon footer (navy-deep, which is black in high contrast) */
 .site-footer {
   margin-top: auto;
   padding: 25px 40px;
@@ -71,12 +71,12 @@ body {
 /* Orange underline on hover and on the current page, like the nav links */
 .site-footer a:hover,
 .site-footer a[aria-current="page"] {
-  text-decoration-color: var(--accent, var(--color-orange));
+  text-decoration-color: var(--color-orange);
   text-decoration-thickness: 3px;
 }
 
 .site-footer a:focus-visible {
-  outline: 2px solid var(--accent, var(--color-orange));
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
 }
 
@@ -89,19 +89,9 @@ body {
   font-size: 0.875rem;
 }
 
-/* High contrast: black footer with a white edge against the page */
+/* High contrast: the footer is black like the page, so a white edge separates them */
 [data-theme="high-contrast"] .site-footer {
-  background: #000;
-  border-top: 2px solid #fff;
-}
-
-[data-theme="high-contrast"] .footer-tagline,
-[data-theme="high-contrast"] .footer-bottom {
-  color: #fff;
-}
-
-[data-theme="high-contrast"] .footer-bottom {
-  border-top-color: #fff;
+  border-top: 2px solid var(--color-on-navy);
 }
 
 /* Tablets: brand on its own row, link columns below */
