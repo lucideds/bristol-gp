@@ -159,18 +159,20 @@
     return score;
   }
 
+  var MAX_SUGGESTIONS = 8;
+
+  // Matching entries, best first. Ties keep SEARCH_INDEX order.
+  function findMatches(query) {
+    return SEARCH_INDEX
+      .map(function (entry, i) { return { entry: entry, score: scoreEntry(entry, query), i: i }; })
+      .filter(function (m) { return m.score > 0; })
+      .sort(function (a, b) { return b.score - a.score || a.i - b.i; })
+      .map(function (m) { return m.entry; });
+  }
+
   // Return the best matching entry, or null if nothing matches.
   function findBestMatch(query) {
-    var best = null;
-    var bestScore = 0;
-    SEARCH_INDEX.forEach(function (entry) {
-      var s = scoreEntry(entry, query);
-      if (s > bestScore) {
-        best = entry;
-        bestScore = s;
-      }
-    });
-    return best;
+    return findMatches(query)[0] || null;
   }
 
   function goTo(entry) {
@@ -215,10 +217,9 @@
             '</a>' +
             '<form class="nav-search" role="search" action="' + link('') + '">' +
               '<input type="search" name="q" placeholder="Search T Levels and placements" aria-label="Search the site"' +
-                ' list="nav-search-suggestions" autocomplete="off" aria-describedby="nav-search-status">' +
-              '<datalist id="nav-search-suggestions">' +
-                SEARCH_INDEX.map(function (entry) { return '<option value="' + entry.title + '">'; }).join('') +
-              '</datalist>' +
+                ' role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="nav-search-list"' +
+                ' autocomplete="off" aria-describedby="nav-search-status">' +
+              '<ul class="nav-search-list" id="nav-search-list" role="listbox" aria-label="Search suggestions" hidden></ul>' +
               '<p class="nav-search-status" id="nav-search-status" role="status"></p>' +
               '<button type="submit" aria-label="Search">' +
                 '<img src="' + link('Sources/assets/nav-search.svg') + '" alt="" width="24" height="24">' +
@@ -267,30 +268,141 @@
     var searchForm = document.querySelector('.nav-search');
     var searchInput = searchForm.querySelector('input');
     var searchStatus = document.getElementById('nav-search-status');
+    var searchList = document.getElementById('nav-search-list');
+    var suggestions = [];
+    var activeIndex = -1;
+
+    // Suggestions dropdown (replaces the browser's <datalist> popup so it matches the site
+    // and themes). Focus stays in the input; the highlighted option is announced through
+    // aria-activedescendant, following the ARIA combobox pattern.
+    function setActive(index) {
+      activeIndex = index;
+      Array.prototype.forEach.call(searchList.children, function (li, i) {
+        li.setAttribute('aria-selected', i === index ? 'true' : 'false');
+      });
+      if (index === -1) {
+        searchInput.removeAttribute('aria-activedescendant');
+        return;
+      }
+      var li = searchList.children[index];
+      searchInput.setAttribute('aria-activedescendant', li.id);
+      li.scrollIntoView({ block: 'nearest' });
+    }
+
+    function closeSuggestions() {
+      suggestions = [];
+      setActive(-1);
+      searchList.textContent = '';
+      searchList.hidden = true;
+      searchInput.setAttribute('aria-expanded', 'false');
+    }
+
+    // Bold the part of the title that matches what was typed.
+    function optionLabel(li, title, query) {
+      var at = title.toLowerCase().indexOf(query.toLowerCase());
+      if (at === -1) {
+        li.textContent = title;
+        return;
+      }
+      var match = document.createElement('strong');
+      match.textContent = title.slice(at, at + query.length);
+      li.append(title.slice(0, at), match, title.slice(at + query.length));
+    }
+
+    function showSuggestions() {
+      var query = searchInput.value.trim();
+      suggestions = query ? findMatches(query).slice(0, MAX_SUGGESTIONS) : [];
+      if (!suggestions.length) {
+        closeSuggestions();
+        return;
+      }
+      searchList.textContent = '';
+      suggestions.forEach(function (entry, i) {
+        var li = document.createElement('li');
+        li.id = 'nav-search-option-' + i;
+        li.className = 'nav-search-option';
+        li.setAttribute('role', 'option');
+        optionLabel(li, entry.title, query);
+        searchList.appendChild(li);
+      });
+      setActive(-1);
+      searchList.hidden = false;
+      searchInput.setAttribute('aria-expanded', 'true');
+    }
+
+    function choose(entry, query) {
+      window.tlcTrack('search', query.slice(0, 100));
+      closeSuggestions();
+      searchStatus.textContent = '';
+      searchInput.value = '';
+      goTo(entry);
+    }
+
+    searchInput.addEventListener('keydown', function (e) {
+      var open = !searchList.hidden;
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (!open) showSuggestions();
+        if (suggestions.length) setActive((activeIndex + 1) % suggestions.length);
+      } else if (e.key === 'ArrowUp' && open) {
+        e.preventDefault();
+        setActive(activeIndex <= 0 ? suggestions.length - 1 : activeIndex - 1);
+      } else if (e.key === 'Escape' && open) {
+        // Only close the list; the browser's own Escape would also wipe the typed text.
+        e.preventDefault();
+        e.stopPropagation();
+        closeSuggestions();
+      }
+    });
+
+    // Keep focus in the input when an option is pressed, so blur doesn't close the list first.
+    searchList.addEventListener('mousedown', function (e) { e.preventDefault(); });
+
+    searchList.addEventListener('mousemove', function (e) {
+      var li = e.target.closest('[role="option"]');
+      var index = Array.prototype.indexOf.call(searchList.children, li);
+      if (li && index !== activeIndex) setActive(index);
+    });
+
+    searchList.addEventListener('click', function (e) {
+      var li = e.target.closest('[role="option"]');
+      if (!li) return;
+      choose(suggestions[Array.prototype.indexOf.call(searchList.children, li)], searchInput.value.trim());
+    });
 
     searchForm.addEventListener('submit', function (e) {
       e.preventDefault();
       var query = searchInput.value.trim();
+      if (activeIndex !== -1) {
+        choose(suggestions[activeIndex], query);
+        return;
+      }
+      closeSuggestions();
       if (!query) {
         searchStatus.textContent = 'Type a word to search, for example "digital" or "apply".';
         searchInput.focus();
         return;
       }
-      window.tlcTrack('search', query.slice(0, 100));
       var match = findBestMatch(query);
       if (!match) {
+        window.tlcTrack('search', query.slice(0, 100));
         searchStatus.textContent = 'No results for "' + query + '". Try "T Levels", "placement" or "contact".';
         searchInput.focus();
         return;
       }
-      searchStatus.textContent = '';
-      searchInput.value = '';
-      goTo(match);
+      choose(match, query);
     });
 
-    // Clear the message as soon as the user changes the search or leaves the box.
-    searchInput.addEventListener('input', function () { searchStatus.textContent = ''; });
-    searchInput.addEventListener('blur', function () { searchStatus.textContent = ''; });
+    // Typing refreshes the suggestions and clears any message; leaving the box hides both.
+    searchInput.addEventListener('input', function () {
+      searchStatus.textContent = '';
+      showSuggestions();
+    });
+    searchInput.addEventListener('focus', showSuggestions);
+    searchInput.addEventListener('blur', function () {
+      searchStatus.textContent = '';
+      closeSuggestions();
+    });
 
     // Hamburger menu: collapses the links/search/sign-in group on narrow screens.
     var navToggle = document.querySelector('.nav-toggle');

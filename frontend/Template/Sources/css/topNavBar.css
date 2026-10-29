@@ -89,6 +89,48 @@ body {
   display: none;
 }
 
+/* Suggestions dropdown, in the same spot and style as the status message */
+.nav-search-list {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  max-height: 352px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border: 1px solid var(--color-orange-edge);
+  border-radius: 8px;
+  box-shadow: var(--shadow-raised);
+}
+
+.nav-search-list[hidden] {
+  display: none;
+}
+
+/* 44px rows for touch */
+.nav-search-option {
+  padding: 10px 12px;
+  font-size: 16px;
+  line-height: 24px;
+  cursor: pointer;
+}
+
+.nav-search-option strong {
+  font-weight: 700;
+}
+
+/* Highlighted option (arrow keys or hover). The orange bar keeps it visible in high
+   contrast, where the tint is close to black. */
+.nav-search-option[aria-selected="true"] {
+  background: var(--color-orange-tint);
+  box-shadow: inset 4px 0 0 var(--color-orange);
+}
+
 .nav-search input {
   flex: 1;
   min-width: 0;
