@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{% endblock %} – T Level Connect</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/topNavBar.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/accessibility.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/motion.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/chatWidget.css') }}">
+  {%- for name in page_css %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/' ~ name ~ '.css') }}">
+  {%- endfor %}
+  {#- No defer: applies the saved theme and text size before the page is drawn. #}
+  <script src="{{ url_for('static', filename='js/accessibility.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/site.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/topNavBar.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/footer.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/chatWidget.js') }}" defer></script>
+  {%- for name in page_js %}
+  <script src="{{ url_for('static', filename='js/' ~ name ~ '.js') }}" defer></script>
+  {%- endfor %}
+</head>
+<body>
+{% block content %}{% endblock %}
+</body>
+</html>

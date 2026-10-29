@@ -1,22 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your account – T Level Connect</title>
-  <link rel="stylesheet" href="Sources/css/tokens.css">
-  <link rel="stylesheet" href="Sources/css/topNavBar.css">
-  <link rel="stylesheet" href="Sources/css/accessibility.css">
-  <link rel="stylesheet" href="Sources/css/motion.css">
-  <script src="Sources/js/accessibility.js"></script>
-  <link rel="stylesheet" href="Sources/css/footer.css">
-  <link rel="stylesheet" href="Sources/css/chatWidget.css">
-  <link rel="stylesheet" href="Sources/css/auth.css">
-  <script src="Sources/js/topNavBar.js" defer></script>
-  <script src="Sources/js/footer.js" defer></script>
-  <script src="Sources/js/chatWidget.js" defer></script>
-</head>
-<body>
+{% extends "base.html" %}
+{% set page_css = ["auth"] %}
+{% set page_js = [] %}
+{% block title %}Your account{% endblock %}
+{% block content %}
   <main class="auth-page">
     <section class="auth-card" aria-labelledby="account-title">
       <h1 id="account-title" class="auth-title">Your account</h1>
@@ -29,7 +15,7 @@
         <dd>{{ current_user.created_at[:10] }}</dd>
       </dl>
       {% if can_see_analytics %}
-      <p><a href="analytics.html">View site analytics</a></p>
+      <p><a href="/analytics">View site analytics</a></p>
       {% endif %}
       <form method="post" action="/logout">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -37,5 +23,4 @@
       </form>
     </section>
   </main>
-</body>
-</html>
+{% endblock %}

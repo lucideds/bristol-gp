@@ -1,0 +1,21 @@
+/* Site-wide defaults, loaded on every page straight after tokens.css. */
+
+/* Keyboard focus ring. :where() gives it no specificity, so any component that needs a
+   different ring (on an orange or navy fill, or inset to avoid clipping) overrides it simply. */
+:where(:focus-visible) {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Hidden on screen but still read by screen readers */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

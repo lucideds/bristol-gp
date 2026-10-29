@@ -1,6 +1,7 @@
 // T Level page: vertical tabs ("General info" plus one per route).
 // Without JavaScript the tab list stays hidden and every section shows in order.
-// The URL hash (#digital, #business, ...) picks the tab, so links like TLevel.html#media keep working.
+// The URL hash (#digital, #business, ...) picks the tab, so links like /t-levels#media open that tab.
+// Loaded with defer, so the page's HTML is ready when this runs.
 (function () {
   function init() {
     var tablist = document.querySelector('.tlevel-tabs');
@@ -19,11 +20,11 @@
     // Earlier items are links; the last one is the current page.
     function updateBreadcrumb(index) {
       if (!crumbs) return;
-      var html = '<li><a href="home.html">Home</a></li>';
+      var html = '<li><a href="/">Home</a></li>';
       if (index === 0) {
         html += '<li aria-current="page">T Levels</li>';
       } else {
-        html += '<li><a href="TLevel.html" data-tab-link="' + DEFAULT_ID + '">T Levels</a></li>' +
+        html += '<li><a href="/t-levels" data-tab-link="' + DEFAULT_ID + '">T Levels</a></li>' +
           '<li aria-current="page">' + tabs[index].textContent + '</li>';
       }
       crumbs.innerHTML = html;
@@ -109,9 +110,5 @@
     selectFromHash();
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
+  init();
 })();

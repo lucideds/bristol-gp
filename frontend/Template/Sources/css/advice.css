@@ -1,6 +1,6 @@
 /* Advice page: side navigation on the left, sections on the right.
-   Load after tlevel.css, which supplies the breadcrumb, title, callout, accordion,
-   button and route card colours. Colours are tokens from tokens.css. */
+   components.css supplies the breadcrumb, title, callout, accordion, buttons and route cards.
+   Colours are tokens from tokens.css. */
 
 .advice-page > .advice-lead {
   max-width: 42.5rem;
@@ -9,7 +9,7 @@
   line-height: 1.75rem;
 }
 
-/* Quiz link under the lead; tlevel.css supplies the button styles */
+/* Quiz link under the lead; components.css supplies the button styles */
 .advice-page > .advice-lead:has(+ .advice-quiz-link) {
   margin-bottom: 20px;
 }
@@ -67,11 +67,6 @@
   text-decoration: none;
 }
 
-.advice-nav a:focus-visible {
-  outline: 2px solid var(--color-focus-ring);
-  outline-offset: 2px;
-}
-
 .advice-nav-label {
   margin: 24px 12px 4px;
   font-size: 0.8125rem;
@@ -100,8 +95,7 @@
   margin: 0 0 24px;
 }
 
-.advice-section h3,
-.advice-unsure > h3 {
+.advice-section h3 {
   margin: 0 0 4px;
   font-size: 1.0625rem;
   line-height: 1.5rem;
@@ -111,17 +105,6 @@
 .advice-section h3 + p,
 .advice-section li p {
   margin: 0;
-}
-
-/* ---------- Cards ---------- */
-.advice-card {
-  padding: 20px;
-  box-sizing: border-box;
-  background: var(--color-surface);
-  color: var(--color-ink);
-  border: var(--card-border-width) solid var(--color-border-subtle);
-  border-radius: 8px;
-  box-shadow: var(--shadow-card);
 }
 
 .advice-benefits {
@@ -171,10 +154,6 @@
   border-radius: 50%;
   font-weight: 700;
   font-size: 0.875rem;
-}
-
-.advice-register {
-  margin-top: 24px;
 }
 
 /* ---------- Route cards: left-aligned lists, three per row ---------- */
@@ -235,57 +214,6 @@
   line-height: 1.625rem;
 }
 
-/* ---------- Still unsure ---------- */
-.advice-unsure {
-  margin-top: 32px;
-}
-
-.advice-unsure > h3 + p {
-  margin: 0 0 16px;
-}
-
-.advice-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.advice-action {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 2.75rem;
-  padding: 0 18px;
-  box-sizing: border-box;
-  background: var(--color-surface);
-  color: var(--color-ink);
-  border: 1.5px solid var(--color-ink);
-  border-radius: 22px;
-  font: inherit;
-  font-size: 0.9375rem;
-  font-weight: 700;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.advice-action[hidden] {
-  display: none;
-}
-
-.advice-action:hover {
-  background: var(--color-surface-muted);
-  text-decoration: underline;
-}
-
-.advice-action:focus-visible {
-  outline: 2px solid var(--color-focus-ring);
-  outline-offset: 2px;
-}
-
-.advice-action svg {
-  flex: none;
-}
-
 /* ---------- Tablet and phone: nav sits above the content ---------- */
 @media (max-width: 900px) {
   .advice-layout {
@@ -304,13 +232,6 @@
 
   .advice-nav-label {
     margin-left: 0;
-  }
-}
-
-@media (max-width: 480px) {
-  .advice-action {
-    width: 100%;
-    justify-content: center;
   }
 }
 
@@ -410,11 +331,6 @@
 }
 .path-link:hover {
   text-decoration-thickness: 2px;
-}
-.path-link:focus-visible,
-.path-status a:focus-visible {
-  outline: 2px solid var(--color-focus-ring);
-  outline-offset: 2px;
 }
 .path-status a {
   color: var(--color-link);

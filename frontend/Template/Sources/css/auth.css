@@ -1,4 +1,6 @@
-/* Sign in, sign up and account pages. Colours are tokens from tokens.css, so they follow the theme. */
+/* Sign in, sign up and account pages, styled to the Figma "Signin" frame (node 7:1363).
+   Colours are tokens from tokens.css, so they follow the theme. Text sizes are in rem so the
+   larger-text settings still apply. */
 
 /* Page area between nav and footer; bottom padding clears the chat button */
 .auth-page {
@@ -9,228 +11,7 @@
   padding: 48px 24px 96px;
 }
 
-/* Single narrow bordered card, no decoration */
 .auth-card {
-  width: 100%;
-  max-width: 360px;
-  box-sizing: border-box;
-  padding: 24px 26px;
-  background: var(--color-surface);
-  color: var(--color-ink);
-  border: var(--card-border-width) solid var(--color-border-subtle);
-  border-radius: 8px;
-}
-
-/* Large, light heading */
-.auth-title {
-  margin: 0 0 16px;
-  font-size: 1.75rem;
-  font-weight: 400;
-}
-
-/* Sign in / Sign up segmented switch */
-.auth-switch {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  margin-bottom: 20px;
-  border: 1px solid var(--color-border-control);
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.auth-switch [role="tab"] {
-  padding: 8px;
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  border: 0;
-  cursor: pointer;
-}
-
-.auth-switch [role="tab"][aria-selected="true"] {
-  background: var(--color-selected);
-  color: var(--color-on-selected);
-  font-weight: bold;
-}
-
-/* Orange underline on the unselected tab, like the nav links */
-.auth-switch [role="tab"][aria-selected="false"]:hover {
-  box-shadow: inset 0 -3px 0 var(--color-orange);
-}
-
-/* Inset focus ring so overflow: hidden on the switch doesn't clip it */
-.auth-switch [role="tab"]:focus-visible {
-  outline-offset: -3px;
-}
-
-/* Form fields */
-.auth-form {
-  margin: 0;
-}
-
-.auth-field {
-  margin-bottom: 14px;
-}
-
-.auth-field label {
-  display: block;
-  margin-bottom: 4px;
-  font-size: 0.875rem;
-  font-weight: bold;
-}
-
-.auth-field input,
-.auth-field textarea {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 8px;
-  background: var(--color-surface);
-  color: var(--color-ink);
-  font: inherit;
-  border: 1px solid var(--color-border-control);
-  border-radius: 4px;
-}
-
-.auth-field input[aria-invalid="true"] {
-  border-color: var(--color-danger);
-  box-shadow: 0 0 0 1px var(--color-danger);
-}
-
-/* Helper text under a field */
-.field-hint {
-  margin: 4px 0 0;
-  font-size: 0.8125rem;
-  color: var(--color-ink-muted);
-}
-
-/* Inline error: red text with a small round alert marker */
-.field-error {
-  display: flex;
-  gap: 6px;
-  align-items: flex-start;
-  margin: 4px 0 0;
-  font-size: 0.8125rem;
-  color: var(--color-danger);
-}
-
-.field-error[hidden] {
-  display: none;
-}
-
-.field-error-icon {
-  flex: none;
-  width: 14px;
-  height: 14px;
-  margin-top: 1px;
-  border-radius: 50%;
-  background: var(--color-danger);
-  color: var(--color-surface);
-  font-size: 0.6875rem;
-  font-weight: bold;
-  line-height: 14px;
-  text-align: center;
-}
-
-/* Message from the server above a form (e.g. wrong password, message sent) */
-.form-message {
-  margin: 0 0 4px;
-  padding: 8px 10px;
-  border: 1px solid currentColor;
-  border-radius: 4px;
-  font-size: 0.875rem;
-}
-
-.form-message--error {
-  color: var(--color-danger);
-}
-
-.form-message--success {
-  color: var(--color-success);
-}
-
-/* Multi-line box on the contact form, styled like the inputs */
-.auth-field textarea {
-  min-height: 120px;
-  resize: vertical;
-}
-
-/* Signed-in details on the account page */
-.account-details {
-  margin: 0 0 16px;
-}
-
-.account-details dt {
-  font-size: 0.8125rem;
-  color: var(--color-ink-muted);
-}
-
-.account-details dd {
-  margin: 0 0 10px;
-}
-
-/* Full-width orange primary button */
-.auth-primary {
-  width: 100%;
-  margin-top: 6px;
-  padding: 8px 12px;
-  background: var(--color-orange);
-  color: var(--color-on-orange);
-  font: inherit;
-  font-weight: bold;
-  border: 1px solid var(--color-orange-edge);
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.auth-primary:hover {
-  background: var(--color-orange-hover);
-}
-
-/* Alternate action under the form, separated by a thin line */
-.auth-alt {
-  margin: 20px 0 0;
-  padding-top: 16px;
-  border-top: 1px solid var(--color-border-subtle);
-  text-align: center;
-  font-size: 0.875rem;
-}
-
-.auth-alt a {
-  color: inherit;
-  font-weight: bold;
-  text-decoration: none;
-}
-
-.auth-alt a:hover,
-.auth-alt a:focus-visible {
-  text-decoration: underline;
-  text-decoration-color: var(--color-orange);
-  text-decoration-thickness: 3px;
-  text-underline-offset: 6px;
-}
-
-/* Visible keyboard focus */
-.auth-card a:focus-visible,
-.auth-card button:focus-visible,
-.auth-card input:focus-visible {
-  outline: 2px solid var(--color-focus-ring);
-  outline-offset: 2px;
-}
-
-/* Narrow screens: tighter padding */
-@media (max-width: 480px) {
-  .auth-page {
-    padding: 24px 16px 96px;
-  }
-
-  .auth-card {
-    padding: 20px 16px;
-  }
-}
-
-/* Sign in card, styled to the Figma "Signin" frame (node 7:1363).
-   Text sizes in rem so the larger-text settings still apply. */
-.auth-card--figma {
   width: 100%;
   max-width: 23.75rem;
   box-sizing: border-box;
@@ -245,12 +26,7 @@
   line-height: 1.5rem;
 }
 
-/* The Figma card has no Sign in / Sign up switch; the tab buttons stay in the DOM for auth.js */
-.auth-card--figma .auth-switch[hidden] {
-  display: none;
-}
-
-.auth-card--figma .auth-title {
+.auth-title {
   margin: 0;
   font-size: 1.75rem;
   line-height: 2.125rem;
@@ -258,22 +34,23 @@
   color: var(--color-ink);
 }
 
-.auth-card--figma .auth-subtitle {
+.auth-subtitle {
   margin: 8px 0 0;
   font-size: 1rem;
   line-height: 1.5rem;
   color: var(--color-ink-muted);
 }
 
-.auth-card--figma .auth-form {
-  margin-top: 20px;
+/* ---------- Form fields ---------- */
+.auth-form {
+  margin: 20px 0 0;
 }
 
-.auth-card--figma .auth-field {
+.auth-field {
   margin: 0 0 20px;
 }
 
-.auth-card--figma .auth-field label {
+.auth-field label {
   display: block;
   margin-bottom: 4px;
   font-size: 1rem;
@@ -282,9 +59,11 @@
   color: var(--color-ink);
 }
 
-.auth-card--figma .auth-field input {
+.auth-field input {
   display: block;
+  width: 100%;
   height: 2.75rem;
+  box-sizing: border-box;
   padding: 0 12px;
   background: var(--color-surface);
   color: var(--color-ink);
@@ -293,55 +72,22 @@
   font: inherit;
   font-size: 1rem;
   line-height: 1.5rem;
-  box-shadow: none;
 }
 
-/* Contact form message box, matching the inputs */
-.auth-card--figma .auth-field textarea {
-  display: block;
-  min-height: 8rem;
-  padding: 10px 12px;
-  background: var(--color-surface);
-  color: var(--color-ink);
-  border: 1.6px solid var(--color-border-control);
-  border-radius: 8px;
-  font: inherit;
-  font-size: 1rem;
-  line-height: 1.5rem;
-  resize: vertical;
-}
-/* "Message sent" confirmation on the contact card */
-.auth-card--figma .form-message--success {
-  margin: 20px 0 0;
-  padding: 16px;
-  background: var(--color-success-bg);
-  color: var(--color-ink);
-  border: 1.6px solid var(--color-success);
-  border-radius: 8px;
-  font-size: 1rem;
-  line-height: 1.5rem;
-}
-.auth-card--figma .auth-field textarea:focus-visible,
-.auth-card--figma .auth-field input:focus-visible {
-  outline: 2px solid var(--color-focus-ring);
-  outline-offset: 2px;
-}
-
-.auth-card--figma .auth-field input[aria-invalid="true"] {
+.auth-field input[aria-invalid="true"] {
   border-color: var(--color-danger);
-  box-shadow: none;
 }
 
 /* Show / Hide sits inside the password input on the right */
-.auth-card--figma .password-wrap {
+.password-wrap {
   position: relative;
 }
 
-.auth-card--figma .password-wrap input {
+.password-wrap input {
   padding-right: 4.5rem;
 }
 
-.auth-card--figma .password-toggle {
+.password-toggle {
   position: absolute;
   right: 12px;
   top: 50%;
@@ -359,8 +105,43 @@
   cursor: pointer;
 }
 
+/* Helper text under a field */
+.field-hint {
+  margin: 4px 0 0;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--color-ink-muted);
+}
+
+/* Inline field error: warning triangle + bold red text */
+.field-error {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  margin: 4px 0 0;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 700;
+  color: var(--color-danger);
+}
+
+.field-error[hidden] {
+  display: none;
+}
+
+/* Icons are masks in the danger colour, so they follow the theme */
+.field-error-icon {
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin: 0;
+  background: var(--color-danger);
+  -webkit-mask: url("../assets/signin-field-error.svg") center / contain no-repeat;
+  mask: url("../assets/signin-field-error.svg") center / contain no-repeat;
+}
+
 /* "Keep me signed in": native checkbox drawn like the Figma one */
-.auth-card--figma .auth-check {
+.auth-check {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -368,7 +149,7 @@
   margin: 0 0 12px;
 }
 
-.auth-card--figma .auth-check input {
+.auth-check input {
   appearance: none;
   -webkit-appearance: none;
   flex: none;
@@ -383,22 +164,22 @@
   cursor: pointer;
 }
 
-.auth-card--figma .auth-check input:checked {
+.auth-check input:checked {
   background: var(--color-ink);
   border-color: var(--color-ink);
 }
 
 /* The tick is a mask in the surface colour, so it shows on the ink fill in every theme */
-.auth-card--figma .auth-check input:checked::before {
+.auth-check input:checked::before {
   content: "";
   width: 0.875rem;
   height: 0.875rem;
   background-color: var(--color-surface);
-  -webkit-mask: url("../assests/a11y-check.svg") center / contain no-repeat;
-  mask: url("../assests/a11y-check.svg") center / contain no-repeat;
+  -webkit-mask: url("../assets/a11y-check.svg") center / contain no-repeat;
+  mask: url("../assets/a11y-check.svg") center / contain no-repeat;
 }
 
-.auth-card--figma .auth-check label {
+.auth-check label {
   margin: 0;
   font-size: 1rem;
   line-height: 1.5rem;
@@ -407,8 +188,10 @@
   cursor: pointer;
 }
 
+/* ---------- Buttons and links ---------- */
+
 /* Orange pill primary button */
-.auth-card--figma .auth-primary {
+.auth-primary {
   display: block;
   width: 100%;
   min-height: 2.75rem;
@@ -426,11 +209,11 @@
   cursor: pointer;
 }
 
-.auth-card--figma .auth-primary:hover {
+.auth-primary:hover {
   background: var(--color-orange-hover);
 }
 
-.auth-card--figma .auth-link {
+.auth-link {
   display: inline-block;
   margin-top: 12px;
   font-size: 0.875rem;
@@ -439,22 +222,22 @@
   text-decoration: underline;
 }
 
-.auth-card--figma .auth-divider {
+.auth-divider {
   height: 0;
   margin: 20px 0 0;
   border: 0;
   border-top: 0.8px solid var(--color-border-subtle);
 }
 
-.auth-card--figma .auth-alt-text {
+.auth-alt-text {
   margin: 20px 0 0;
   font-size: 0.875rem;
   line-height: 1.25rem;
   color: var(--color-ink);
 }
 
-/* Secondary pill button (switches to the sign-up form) */
-.auth-card--figma .auth-secondary {
+/* Secondary pill button (switches between the sign-in and sign-up forms) */
+.auth-secondary {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -474,41 +257,12 @@
   text-decoration: none;
 }
 
-.auth-card--figma .auth-secondary:hover {
+.auth-secondary:hover {
   background: var(--color-surface-muted);
 }
 
-.auth-card--figma .field-hint {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  color: var(--color-ink-muted);
-}
-
-/* Inline field error: warning triangle + bold red text */
-.auth-card--figma .field-error {
-  gap: 6px;
-  align-items: flex-start;
-  margin-top: 4px;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  font-weight: 700;
-  color: var(--color-danger);
-}
-
-/* Icons are masks in the danger colour, so they follow the theme */
-.auth-card--figma .field-error-icon {
-  width: 1.25rem;
-  height: 1.25rem;
-  margin: 0;
-  border-radius: 0;
-  background: var(--color-danger);
-  -webkit-mask: url("../assests/signin-field-error.svg") center / contain no-repeat;
-  mask: url("../assests/signin-field-error.svg") center / contain no-repeat;
-  font-size: 0;
-}
-
-/* Error summary box at the top of the card */
-.auth-card--figma .auth-error-summary {
+/* ---------- Error summary box at the top of the card ---------- */
+.auth-error-summary {
   position: relative;
   margin: 0 0 20px;
   padding: 16px 16px 16px 52px;
@@ -518,11 +272,17 @@
   border-radius: 8px;
 }
 
-.auth-card--figma .auth-error-summary[hidden] {
+.auth-error-summary[hidden] {
   display: none;
 }
 
-.auth-card--figma .auth-error-summary::before {
+/* auth.js moves focus here when a form has errors */
+.auth-error-summary:focus {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+.auth-error-summary::before {
   content: "";
   position: absolute;
   left: 16px;
@@ -530,18 +290,18 @@
   width: 1.5rem;
   height: 1.5rem;
   background: var(--color-danger);
-  -webkit-mask: url("../assests/signin-alert-error.svg") center / contain no-repeat;
-  mask: url("../assests/signin-alert-error.svg") center / contain no-repeat;
+  -webkit-mask: url("../assets/signin-alert-error.svg") center / contain no-repeat;
+  mask: url("../assets/signin-alert-error.svg") center / contain no-repeat;
 }
 
-.auth-card--figma .auth-error-summary-title {
+.auth-error-summary-title {
   margin: 0;
   font-size: 1rem;
   line-height: 1.5rem;
   font-weight: 700;
 }
 
-.auth-card--figma .auth-error-summary-list {
+.auth-error-summary-list {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -550,23 +310,28 @@
   font-weight: 400;
 }
 
-.auth-card--figma .auth-error-summary-list a {
+.auth-error-summary-list a {
   color: var(--color-ink);
   text-decoration: underline;
 }
 
-/* Visible keyboard focus */
-.auth-card--figma a:focus-visible,
-.auth-card--figma button:focus-visible,
-.auth-card--figma .auth-check input:focus-visible,
-.auth-card--figma .auth-error-summary:focus {
-  outline: 2px solid var(--color-focus-ring);
-  outline-offset: 2px;
+/* ---------- Account page ---------- */
+.account-details {
+  margin: 16px 0;
 }
 
-/* Keep the Figma padding on narrow screens too */
+.account-details dt {
+  font-size: 0.8125rem;
+  color: var(--color-ink-muted);
+}
+
+.account-details dd {
+  margin: 0 0 10px;
+}
+
+/* Narrow screens: tighter page padding */
 @media (max-width: 480px) {
-  .auth-card--figma {
-    padding: 24px;
+  .auth-page {
+    padding: 24px 16px 96px;
   }
 }

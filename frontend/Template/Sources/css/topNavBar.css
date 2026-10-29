@@ -182,11 +182,11 @@ button.nav-tool {
 }
 
 .nav-tool--accessibility::before {
-  background-image: url("../assests/nav-accessibility.svg");
+  background-image: url("../assets/nav-accessibility.svg");
 }
 
 .nav-tool--signin::before {
-  background-image: url("../assests/nav-signin.svg");
+  background-image: url("../assets/nav-signin.svg");
 }
 
 .nav-tool:hover {
@@ -266,14 +266,6 @@ button.nav-tool {
 
 .theme-toggle:hover {
   box-shadow: inset 0 -2px 0 var(--color-on-navy-muted);
-}
-
-/* Visible keyboard focus */
-.site-header a:focus-visible,
-.site-header button:focus-visible,
-.site-header input:focus-visible {
-  outline: 2px solid var(--color-focus-ring);
-  outline-offset: 2px;
 }
 
 /* Keep the ring inside the 44px dark bar */

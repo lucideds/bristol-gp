@@ -1,29 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FAQs</title>
-  <link rel="stylesheet" href="Sources/css/tokens.css">
-  <link rel="stylesheet" href="Sources/css/topNavBar.css">
-  <link rel="stylesheet" href="Sources/css/accessibility.css">
-  <link rel="stylesheet" href="Sources/css/motion.css">
-  <script src="Sources/js/accessibility.js"></script>
-  <script src="Sources/js/topNavBar.js" defer></script>
-  <link rel="stylesheet" href="Sources/css/footer.css">
-  <link rel="stylesheet" href="Sources/css/chatWidget.css">
-  <link rel="stylesheet" href="Sources/css/tlevel.css">
-  <link rel="stylesheet" href="Sources/css/advice.css">
-  <script src="Sources/js/footer.js" defer></script>
-  <script src="Sources/js/chatWidget.js" defer></script>
-  <script src="Sources/js/advice.js" defer></script>
-</head>
-<body>
-  <!-- Reuses the T Level page styles (tlevel.css): breadcrumb, title, lead and FAQ accordion -->
+{% extends "base.html" %}
+{% set page_css = ["components"] %}
+{% set page_js = [] %}
+{% block title %}FAQs{% endblock %}
+{% block content %}
+  <!-- Styled by components.css: breadcrumb, title, lead, FAQ accordion and the "Still unsure?" card -->
   <main class="tlevel-page">
     <nav class="tlevel-breadcrumb" aria-label="Breadcrumb">
       <ol>
-        <li><a href="home.html">Home</a></li>
+        <li><a href="/">Home</a></li>
         <li aria-current="page">FAQs</li>
       </ol>
     </nav>
@@ -46,7 +30,7 @@
         <details>
           <summary>What subjects are available as T Levels?</summary>
           <p>T Levels have 11 different categories of study. However, Amazon only accepts five for their work placement: Digital, Business, Media, Finance and Engineering.</p>
-          <p>See the <a href="TLevel.html">T Levels page</a> for details of each route.</p>
+          <p>See the <a href="/t-levels">T Levels page</a> for details of each route.</p>
         </details>
         <details>
           <summary>Will I receive a qualification after completing a T Level?</summary>
@@ -88,7 +72,7 @@
         <details>
           <summary>How can I apply for an Amazon placement?</summary>
           <!-- TODO: confirm the application process with the content owner -->
-          <p>Start by talking to your school or college, as they arrange placements with employers. You can also <a href="login.html#register">register your interest</a> on this site to hear about placements at Amazon.</p>
+          <p>Start by talking to your school or college, as they arrange placements with employers. You can also <a href="/login#register">register your interest</a> on this site to hear about placements at Amazon.</p>
           <p>Find out more on the <a href="https://www.aboutamazon.co.uk/amazon-for-schools/online-hub-offerings/t-level-placements">Amazon T Level placements page</a>.</p>
         </details>
         <details>
@@ -110,32 +94,31 @@
         </details>
         <details>
           <summary>What opportunities are available after finishing a T Level?</summary>
-          <p>You can go into skilled work, start a higher or degree apprenticeship, or go on to university. Each route on the <a href="TLevel.html">T Levels page</a> lists example job paths.</p>
+          <p>You can go into skilled work, start a higher or degree apprenticeship, or go on to university. Each route on the <a href="/t-levels">T Levels page</a> lists example job paths.</p>
         </details>
         <details>
           <summary>Who can I contact if I need more help?</summary>
-          <p>Your school or college is the best place to start. You can also get in touch with us through the <a href="contact.html">contact page</a>.</p>
+          <p>Your school or college is the best place to start. You can also get in touch with us through the <a href="/contact">contact page</a>.</p>
         </details>
       </div>
 
-      <!-- Same "Still unsure?" card as the advice page (advice.css) -->
+      <!-- Same "Still unsure?" card as the advice page -->
       <div class="advice-card advice-unsure">
         <h3>Still unsure?</h3>
         <p>Ask the assistant for a quick answer, or send a message to the team.</p>
         <div class="advice-actions">
-          <!-- advice.js shows this button and opens the chat widget; it needs JavaScript -->
-          <button type="button" class="advice-action" data-open-chat hidden>
+          <!-- chatWidget.js shows this button and makes it open the chat; it needs JavaScript -->
+          <button type="button" class="advice-action" data-open-chat data-needs-chat hidden>
             <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
               <path d="M8 2l1.333 4 4 1.333-4 1.334L8 12.667 6.667 8.667l-4-1.334 4-1.333L8 2Z" fill="none" stroke="currentColor" stroke-width="1.333" stroke-linejoin="round"/>
             </svg>
             Ask a question
           </button>
-          <a class="advice-action" href="contact.html">Contact us</a>
+          <a class="advice-action" href="/contact">Contact us</a>
         </div>
       </div>
 
-      <a class="tlevel-btn advice-register" href="login.html#register">Register your interest</a>
+      <a class="tlevel-btn advice-register" href="/login#register">Register your interest</a>
     </section>
   </main>
-</body>
-</html>
+{% endblock %}

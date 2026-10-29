@@ -256,19 +256,6 @@
   }
 }
 
-/* Hidden on screen but still read out by screen readers */
-.chat-visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
 /* Links in the widget */
 .chat-panel a {
   color: var(--color-link);
@@ -346,27 +333,11 @@
   background: var(--color-surface);
 }
 
-/* Visible keyboard focus */
-.chat-toggle:focus-visible {
-  outline: 2px solid var(--color-focus-ring);
-  outline-offset: 2px;
-}
-
-.chat-panel button:focus-visible,
-.chat-panel input:focus-visible,
-.chat-panel a:focus-visible {
-  outline: 2px solid var(--color-focus-ring);
-  outline-offset: 2px;
-}
-
 /* On the navy header, and kept inside the panel so overflow:hidden doesn't clip it */
 .chat-close:focus-visible {
   outline-offset: -2px;
 }
 
-.chat-input:focus-visible {
-  outline-offset: 0;
-}
 
 /* Phones: near full screen with safe margins, the button stays visible below */
 @media (max-width: 480px) {

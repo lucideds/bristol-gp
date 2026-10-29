@@ -1,30 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Which T Level suits you? Quiz</title>
-  <link rel="stylesheet" href="Sources/css/tokens.css">
-  <link rel="stylesheet" href="Sources/css/topNavBar.css">
-  <link rel="stylesheet" href="Sources/css/accessibility.css">
-  <link rel="stylesheet" href="Sources/css/motion.css">
-  <script src="Sources/js/accessibility.js"></script>
-  <script src="Sources/js/topNavBar.js" defer></script>
-  <link rel="stylesheet" href="Sources/css/footer.css">
-  <link rel="stylesheet" href="Sources/css/chatWidget.css">
-  <link rel="stylesheet" href="Sources/css/tlevel.css">
-  <link rel="stylesheet" href="Sources/css/quiz.css">
-  <script src="Sources/js/footer.js" defer></script>
-  <script src="Sources/js/chatWidget.js" defer></script>
-  <script src="Sources/js/quiz.js" defer></script>
-</head>
-<body>
-  <!-- Reuses tlevel.css for the breadcrumb, title, button and route card colours; quiz.css adds the rest -->
+{% extends "base.html" %}
+{% set page_css = ["components", "quiz"] %}
+{% set page_js = ["quiz"] %}
+{% block title %}Which T Level suits you? Quiz{% endblock %}
+{% block content %}
+  <!-- components.css supplies the breadcrumb, title, button and route card colours; quiz.css adds the rest -->
   <main class="tlevel-page quiz-page">
     <nav class="tlevel-breadcrumb" aria-label="Breadcrumb">
       <ol>
-        <li><a href="home.html">Home</a></li>
-        <li><a href="advice.html">Advice</a></li>
+        <li><a href="/">Home</a></li>
+        <li><a href="/advice">Advice</a></li>
         <li aria-current="page">Quiz</li>
       </ol>
     </nav>
@@ -99,13 +83,13 @@
           <p class="quiz-match-rank">Best match</p>
           <h3 class="quiz-match-name"></h3>
           <p class="quiz-match-text"></p>
-          <a class="quiz-match-link" href="TLevel.html"></a>
+          <a class="quiz-match-link" href="/t-levels"></a>
         </li>
         <li class="route-card quiz-result-card" data-match>
           <p class="quiz-match-rank">Also a good fit</p>
           <h3 class="quiz-match-name"></h3>
           <p class="quiz-match-text"></p>
-          <a class="quiz-match-link" href="TLevel.html"></a>
+          <a class="quiz-match-link" href="/t-levels"></a>
         </li>
       </ol>
       <p class="quiz-result-also" id="quiz-result-also" hidden></p>
@@ -115,5 +99,4 @@
       </div>
     </section>
   </main>
-</body>
-</html>
+{% endblock %}

@@ -1,18 +1,13 @@
+// The site header: logo, search, Accessibility and Sign in buttons, and the main page links.
+// Loaded with defer after site.js, so the page's HTML is ready when this runs.
 (function () {
-  // 1. Work out the site root from this script's own URL.
-  //    (document.currentScript only works here at the top level, not in callbacks.)
-  var script = document.currentScript;
-  //    The script lives in Template/Sources/js/, so the pages are two folders up.
-  var SITE_ROOT = new URL('../../', script.src);
+  var link = TLC.link;
+  var isCurrent = TLC.isCurrent;
 
-  function link(path) {
-    return new URL(path, SITE_ROOT).href;
-  }
-
-  // 2. Analytics: records a search, route view or quiz result for the analytics page.
-  //    Shared on window so tlevelTabs.js and quiz.js can use it (this script loads before them).
-  //    keepalive lets the request finish even if the page is changing (search moves to a new page).
-  //    Failures are ignored: analytics must never get in the visitor's way.
+  // Records a search, route view or quiz result for the analytics page.
+  // Shared on window so tlevelTabs.js and quiz.js can use it (this script loads before them).
+  // keepalive lets the request finish even if the page is changing (search moves to a new page).
+  // Failures are ignored: analytics must never get in the visitor's way.
   window.tlcTrack = function (kind, value) {
     fetch(link('api/track'), {
       method: 'POST',
@@ -22,13 +17,13 @@
     }).catch(function () {});
   };
 
-  // 3. Page links in the middle of the top bar, in order.
+  // Page links in the middle of the top bar, in order.
   var PAGES = [
-    { label: 'Home', path: 'home.html' },
-    { label: 'T Level', path: 'TLevel.html' },
-    { label: 'Advice', path: 'advice.html' },
-    { label: 'FAQ', path: 'faqs.html' },
-    { label: 'Contact', path: 'contact.html' }
+    { label: 'Home', path: '' },
+    { label: 'T Level', path: 't-levels' },
+    { label: 'Advice', path: 'advice' },
+    { label: 'FAQ', path: 'faqs' },
+    { label: 'Contact', path: 'contact' }
   ];
 
   // Search index used by the search bar in the top bar.
@@ -36,81 +31,81 @@
   // the page (plus #section) to open, and extra keywords people might type.
   // When you add a page or section, add an entry here so search can find it.
   var SEARCH_INDEX = [
-    { title: 'Home', path: 'home.html',
+    { title: 'Home', path: '',
       keywords: 'home main start welcome amazon placement career' },
-    { title: 'Who are you?', path: 'home.html#home-audience-title',
+    { title: 'Who are you?', path: '#home-audience-title',
       keywords: 'students schools colleges teachers parents guardians audience after gcses gcse during t level educational step' },
-    { title: 'Explore placement routes', path: 'home.html#home-routes-title',
+    { title: 'Explore placement routes', path: '#home-routes-title',
       keywords: 'routes pathways options explore five' },
-    { title: 'Interested? Tell us.', path: 'home.html#home-cta-title',
+    { title: 'Interested? Tell us.', path: '#home-cta-title',
       keywords: 'interested interest tell us questions' },
 
-    { title: 'T Levels at Amazon', path: 'TLevel.html',
+    { title: 'T Levels at Amazon', path: 't-levels',
       keywords: 't level tlevel tlevels qualification course routes overview general what t levels are choose a route' },
-    { title: 'Digital route', path: 'TLevel.html#digital',
+    { title: 'Digital route', path: 't-levels#digital',
       keywords: 'digital it tech technology computing computer software developer programming coding cloud infrastructure engineer data analyst support technician cyber security computer science' },
-    { title: 'Business route', path: 'TLevel.html#business',
+    { title: 'Business route', path: 't-levels#business',
       keywords: 'business analyst operations coordinator manager project management hr human resources advisor assistant management' },
-    { title: 'Media route', path: 'TLevel.html#media',
+    { title: 'Media route', path: 't-levels#media',
       keywords: 'media marketing executive assistant content creator producer video editor social media manager coordinator graphic design designer production creative' },
-    { title: 'Finance route', path: 'TLevel.html#finance',
+    { title: 'Finance route', path: 't-levels#finance',
       keywords: 'finance financial accounting accounts accountant auditor money payroll specialist administrator aat acca analyst trainee apprentice' },
-    { title: 'Engineering route', path: 'TLevel.html#engineering',
+    { title: 'Engineering route', path: 't-levels#engineering',
       keywords: 'engineering engineer mechanical electrical quality manufacturing processing control maintenance technician logistics fulfilment equipment' },
 
-    { title: 'Advice', path: 'advice.html',
+    { title: 'Advice', path: 'advice',
       keywords: 'advice guide guidance thinking about tips resources parents careers advisor' },
-    { title: 'Advice: Why choose a T Level', path: 'advice.html#why-choose',
+    { title: 'Advice: Why choose a T Level', path: 'advice#why-choose',
       keywords: 'why choose reasons learn by doing practical real placement three a levels doors open year 10 benefits' },
-    { title: 'Advice: How to apply for a placement', path: 'advice.html#how-to-apply',
+    { title: 'Advice: How to apply for a placement', path: 'advice#how-to-apply',
       keywords: 'apply application steps how to apply interview prepare cv dates school college' },
-    { title: 'Advice: Where it can lead', path: 'advice.html#where-it-leads',
+    { title: 'Advice: Where it can lead', path: 'advice#where-it-leads',
       keywords: 'lead careers jobs example jobs future university apprenticeship work' },
-    { title: 'Advice: Common worries', path: 'advice.html#common-worries',
+    { title: 'Advice: Common worries', path: 'advice#common-worries',
       keywords: 'worries worried concerns common question team adjustments support change mind unsure nervous' },
-    { title: 'Advice: Your path', path: 'advice.html#your-path',
+    { title: 'Advice: Your path', path: 'advice#your-path',
       keywords: 'your path find timeline year 10 11 12 13 steps when gcse results start placement interview next step journey plan' },
 
-    { title: 'Which T Level suits you? (quiz)', path: 'quiz.html',
+    { title: 'Which T Level suits you? (quiz)', path: 'quiz',
       keywords: 'quiz test which suits me match matches find my t level questions personality recommend' },
 
-    { title: 'Frequently asked questions', path: 'faqs.html',
+    { title: 'Frequently asked questions', path: 'faqs',
       keywords: 'faq faqs questions answers help' },
-    { title: 'FAQ: About T Levels', path: 'faqs.html#about-t-levels',
+    { title: 'FAQ: About T Levels', path: 'faqs#about-t-levels',
       keywords: 'a levels difference eligibility eligible age gcse subjects qualification certificate grade pass merit distinction' },
-    { title: 'FAQ: Industry placements', path: 'faqs.html#industry-placements',
+    { title: 'FAQ: Industry placements', path: 'faqs#industry-placements',
       keywords: 'industry placement work experience hours length long duration skills network networking 315' },
-    { title: 'FAQ: Amazon placements', path: 'faqs.html#amazon-placements',
+    { title: 'FAQ: Amazon placements', path: 'faqs#amazon-placements',
       keywords: 'apply application how to apply cv benefits amazon' },
-    { title: 'FAQ: After your T Level', path: 'faqs.html#after-your-t-level',
+    { title: 'FAQ: After your T Level', path: 'faqs#after-your-t-level',
       keywords: 'after university uni degree apprenticeship apprenticeships jobs future opportunities next steps' },
 
-    { title: 'Contact us', path: 'contact.html',
+    { title: 'Contact us', path: 'contact',
       keywords: 'contact email message get in touch support enquiry enquiries help interested' },
 
-    { title: 'Privacy', path: 'privacy.html',
+    { title: 'Privacy', path: 'privacy',
       keywords: 'privacy policy personal data gdpr' },
-    { title: 'Privacy: What data we collect', path: 'privacy.html#data-we-collect',
+    { title: 'Privacy: What data we collect', path: 'privacy#data-we-collect',
       keywords: 'data collect collected email information' },
-    { title: 'Privacy: What your data is used for', path: 'privacy.html#data-use',
+    { title: 'Privacy: What your data is used for', path: 'privacy#data-use',
       keywords: 'data use used marketing share sharing third parties' },
-    { title: 'Privacy: How your password is protected', path: 'privacy.html#password-protection',
+    { title: 'Privacy: How your password is protected', path: 'privacy#password-protection',
       keywords: 'password security hashed protected' },
-    { title: 'Privacy: Data retention policy', path: 'privacy.html#data-retention',
+    { title: 'Privacy: Data retention policy', path: 'privacy#data-retention',
       keywords: 'retention delete deletion keep account' },
-    { title: 'Privacy: Your rights', path: 'privacy.html#your-rights',
+    { title: 'Privacy: Your rights', path: 'privacy#your-rights',
       keywords: 'rights gdpr data protection act request correct' },
-    { title: 'Privacy: Cookies', path: 'privacy.html#cookies',
+    { title: 'Privacy: Cookies', path: 'privacy#cookies',
       keywords: 'cookies cookie consent analytics pecr' },
-    { title: 'Privacy: AI privacy notice', path: 'privacy.html#AI-data',
+    { title: 'Privacy: AI privacy notice', path: 'privacy#AI-data',
       keywords: 'ai chatbot chat bot assistant artificial intelligence zero data retention messages stored' },
 
-    { title: 'Sign in', path: 'signin.html',
+    { title: 'Sign in', path: 'login',
       keywords: 'sign in signin login log in account' },
-    { title: 'Register your interest', path: 'login.html#register',
+    { title: 'Register your interest', path: 'login#register',
       keywords: 'register registration sign up signup create account interest join' },
     // Opens the accessibility popup on the current page instead of navigating.
-    { title: 'Accessibility settings', path: 'home.html#accessibility', opensAccessibility: true,
+    { title: 'Accessibility settings', path: '#accessibility', opensAccessibility: true,
       keywords: 'accessibility a11y dark mode theme contrast high contrast text size font colour color' }
   ];
 
@@ -196,12 +191,7 @@
     location.href = target.href;
   }
 
-  //checking if the links have loaded on the page
-  function isCurrent(href) {
-    return new URL(href).pathname === location.pathname;
-  }
-
-  //gets the active page to be able to underrline it in the nav bar
+  // Marks the link to the current page, so the nav bar can underline it.
   function currentAttrs(href) {
     return isCurrent(href) ? { cls: ' active', aria: ' aria-current="page"' } : { cls: '', aria: '' };
   }
@@ -212,19 +202,18 @@
     return '<a class="nav-link' + cur.cls + '" href="' + href + '"' + cur.aria + '>' + label + '</a>';
   }
 
-  //this actualy renders the bars
   function buildNav() {
-    var signinHref = link('signin.html');
+    var signinHref = link('login');
     var signin = currentAttrs(signinHref);
 
     var html =
       '<header class="site-header">' +
         '<div class="nav-top">' +
           '<div class="nav-container nav-top-inner">' +
-            '<a class="brand" href="' + link('home.html') + '">' +
-              '<img src="' + link('Sources/assests/amazon_logo.png') + '" alt="Home" width="102" height="34">' +
+            '<a class="brand" href="' + link('') + '">' +
+              '<img src="' + link('Sources/assets/amazon_logo.png') + '" alt="Home" width="102" height="34">' +
             '</a>' +
-            '<form class="nav-search" role="search" action="' + link('home.html') + '">' +
+            '<form class="nav-search" role="search" action="' + link('') + '">' +
               '<input type="search" name="q" placeholder="Search T Levels and placements" aria-label="Search the site"' +
                 ' list="nav-search-suggestions" autocomplete="off" aria-describedby="nav-search-status">' +
               '<datalist id="nav-search-suggestions">' +
@@ -232,7 +221,7 @@
               '</datalist>' +
               '<p class="nav-search-status" id="nav-search-status" role="status"></p>' +
               '<button type="submit" aria-label="Search">' +
-                '<img src="' + link('Sources/assests/nav-search.svg') + '" alt="" width="24" height="24">' +
+                '<img src="' + link('Sources/assets/nav-search.svg') + '" alt="" width="24" height="24">' +
               '</button>' +
             '</form>' +
             '<div class="nav-tools">' +
@@ -256,7 +245,6 @@
     document.body.insertAdjacentHTML('afterbegin', html);
 
     // Ask the Flask server if someone is signed in; if so, turn "Sign in" into "Account".
-    // (Fails quietly when the page is opened as a file, so the button stays "Sign in".)
     fetch(link('api/session'), { credentials: 'same-origin' })
       .then(function (res) { return res.ok ? res.json() : null; })
       .then(function (data) {
@@ -304,9 +292,6 @@
     searchInput.addEventListener('input', function () { searchStatus.textContent = ''; });
     searchInput.addEventListener('blur', function () { searchStatus.textContent = ''; });
 
-    // The accessibility popup changed the theme: refresh the button text.
-    document.addEventListener('tlc:themechange', function () { updateToggle(toggle); });
-
     // Hamburger menu: collapses the links/search/sign-in group on narrow screens.
     var navToggle = document.querySelector('.nav-toggle');
     var navCollapsible = document.getElementById('nav-collapsible');
@@ -342,10 +327,5 @@
     });
   }
 
-  //build the nav once the page's HTML has loaded.
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', buildNav);
-  } else {
-    buildNav();
-  }
+  buildNav();
 })();

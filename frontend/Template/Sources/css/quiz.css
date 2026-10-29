@@ -159,10 +159,6 @@
   background: var(--color-surface-muted);
   text-decoration: underline;
 }
-.quiz-reset:focus-visible {
-  outline: 2px solid var(--color-focus-ring);
-  outline-offset: 2px;
-}
 
 /* ---------- Result ---------- */
 .quiz-result {

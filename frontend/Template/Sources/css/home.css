@@ -149,11 +149,6 @@
   background: var(--color-navy-deep);
 }
 
-.home-hero .home-btn:focus-visible {
-  outline: 2px solid var(--color-focus-ring);
-  outline-offset: 2px;
-}
-
 /* The focus-ring colour would vanish on the orange band, so use the band's text colour */
 .home-cta .home-btn:focus-visible {
   outline: 2px solid var(--color-on-orange);

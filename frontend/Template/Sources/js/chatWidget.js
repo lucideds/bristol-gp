@@ -1,14 +1,14 @@
+// The "T buddy" AI chat button and popup, on every page. Talks to /api/chat (chat_api.py).
+// Loaded with defer after site.js, so the page's HTML is ready when this runs.
+// Any button with data-open-chat opens the chat, and elements marked data-needs-chat (hidden
+// in the HTML, because they need JavaScript) are shown once the widget is on the page.
 (function () {
-  // Work out the chat API URL from this script's own URL, like topNavBar.js does.
-  // (document.currentScript only works here at the top level, not in callbacks.)
-  // The script lives in Template/Sources/js/, so the site root is two folders up.
-  var script = document.currentScript;
-  var API_URL = new URL('../../api/chat', script.src).href;            // Whole reply at once (fallback).
-  var STREAM_URL = new URL('../../api/chat/stream', script.src).href;  // Reply streamed word by word.
-  var SPARKLE_URL = new URL('../assests/chat-ai-sparkle.svg', script.src).href;              // Header + launcher icon.
-  var SPARKLE_SMALL_URL = new URL('../assests/chat-ai-sparkle-small.svg', script.src).href;  // "AI-generated" badge icon.
-  var SEND_ICON_URL = new URL('../assests/chat-send.svg', script.src).href;                  // Send button icon.
-  var LEARN_MORE_URL = new URL('../../privacy.html#AI-data', script.src).href;                // Disclaimer link: AI privacy notice section.
+  var API_URL = TLC.link('api/chat');                                     // Whole reply at once (fallback).
+  var STREAM_URL = TLC.link('api/chat/stream');                           // Reply streamed word by word.
+  var SPARKLE_URL = TLC.link('Sources/assets/chat-ai-sparkle.svg');             // Header + launcher icon.
+  var SPARKLE_SMALL_URL = TLC.link('Sources/assets/chat-ai-sparkle-small.svg'); // "AI-generated" badge icon.
+  var SEND_ICON_URL = TLC.link('Sources/assets/chat-send.svg');                 // Send button icon.
+  var LEARN_MORE_URL = TLC.link('privacy#AI-data');                       // Disclaimer link: AI privacy notice section.
 
   var MAX_HISTORY = 12;          // Most recent messages sent to the server each time.
   var MAX_STORED_REPLY = 4000;   // Long replies are shortened in the history (not on screen).
@@ -23,6 +23,18 @@
   var greeted = false;
 
   var panel, list, input, toggle, sendButton, typing;
+
+  var CHAT_LABEL_OPEN = 'Open T buddy chat';
+  var CHAT_LABEL_CLOSE = 'Close T buddy chat';
+
+  // The server's {"error": "..."} message from a failed response, or a general one.
+  async function readError(res) {
+    try {
+      var data = await res.json();
+      if (data && typeof data.error === 'string' && data.error) return data.error;
+    } catch (e) { /* Not JSON. */ }
+    return GENERIC_ERROR;
+  }
   var streamEl = null;   // The bubble a reply is being streamed into.
   var streamText = null; // The text inside it.
 
@@ -52,15 +64,12 @@
       clearTimeout(timer);
     }
 
-    var data = {};
+    if (!res.ok) throw new Error(await readError(res));
+    var data = null;
     try {
       data = await res.json();
-    } catch (e) {
-      data = {};
-    }
-    if (!res.ok || !data || typeof data.reply !== 'string') {
-      throw new Error((data && typeof data.error === 'string' && data.error) || GENERIC_ERROR);
-    }
+    } catch (e) { /* Not JSON; handled below. */ }
+    if (!data || typeof data.reply !== 'string') throw new Error(GENERIC_ERROR);
     return data.reply;
   }
 
@@ -118,13 +127,7 @@
       if (res.status === 404 || res.status === 405) throw fail(fallbackError());
       if (!res.ok) {
         // The server said what went wrong (rate limit, bad request...). Retrying won't help.
-        var data = {};
-        try {
-          data = await res.json();
-        } catch (e) {
-          data = {};
-        }
-        throw fail(new Error((data && typeof data.error === 'string' && data.error) || GENERIC_ERROR));
+        throw fail(new Error(await readError(res)));
       }
       var type = res.headers.get('Content-Type') || '';
       if (type.indexOf('text/event-stream') === -1 || !res.body || !res.body.getReader) {
@@ -287,7 +290,7 @@
     typing.className = 'chat-msg chat-msg--assistant chat-msg--typing';
 
     var label = document.createElement('span');
-    label.className = 'chat-visually-hidden';
+    label.className = 'visually-hidden';
     label.textContent = 'T buddy is typing\u2026';
     typing.appendChild(label);
 
@@ -371,7 +374,7 @@
   function openChat() {
     panel.hidden = false;
     toggle.setAttribute('aria-expanded', 'true');
-    toggle.setAttribute('aria-label', 'Close T buddy chat');
+    toggle.setAttribute('aria-label', CHAT_LABEL_CLOSE);
     if (!greeted) {
       greeted = true;
       // Shown only, not sent to the server.
@@ -383,14 +386,14 @@
   function closeChat() {
     panel.hidden = true;
     toggle.setAttribute('aria-expanded', 'false');
-    toggle.setAttribute('aria-label', 'Open T buddy chat');
+    toggle.setAttribute('aria-label', CHAT_LABEL_OPEN);
     toggle.focus();
   }
 
   // Adds the chat button and popup to the end of the page.
   function buildChat() {
     var html =
-      '<button type="button" class="chat-toggle" aria-label="Open chat" aria-expanded="false" aria-controls="chat-panel">' +
+      '<button type="button" class="chat-toggle" aria-label="' + CHAT_LABEL_OPEN + '" aria-expanded="false" aria-controls="chat-panel">' +
         '<img src="' + SPARKLE_URL + '" alt="" class="chat-toggle-icon">' +
       '</button>' +
       '<div id="chat-panel" class="chat-panel" role="dialog" aria-labelledby="chat-title" aria-describedby="chat-disclaimer" hidden>' +
@@ -436,12 +439,20 @@
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && isOpen()) closeChat();
     });
+
+    // "Ask a question" buttons on the advice, FAQs and contact pages.
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest || !e.target.closest('[data-open-chat]')) return;
+      if (isOpen()) {
+        input.focus();
+      } else {
+        openChat();
+      }
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-needs-chat]'), function (el) {
+      el.hidden = false;
+    });
   }
 
-  // Build the chat once the page's HTML has loaded.
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', buildChat);
-  } else {
-    buildChat();
-  }
+  buildChat();
 })();

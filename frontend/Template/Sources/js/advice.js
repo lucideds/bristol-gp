@@ -1,5 +1,5 @@
-// Advice page: highlights the side nav link for the section in view, runs the Your path year picker,
-// and wires the "Ask a question" button to the chat widget (chatWidget.js).
+// Advice page: highlights the side nav link for the section in view and runs the Your path year picker.
+// Loaded with defer, so the page's HTML is ready when this runs.
 (function () {
   function init() {
     var links = Array.prototype.slice.call(document.querySelectorAll('.advice-nav a[href^="#"]'));
@@ -36,16 +36,6 @@
     update();
 
     initPath();
-
-    // The chat button only works with JavaScript, so it starts hidden.
-    var ask = document.querySelector('[data-open-chat]');
-    if (ask) {
-      ask.hidden = false;
-      ask.addEventListener('click', function () {
-        var toggle = document.querySelector('.chat-toggle');
-        if (toggle && toggle.getAttribute('aria-expanded') !== 'true') toggle.click();
-      });
-    }
   }
 
   // Your path: shows the year picker and marks the step for the chosen year with a
@@ -100,9 +90,5 @@
     mark(checked.value);
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
+  init();
 })();

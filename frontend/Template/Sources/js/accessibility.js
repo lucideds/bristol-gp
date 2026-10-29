@@ -2,12 +2,12 @@
   // Accessibility popup: text size, colours and a few reading aids, saved on this device.
   // Load this in <head> WITHOUT defer, so saved settings are applied before the page is drawn.
   // (document.currentScript only works here at the top level, not in callbacks.)
-  // The script lives in Template/Sources/js/, so the icons are one folder up in assests/.
+  // The script lives in Template/Sources/js/, so the icons are one folder up in assets/.
   var script = document.currentScript;
-  var CLOSE_ICON_URL = new URL('../assests/a11y-close.svg', script.src).href; // Cross mask used by accessibility.css.
-  var CHECK_ICON_URL = new URL('../assests/a11y-check.svg', script.src).href; // Tick mask used by accessibility.css.
+  var CLOSE_ICON_URL = new URL('../assets/a11y-close.svg', script.src).href; // Cross mask used by accessibility.css.
+  var CHECK_ICON_URL = new URL('../assets/a11y-check.svg', script.src).href; // Tick mask used by accessibility.css.
 
-  var THEME_KEY = 'tlc-theme';     // Shared with the light / dark button in topNavBar.js.
+  var THEME_KEY = 'tlc-theme';
   var SETTINGS_KEY = 'tlc-a11y';   // Everything else, as one JSON object.
   var THEMES = ['light', 'dark', 'high-contrast'];
   var SIZES = ['standard', 'large', 'extra-large'];
@@ -61,10 +61,8 @@
     root.classList.toggle('a11y-highlight-links', s.highlightLinks);
   }
 
-  // Changes the theme and tells the nav bar so its light / dark button updates.
   function applyTheme(t) {
     root.setAttribute('data-theme', t);
-    document.dispatchEvent(new CustomEvent('tlc:themechange'));
   }
   // Same as applyTheme, but the page fades into the new colours where the browser
   // supports it and the visitor hasn't asked for reduced motion.
@@ -79,7 +77,7 @@
     }
   }
 
-  // Apply the saved choices straight away (the nav bar isn't built yet, so no event).
+  // Apply the saved choices straight away, before the page is drawn.
   var settings = loadSettings();
   applySettings(settings);
   root.setAttribute('data-theme', loadTheme());
@@ -90,7 +88,7 @@
   // One tile in the "Text size" or "Colours" group.
   function tile(name, value, label, sample, boxClass) {
     return '<label class="a11y-tile">' +
-        '<input type="radio" class="a11y-visually-hidden" name="' + name + '" value="' + value + '">' +
+        '<input type="radio" class="visually-hidden" name="' + name + '" value="' + value + '">' +
         '<span class="a11y-tile-box' + (boxClass || '') + '">' +
           sample +
           '<span class="a11y-tile-label">' + label + '</span>' +
@@ -118,7 +116,7 @@
           '<span id="a11y-' + id + '-desc" class="a11y-toggle-desc">' + desc + '</span>' +
         '</span>' +
         '<span class="a11y-toggle-status" aria-hidden="true">Off</span>' +
-        '<input type="checkbox" role="switch" class="a11y-visually-hidden" id="a11y-' + id + '"' +
+        '<input type="checkbox" role="switch" class="visually-hidden" id="a11y-' + id + '"' +
           ' data-setting="' + setting + '" aria-labelledby="a11y-' + id + '-title" aria-describedby="a11y-' + id + '-desc">' +
         '<span class="a11y-switch" aria-hidden="true"></span>' +
       '</label>';

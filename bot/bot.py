@@ -1,9 +1,15 @@
+# Posts each contact form message to Slack, with buttons the team can use to triage it.
+# main.py starts it in the background. To run only the bot:  python -m bot.bot
+import json
+import logging
+import os
+
+from dotenv import load_dotenv
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 from slack_sdk.errors import SlackApiError
-import os
-import json
-from dotenv import load_dotenv
+
+log = logging.getLogger(__name__)
 
 # Load the .env file in the project folder (one level up from this bot folder).
 load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env"))
@@ -33,6 +39,7 @@ def escape(text):
 
 
 def send_to_slack(payload: dict):
+    """Posts one contact form message ({"name", "email", "message"}) to SLACK_CHANNEL_ID."""
     pretty_json = json.dumps(payload, indent=2)[:MAX_BUTTON_VALUE]
 
     blocks = [
@@ -45,9 +52,6 @@ def send_to_slack(payload: dict):
             "fields": [
                 {"type": "mrkdwn", "text": f"*Name:*\n{escape(payload.get('name', ''))}"},
                 {"type": "mrkdwn", "text": f"*Email:*\n{escape(payload.get('email', ''))}"},
-                {"type": "mrkdwn", "text": f"*Phone:*\n{escape(payload.get('phone') or 'N/A')}"},
-                {"type": "mrkdwn", "text": f"*Programme:*\n{escape(payload.get('programme') or 'N/A')}"},
-                {"type": "mrkdwn", "text": f"*Enquiry:*\n{escape(payload.get('enquiryType') or 'N/A')}"},
             ],
         },
         {
@@ -156,12 +160,12 @@ def start_in_background():
     """Listens for button clicks in a background thread, so main.py can run the website and the bot together.
     Socket Mode connects out to Slack, so it doesn't open any port on this computer."""
     if not (is_configured() and SLACK_APP_TOKEN):
-        print("Slack bot not started: set SLACK_BOT_TOKEN, SLACK_APP_TOKEN and SLACK_CHANNEL_ID in .env.")
+        log.info("Slack bot not started: set SLACK_BOT_TOKEN, SLACK_APP_TOKEN and SLACK_CHANNEL_ID in .env.")
         return
     global _handler
     _handler = SocketModeHandler(app, SLACK_APP_TOKEN)
     _handler.connect()  # connect() returns straight away; start() would block.
-    print("Slack bot connected.")
+    log.info("Slack bot connected.")
 
 
 if __name__ == "__main__":

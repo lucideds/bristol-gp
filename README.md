@@ -21,7 +21,7 @@ Open http://127.0.0.1:5000.
 
 `FLASK_DEBUG=1` turns on Flask's debugger and auto-reload. Leave it off anywhere other than your own machine.
 
-The database file `site.db` is created next to `main.py` the first time the app starts. To reset the data, stop the app and delete `site.db`.
+The database file `site.db` is created next to `main.py` the first time a page needs it. To reset the data, stop the app and delete `site.db`.
 
 Open the pages through Flask, not by double-clicking the HTML files. The templates contain Jinja tags such as `{{ csrf_token() }}`, and the forms, sign-in state and chat widget all need the server.
 
@@ -50,25 +50,26 @@ The chat and Slack settings are read when they are used, so a missing value turn
 bristol-gp/
 ├── main.py                 Flask app: page routes, accounts, contact form, error pages, database setup
 ├── chat_api.py             Blueprint for /api/chat and /api/chat/stream (OpenRouter proxy)
+├── extensions.py           The rate limiter, shared by main.py and chat_api.py
+├── chat_knowledge.md       Facts about the site that the chat assistant answers from
 ├── bot/
-│   ├── bot.py              Slack bot: posts contact messages, handles the message buttons
-│   └── slack_bot_runner.py Runs only the Slack bot, without the website
+│   └── bot.py              Slack bot: posts contact messages, handles the message buttons
 ├── send_slack_test.py      Sends one fake contact message to Slack to check the setup
 ├── requirements.txt
 ├── .env.example            Template for .env
 ├── site.db                 SQLite database (created on first run, not committed)
+├── resources/specs/        Members-only T Level spec PDFs, served by /download/<name>
 └── frontend/Template/      Jinja templates (Flask's template_folder)
-    ├── home.html, TLevel.html, advice.html, faqs.html, contact.html, privacy.html
+    ├── base.html           Shared <head> and <body>; every page extends it
+    ├── home.html, TLevel.html, advice.html, faqs.html, quiz.html, contact.html, privacy.html
     ├── login.html          Sign-in and sign-up forms on one page
-    ├── signin.html         Redirects to login.html (the nav bar links here)
     ├── account.html        Signed-in users only
     ├── analytics.html      Site analytics, for emails listed in ANALYTICS_EMAILS
-    ├── quiz.html           Placeholder, no content yet
     ├── 404.html, 500.html
     └── Sources/            Static files (Flask's static_folder, served at /Sources/...)
         ├── css/
         ├── js/
-        └── assests/        Images and icons (the folder name is spelled this way in every link)
+        └── assets/         Images and icons
 ```
 
 `.agents/` holds Figma specs, plans and screenshots from earlier work. It is ignored by git, so it only exists on machines where it was created.
@@ -77,23 +78,25 @@ bristol-gp/
 
 ### Routes
 
-Each page answers on its short URL and on its `.html` file name, because the nav bar and footer link to the file names (for example `/faqs` and `/faqs.html`). `url_for()` builds the short URL.
+Every link on the site uses these short URLs. The old file-name addresses, such as `/faqs.html` or `/signin.html`, redirect to them (see `OLD_PAGE_URLS` in `main.py`), so old links and bookmarks keep working.
 
 | URL | Methods | Template or response |
 |---|---|---|
-| `/`, `/home.html` | GET | `home.html` |
-| `/t-levels`, `/TLevel.html` | GET | `TLevel.html` |
-| `/advice`, `/advice.html` | GET | `advice.html` |
-| `/faqs`, `/faqs.html` | GET | `faqs.html` |
-| `/privacy`, `/privacy.html` | GET | `privacy.html` |
-| `/quiz`, `/quiz.html` | GET | `quiz.html` |
-| `/contact`, `/contact.html` | GET, POST | `contact.html`. POST saves the message and posts it to Slack. Limited to 5 POSTs per minute per IP. |
-| `/login`, `/login.html`, `/signin.html` | GET, POST | `login.html`, sign-in tab. Limited to 10 POSTs per minute. |
-| `/register` | GET, POST | `login.html`, sign-up tab. Limited to 10 POSTs per minute. |
+| `/` | GET | `home.html` |
+| `/t-levels` | GET | `TLevel.html` |
+| `/advice` | GET | `advice.html` |
+| `/faqs` | GET | `faqs.html` |
+| `/privacy` | GET | `privacy.html` |
+| `/quiz` | GET | `quiz.html` |
+| `/contact` | GET, POST | `contact.html`. POST saves the message and posts it to Slack. Limited to 5 POSTs per minute per IP. |
+| `/login` | GET, POST | `login.html`, sign-in form. Limited to 10 POSTs per minute. |
+| `/register` | GET, POST | `login.html`, sign-up form. Limited to 10 POSTs per minute. |
 | `/logout` | POST | Clears the session and redirects home. |
-| `/account`, `/account.html` | GET | `account.html`. Requires sign-in. |
-| `/analytics`, `/analytics.html` | GET | `analytics.html`. Requires sign-in with an email in `ANALYTICS_EMAILS`; anyone else signed in gets a 404. |
-| `/accessibility`, `/accessibility.html` | GET | Redirects to `/#accessibility`. The settings are now a popup on every page. |
+| `/account` | GET | `account.html`. Requires sign-in. |
+| `/analytics` | GET | `analytics.html`. Requires sign-in with an email in `ANALYTICS_EMAILS`; anyone else signed in gets a 404. |
+| `/download/<name>` | GET | A spec PDF from `resources/specs/`. Requires sign-in. Limited to 30 per minute. |
+| `/accessibility` | GET | Redirects to `/#accessibility`. The settings are now a popup on every page. |
+| `/<page>.html` | GET | Redirects an old file-name address to its short URL. |
 | `/api/track` | POST | Records an analytics event, `{"kind": "search" \| "view" \| "quiz", "value": "..."}`. JSON only, 30 per minute per IP. Views and quiz results must be one of the five route names; searches are lower-cased and up to 100 characters. |
 | `/api/session` | GET | `{"signed_in": bool, "name": ...}`, used by `topNavBar.js`. |
 | `/api/chat` | POST | Chat reply as JSON. |
@@ -101,27 +104,38 @@ Each page answers on its short URL and on its `.html` file name, because the nav
 
 ### Adding a page
 
-1. Create `frontend/Template/<name>.html`. Copy the `<head>` from an existing page so it loads the shared CSS and JS (see "Frontend").
-2. Add a route in `main.py` next to the other public pages, with the `.html` route first and the short URL second:
+1. Create `frontend/Template/<name>.html` that extends `base.html`. List the page's own stylesheets and scripts (file names without the extension) and fill in the title and content:
+
+   ```jinja
+   {% extends "base.html" %}
+   {% set page_css = ["components", "example"] %}
+   {% set page_js = ["example"] %}
+   {% block title %}Example{% endblock %}
+   {% block content %}
+     <main class="tlevel-page">...</main>
+   {% endblock %}
+   ```
+
+2. Add a route in `main.py` next to the other public pages:
 
    ```python
-   @app.route("/example.html")
    @app.route("/example")
    def example():
        return render_template("example.html")
    ```
 
-3. To show it in the navigation, add it to the link lists in `Sources/js/topNavBar.js` and, if needed, `Sources/js/footer.js`. `topNavBar.js` also has a list of pages used by the search box.
+3. To show it in the navigation, add it to the link lists in `Sources/js/topNavBar.js` and, if needed, `Sources/js/footer.js`, using the short URL (`'example'`). `topNavBar.js` also has a list of pages used by the search box. Link to it from other pages as `/example`.
 4. To make a page sign-in only, add `@login_required` under the route decorators.
 
 The 404 handler builds its list of pages from the routes, so a new page is included in "Did you mean...?" suggestions and case-correcting redirects (`/FAQS` goes to `/faqs`) without further work.
 
 ### Database
 
-`init_db()` in `main.py` creates these tables if they don't exist:
+`init_db()` in `main.py` creates the tables if they don't exist. `get_db()` runs it the first time the app opens the database:
 
 - `users`: `id`, `name`, `email` (unique, stored in lower case), `password_hash`, `created_at`
 - `messages`: `id`, `name`, `email`, `message`, `created_at`
+- `login_attempts`: failed sign-ins per email, used for the lockout (3 wrong passwords lock that email for 15 minutes). Expired locks are cleared out on later failed sign-ins.
 - `analytics_events`: `id`, `kind` (`search`, `view` or `quiz`), `value`, `created_at`. Sent by `topNavBar.js` (searches), `tlevelTabs.js` (each route tab, once per visit) and `quiz.js` (the top match). No user id or IP is stored.
 
 There are no migrations. `CREATE TABLE IF NOT EXISTS` does not change existing tables, so if you change a schema, either alter `site.db` by hand or delete it and let the app recreate it.
@@ -137,9 +151,10 @@ sqlite3 site.db "SELECT id, name, email, created_at FROM messages ORDER BY id DE
 - Passwords are hashed with `pbkdf2:sha256`. The Werkzeug default, scrypt, is missing from the Python that ships with macOS.
 - Sign-in stores `user_id` in Flask's signed session cookie. `load_user()` loads the user into `g.user` on each request, and templates see it as `current_user`.
 - Every POST form needs a CSRF token from Flask-WTF. Add `<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">` to any new form. The chat blueprint is exempt because it only accepts JSON.
-- The `next` parameter on `/login` is only followed if `is_safe_redirect()` confirms it is a path on this site.
+- The `next` parameter on `/login` and `/register` is only followed if `is_safe_redirect()` confirms it is a path on this site.
+- The form checks (`name_error()`, `email_error()`, `password_error()`, `message_error()` in `main.py`) are shared by the contact and sign-up forms. `auth.js` repeats them in the browser with the same messages, so change both together.
 - Form field limits: name 100 characters, email 254, message 2000, password 8 to 128. Requests over 16 KB are rejected, except chat requests, which allow 100 KB.
-- Rate limits are kept in memory, so they reset when the app restarts and are not shared between processes.
+- Rate limits use Flask-Limiter (set up in `extensions.py`). They are kept in memory, so they reset when the app restarts and are not shared between processes.
 
 ## AI chat (`chat_api.py`)
 
@@ -156,7 +171,9 @@ Validation rules: 1 to 20 messages, each with role `user` or `assistant` (visito
 - `/api/chat` returns `{"reply": "..."}` or `{"error": "..."}` with a status code.
 - `/api/chat/stream` returns `text/event-stream`. Each event is `data: {"delta": "..."}`, then `data: {"done": true}` at the end, or `data: {"error": "..."}` if something fails part-way. Errors found before streaming starts come back as normal JSON errors.
 
-Settings are constants at the top of the file: `CHAT_SYSTEM_PROMPT`, `CHAT_RATE_LIMIT` (10 requests per 60 seconds per IP, shared by both endpoints), `CHAT_TIMEOUT`, `CHAT_MAX_TOKENS` and `CHAT_REASONING`. The model's reasoning is excluded from responses.
+Settings are constants at the top of the file: `CHAT_SYSTEM_PROMPT`, `CHAT_RATE_LIMIT` (10 requests per minute per IP, shared by both endpoints; going over returns a JSON 429 with `Retry-After`), `CHAT_TIMEOUT`, `CHAT_MAX_TOKENS` and `CHAT_REASONING`. The messages visitors see are constants too. The model's reasoning is excluded from responses.
+
+The assistant also answers from `chat_knowledge.md`, a hand-kept copy of the site's page text. It doesn't update itself, so edit it when page wording, password rules or the lockout settings change, then restart the server.
 
 To change what the assistant says or refuses to say, edit `CHAT_SYSTEM_PROMPT`. Many visitors are under 18, so keep the safeguarding rules in it.
 
@@ -188,47 +205,55 @@ python send_slack_test.py
 To run only the bot, without the website:
 
 ```bash
-python -m bot.slack_bot_runner
+python -m bot.bot
 ```
 
 Run both commands from the project folder so the `bot` package can be imported.
 
 ## Frontend
 
-The frontend is plain HTML, CSS and JavaScript, with no build step or package manager. Flask serves `frontend/Template/Sources/` at `/Sources/`, so pages link to files with relative paths such as `href="Sources/css/home.css"`.
+The frontend is plain HTML, CSS and JavaScript, with no build step or package manager. Flask serves `frontend/Template/Sources/` at `/Sources/`.
 
 ### Shared files on every page
 
+`base.html` loads these, in this order, so pages don't list them.
+
 | File | What it does |
 |---|---|
-| `css/tokens.css` | Design tokens (colours, fonts) from the Figma token file. Load it before every other stylesheet. |
-| `css/topNavBar.css`, `js/topNavBar.js` | Builds the top navigation, search box, theme toggle and sign-in or account link. Also defines the light, dark and high-contrast theme variables (`--page-bg`, `--page-text`, `--accent`). |
+| `css/tokens.css` | Design tokens (colours, fonts) for the light, dark and high-contrast themes. Loaded before every other stylesheet. |
+| `css/base.css` | The site-wide keyboard focus ring and the `.visually-hidden` class (hidden on screen, still read by screen readers). |
+| `js/site.js` | `TLC.link()` and `TLC.isCurrent()`, the URL helpers the nav bar, footer and chat widget share. |
+| `css/topNavBar.css`, `js/topNavBar.js` | Builds the top navigation, search box and sign-in or account link. |
 | `css/accessibility.css`, `js/accessibility.js` | Accessibility popup: text size, theme and reading aids, saved in `localStorage` (`tlc-theme` and `tlc-a11y`). |
 | `css/footer.css`, `js/footer.js` | Builds the footer and keeps it at the bottom of short pages. |
-| `css/chatWidget.css`, `js/chatWidget.js` | The "T buddy" chat button and panel. Uses `/api/chat/stream`, with `/api/chat` as a fallback. |
+| `css/chatWidget.css`, `js/chatWidget.js` | The "T buddy" chat button and panel. Uses `/api/chat/stream`, with `/api/chat` as a fallback. Any button with `data-open-chat` opens it, and elements with `data-needs-chat` (hidden in the HTML) are shown once it loads. |
 | `css/motion.css` | Shared transitions. Movement is turned off when the visitor asks for reduced motion in their system or in the accessibility popup. |
 
-Load `accessibility.js` in `<head>` without `defer`, so saved settings apply before the page is drawn and there is no flash of the wrong theme or text size. Load the other scripts with `defer`. `faqs.html` shows the usual order.
+`accessibility.js` loads in `<head>` without `defer`, so saved settings apply before the page is drawn and there is no flash of the wrong theme or text size. Every other script loads with `defer`, so it runs once the page's HTML is ready and doesn't need to wait for `DOMContentLoaded`.
 
-The navigation, footer and chat widget are injected by JavaScript, so you don't add their markup to new pages. Each script works out the site root from its own URL (`document.currentScript`), so links still work whatever URL the page was loaded from.
+The navigation, footer and chat widget are injected by JavaScript, so you don't add their markup to new pages.
 
 ### Page-specific files
 
 | Page | CSS | JS |
 |---|---|---|
-| Home | `home.css`, `tlevel.css` (route cards) | |
-| T Level | `tlevel.css` | `tlevelTabs.js` (vertical tabs, selected by URL hash such as `#media`) |
-| Advice | `tlevel.css`, `advice.css` | `advice.js` (highlights the side nav, opens the chat) |
-| FAQs | `tlevel.css`, `advice.css` | `advice.js` |
-| Login | `auth.css` | `auth.js` (sign-in and sign-up tabs, client-side checks) |
-| Contact, account | `auth.css` | |
+| Home | `components.css`, `home.css` | |
+| T Level | `components.css`, `tlevel.css` | `tlevelTabs.js` (vertical tabs, selected by URL hash such as `#media`) |
+| Advice | `components.css`, `advice.css` | `advice.js` (highlights the side nav, runs the Your path year picker) |
+| FAQs | `components.css` | |
+| Quiz | `components.css`, `quiz.css` | `quiz.js` |
+| Contact | `contact.css` | `contact.js` (moves focus to the result after sending) |
+| Login | `auth.css` | `auth.js` (switches between sign-in and sign-up, client-side checks) |
+| Account | `auth.css` | |
 | Privacy | `privacy.css` | |
+| 404, 500 | `errorPage.css` | `errorPage.js` (404 only: the "Go back" button) |
 
-`tlevel.css` holds shared pieces (breadcrumb, title, callout, accordion, buttons, route cards) used by several pages.
+`components.css` holds the pieces several content pages share: page column, breadcrumb, title, callout, accordion, buttons, route cards and the "Still unsure?" card.
 
 ### Styling conventions
 
-- Take colours from `tokens.css` and the theme variables. Check that new styles work in the light, dark and high-contrast themes.
+- Take colours from `tokens.css`. Check that new styles work in the light, dark and high-contrast themes.
+- Focus rings come from `base.css`. Only add a `:focus-visible` rule when a component needs a different ring, for example on a coloured fill.
 - Size text in `rem` so the Large and Extra large text settings scale it.
 - The font is Amazon Ember, through `var(--font-sans)`. `accessibility.css` loads Atkinson Hyperlegible for the readable-font option.
 - Designs come from Figma. CSS comments name the Figma frame or node a file follows.
@@ -250,7 +275,7 @@ Before the site is reachable by anyone else:
 - Set a long random `SECRET_KEY`, for example from `python -c "import secrets; print(secrets.token_hex(32))"`.
 - Leave `FLASK_DEBUG` unset.
 - Serve over HTTPS and set `HTTPS=1`.
-- Run under a production WSGI server instead of `python main.py`. Note that the Slack bot is only started from `main.py`'s `__main__` block, so a WSGI server needs it started separately (for example with `python -m bot.slack_bot_runner`).
+- Run under a production WSGI server instead of `python main.py`. Note that the Slack bot is only started from `main.py`'s `__main__` block, so a WSGI server needs it started separately (for example with `python -m bot.bot`).
 - Rate limits are stored in memory per process. With several worker processes, each one has its own counts. Use a shared store such as Redis for Flask-Limiter if that matters.
 - Add `ProxyFix` if a reverse proxy sits in front of the app.
 - Back up `site.db`.

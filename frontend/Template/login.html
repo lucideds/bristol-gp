@@ -1,40 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign in – T Level Connect</title>
-  <link rel="stylesheet" href="Sources/css/tokens.css">
-  <link rel="stylesheet" href="Sources/css/topNavBar.css">
-  <link rel="stylesheet" href="Sources/css/accessibility.css">
-  <link rel="stylesheet" href="Sources/css/motion.css">
-  <script src="Sources/js/accessibility.js"></script>
-  <link rel="stylesheet" href="Sources/css/footer.css">
-  <link rel="stylesheet" href="Sources/css/chatWidget.css">
-  <link rel="stylesheet" href="Sources/css/auth.css">
-  <script src="Sources/js/topNavBar.js" defer></script>
-  <script src="Sources/js/footer.js" defer></script>
-  <script src="Sources/js/chatWidget.js" defer></script>
-  <script src="Sources/js/auth.js" defer></script>
-</head>
-<body>
+{% extends "base.html" %}
+{% set page_css = ["auth"] %}
+{% set page_js = ["auth"] %}
+{% block title %}Sign in{% endblock %}
+{% block content %}
   <main class="auth-page">
-    <section class="auth-card auth-card--figma" aria-labelledby="auth-title">
+    <section class="auth-card" aria-labelledby="auth-title">
       {% set auth_error = login_error or register_error %}
+      {#- Both forms keep ?next= so the visitor goes back to the page they came from. #}
+      {% set next_query = '?next=' ~ request.args.next|urlencode if request.args.next else '' %}
       <div id="auth-error-summary" class="auth-error-summary" role="alert" tabindex="-1"{% if not auth_error %} hidden{% endif %}>
         <p class="auth-error-summary-title">There is a problem</p>
         <ul class="auth-error-summary-list">{% if auth_error %}<li>{{ auth_error }}</li>{% endif %}</ul>
       </div>
       <h1 id="auth-title" class="auth-title">Sign in</h1>
 
-      <div class="auth-switch" hidden role="tablist" aria-label="Sign in or create an account">
-        <button type="button" role="tab" id="tab-signin" aria-controls="panel-signin" aria-selected="true" tabindex="0">Sign in</button>
-        <button type="button" role="tab" id="tab-register" aria-controls="panel-register" aria-selected="false" tabindex="-1">Sign up</button>
-      </div>
-
       <div id="panel-signin">
         <p class="auth-subtitle">Sign in to download resources and save your progress</p>
-        <form id="signin-form" class="auth-form" method="post" action="/login{% if request.args.next %}?next={{ request.args.next|urlencode }}{% endif %}" novalidate>
+        <form id="signin-form" class="auth-form" method="post" action="/login{{ next_query }}" novalidate>
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <div class="auth-field">
             <label for="signin-email">Email</label>
@@ -54,7 +36,7 @@
             <label for="signin-remember">Keep me signed in</label>
           </div>
           <button type="submit" class="auth-primary">Sign in</button>
-          <a class="auth-link" href="contact.html">Forgot your password?</a>
+          <a class="auth-link" href="/contact">Forgot your password?</a>
         </form>
         <hr class="auth-divider">
         <p class="auth-alt-text">New to T Level Connect?</p>
@@ -63,7 +45,7 @@
 
       <div id="panel-register" hidden>
         <p class="auth-subtitle">Create an account to save your progress</p>
-        <form id="register-form" class="auth-form" method="post" action="/register" novalidate>
+        <form id="register-form" class="auth-form" method="post" action="/register{{ next_query }}" novalidate>
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <div class="auth-field">
             <label for="register-name">Full name</label>
@@ -100,5 +82,4 @@
       </div>
     </section>
   </main>
-</body>
-</html>
+{% endblock %}

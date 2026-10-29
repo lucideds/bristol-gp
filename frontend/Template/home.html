@@ -1,23 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home</title>
-  <link rel="stylesheet" href="Sources/css/tokens.css">
-  <link rel="stylesheet" href="Sources/css/topNavBar.css">
-  <link rel="stylesheet" href="Sources/css/accessibility.css">
-  <link rel="stylesheet" href="Sources/css/motion.css">
-  <script src="Sources/js/accessibility.js"></script>
-  <script src="Sources/js/topNavBar.js" defer></script>
-  <link rel="stylesheet" href="Sources/css/footer.css">
-  <link rel="stylesheet" href="Sources/css/chatWidget.css">
-  <link rel="stylesheet" href="Sources/css/tlevel.css">
-  <link rel="stylesheet" href="Sources/css/home.css">
-  <script src="Sources/js/footer.js" defer></script>
-  <script src="Sources/js/chatWidget.js" defer></script>
-</head>
-<body>
+{% extends "base.html" %}
+{% set page_css = ["components", "home"] %}
+{% set page_js = [] %}
+{% block title %}Home{% endblock %}
+{% block content %}
   <main class="home-page">
     <section class="home-hero" aria-labelledby="home-hero-title">
       <div class="home-container home-hero-inner">
@@ -25,17 +10,17 @@
           <h1 id="home-hero-title" class="home-hero-title">Start your career with an Amazon T Level placement</h1>
           <p class="home-hero-lead">Find out what T Levels are, your ideal course and how this can lead to a placement at Amazon.</p>
           <div class="home-actions">
-            <a class="home-btn home-btn--primary" href="login.html#register">Register your interest</a>
-            <a class="home-btn home-btn--outline" href="TLevel.html">Explore placements</a>
+            <a class="home-btn home-btn--primary" href="/login#register">Register your interest</a>
+            <a class="home-btn home-btn--outline" href="/t-levels">Explore placements</a>
           </div>
         </div>
         <div class="home-hero-panel">
           <ul class="home-route-list" aria-label="The five placement routes">
-            <li><a href="TLevel.html#digital"><img src="Sources/assests/home-route-digital.svg" alt="" width="28" height="28">Digital</a></li>
-            <li><a href="TLevel.html#business"><img src="Sources/assests/home-route-business.svg" alt="" width="28" height="28">Business</a></li>
-            <li><a href="TLevel.html#media"><img src="Sources/assests/home-route-media.svg" alt="" width="28" height="28">Media</a></li>
-            <li><a href="TLevel.html#finance"><img src="Sources/assests/home-route-finance.svg" alt="" width="28" height="28">Finance</a></li>
-            <li><a href="TLevel.html#engineering"><img src="Sources/assests/home-route-engineering.svg" alt="" width="28" height="28">Engineering</a></li>
+            <li><a href="/t-levels#digital"><img src="Sources/assets/home-route-digital.svg" alt="" width="28" height="28">Digital</a></li>
+            <li><a href="/t-levels#business"><img src="Sources/assets/home-route-business.svg" alt="" width="28" height="28">Business</a></li>
+            <li><a href="/t-levels#media"><img src="Sources/assets/home-route-media.svg" alt="" width="28" height="28">Media</a></li>
+            <li><a href="/t-levels#finance"><img src="Sources/assets/home-route-finance.svg" alt="" width="28" height="28">Finance</a></li>
+            <li><a href="/t-levels#engineering"><img src="Sources/assets/home-route-engineering.svg" alt="" width="28" height="28">Engineering</a></li>
           </ul>
         </div>
       </div>
@@ -47,15 +32,15 @@
         <p class="home-section-lead">Find your next educational step based on where you are right now.</p>
         <ul class="home-audience-grid">
           <li class="home-audience-card">
-            <h3 class="home-card-title"><a href="TLevel.html">After GCSEs</a></h3>
+            <h3 class="home-card-title"><a href="/t-levels">After GCSEs</a></h3>
             <p class="home-card-body">See what T Levels bring and if they fit you.</p>
           </li>
           <li class="home-audience-card">
-            <h3 class="home-card-title"><a href="advice.html">During T Level</a></h3>
+            <h3 class="home-card-title"><a href="/advice">During T Level</a></h3>
             <p class="home-card-body">See how Amazon can help you during your course.</p>
           </li>
           <li class="home-audience-card">
-            <h3 class="home-card-title"><a href="advice.html">After T Level</a></h3>
+            <h3 class="home-card-title"><a href="/advice">After T Level</a></h3>
             <p class="home-card-body">Understand where you can go after your course.</p>
           </li>
         </ul>
@@ -68,23 +53,23 @@
         <p class="home-section-lead">Five routes Amazon offers placements for, find which one works best for you.</p>
         <ul class="route-cards-grid">
           <li class="route-card route-card--digital">
-            <h3 class="route-card-title"><a href="TLevel.html#digital">Digital</a></h3>
+            <h3 class="route-card-title"><a href="/t-levels#digital">Digital</a></h3>
             <p class="route-card-body">Build and support the technology customers use every day.</p>
           </li>
           <li class="route-card route-card--business">
-            <h3 class="route-card-title"><a href="TLevel.html#business">Business</a></h3>
+            <h3 class="route-card-title"><a href="/t-levels#business">Business</a></h3>
             <p class="route-card-body">See how teams plan, run and improve a large organisation.</p>
           </li>
           <li class="route-card route-card--media">
-            <h3 class="route-card-title"><a href="TLevel.html#media">Media</a></h3>
+            <h3 class="route-card-title"><a href="/t-levels#media">Media</a></h3>
             <p class="route-card-body">Help create and share stories, content and campaigns.</p>
           </li>
           <li class="route-card route-card--finance">
-            <h3 class="route-card-title"><a href="TLevel.html#finance">Finance</a></h3>
+            <h3 class="route-card-title"><a href="/t-levels#finance">Finance</a></h3>
             <p class="route-card-body">Learn how money is managed, tracked and reported.</p>
           </li>
           <li class="route-card route-card--engineering">
-            <h3 class="route-card-title"><a href="TLevel.html#engineering">Engineering</a></h3>
+            <h3 class="route-card-title"><a href="/t-levels#engineering">Engineering</a></h3>
             <p class="route-card-body">Work on the systems and equipment that keep things moving.</p>
           </li>
         </ul>
@@ -97,9 +82,8 @@
           <h2 id="home-cta-title" class="home-cta-title">Interested? Tell us.</h2>
           <p class="home-cta-lead">It only takes a few questions.</p>
         </div>
-        <a class="home-btn home-btn--dark" href="login.html#register">Register your interest</a>
+        <a class="home-btn home-btn--dark" href="/login#register">Register your interest</a>
       </div>
     </section>
   </main>
-</body>
-</html>
+{% endblock %}

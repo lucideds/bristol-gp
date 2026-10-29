@@ -7,12 +7,12 @@ main.py registers chat_bp with the app.
 import json
 import logging
 import os
-import threading
 import time
-from collections import deque
 
 import requests
 from flask import Blueprint, Response, current_app, jsonify, request, stream_with_context
+
+from extensions import limiter
 
 chat_bp = Blueprint("chat_api", __name__)
 
@@ -58,8 +58,8 @@ if CHAT_KNOWLEDGE:
 CHAT_MAX_MESSAGES = 20
 CHAT_MAX_MESSAGE_CHARS = 4000
 CHAT_MAX_BODY_BYTES = 100_000
-CHAT_RATE_LIMIT = 10            # Requests per IP address...
-CHAT_RATE_WINDOW = 60           # ...per this many seconds.
+# Each IP address may send this many chat requests a minute, shared by both chat routes.
+CHAT_RATE_LIMIT = "10 per minute"
 CHAT_TIMEOUT = (5, 90)          # (connect, read) seconds. When streaming, "read" is the longest gap between chunks.
 CHAT_STREAM_MAX_SECONDS = 120   # Longest a whole streamed reply may take.
 CHAT_MAX_TOKENS = 4096          # Includes the model's thinking.
@@ -67,34 +67,30 @@ CHAT_MAX_TOKENS = 4096          # Includes the model's thinking.
 # exclude stops the thinking ever being sent back to us or to visitors.
 CHAT_REASONING = {"effort": "low", "exclude": True}
 
-# IP address -> times of its recent chat requests. In memory, so it resets on restart.
-# Uses request.remote_addr, not X-Forwarded-For, because anyone can fake that header. If the site
-# is ever put behind a proxy, use Werkzeug's ProxyFix so remote_addr is the real visitor.
-_chat_hits = {}
-_chat_hits_lock = threading.Lock()
+# Messages shown to visitors. They never include the key, upstream details or tracebacks.
+CHAT_RATE_LIMITED = "You're sending messages too quickly. Please wait a moment and try again."
+NO_REPLY = "The assistant couldn't come up with a reply. Please try again."
+TOO_SLOW = "The assistant took too long to reply. Please try again."
+UNAVAILABLE = "The assistant is temporarily unavailable. Please try again later."
+UNREACHABLE = "Couldn't reach the assistant service. Please try again later."
+BUSY = "The assistant is busy right now. Please try again in a minute."
+INTERRUPTED = "The assistant's reply was interrupted. Please try again."
+
+chat_limit = limiter.shared_limit(CHAT_RATE_LIMIT, scope="chat")
 
 
-def _drop_old_hits(hits, now):
-    while hits and now - hits[0] >= CHAT_RATE_WINDOW:
-        hits.popleft()
+class ChatError(Exception):
+    """Ends a chat request with {"error": message} and the given status code."""
+
+    def __init__(self, message, status):
+        super().__init__(message)
+        self.message = message
+        self.status = status
 
 
-def chat_rate_limited(ip):
-    """Records a chat request from this IP. Returns 0 if it's allowed, or the seconds to wait."""
-    now = time.monotonic()
-    with _chat_hits_lock:
-        if len(_chat_hits) > 1000:  # Forget IPs that have gone quiet, so memory use stays small.
-            for key in list(_chat_hits):
-                _drop_old_hits(_chat_hits[key], now)
-                if not _chat_hits[key]:
-                    del _chat_hits[key]
-
-        hits = _chat_hits.setdefault(ip, deque())
-        _drop_old_hits(hits, now)
-        if len(hits) >= CHAT_RATE_LIMIT:
-            return int(CHAT_RATE_WINDOW - (now - hits[0])) + 1  # Until the oldest request expires.
-        hits.append(now)
-        return 0
+@chat_bp.errorhandler(ChatError)
+def chat_error(e):
+    return jsonify({"error": e.message}), e.status
 
 
 def validate_chat_messages(payload):
@@ -129,24 +125,11 @@ def validate_chat_messages(payload):
     return clean, None
 
 
-def chat_error(message, status):
-    return jsonify({"error": message}), status
-
-
 def check_chat_request():
-    """Runs the checks both chat routes share: rate limit, body size, JSON, API key.
-    Returns (error_response, None) if something is wrong, or (None, (messages, api_key, model)) if it's fine."""
-    # Rate limit first, so it protects everything below. Both routes share one limit.
-    retry_after = chat_rate_limited(request.remote_addr or "unknown")
-    if retry_after:
-        response, status = chat_error(
-            "You're sending messages too quickly. Please wait a moment and try again.", 429
-        )
-        response.headers["Retry-After"] = str(retry_after)
-        return (response, status), None
-
+    """Runs the checks both chat routes share: body size, JSON, API key.
+    Returns (messages, api_key, model), or raises ChatError."""
     if request.content_length is not None and request.content_length > CHAT_MAX_BODY_BYTES:
-        return chat_error("Your message is too long.", 413), None
+        raise ChatError("Your message is too long.", 413)
     # A conversation can be bigger than main.py's 16 KB form limit, so raise it for this request only.
     request.max_content_length = CHAT_MAX_BODY_BYTES
 
@@ -154,20 +137,18 @@ def check_chat_request():
     # which normal HTML forms can't send.
     clean, problem = validate_chat_messages(request.get_json(silent=True))
     if problem:
-        return chat_error("Invalid request: " + problem, 400), None
+        raise ChatError("Invalid request: " + problem, 400)
 
     # Read per request, so the settings can change without a code edit.
     api_key = os.environ.get("OPENROUTER_API_KEY", "").strip()
     if not api_key:
-        return chat_error("The chat assistant is not available: API key not configured.", 503), None
+        raise ChatError("The chat assistant is not available: API key not configured.", 503)
     model = os.environ.get("OPENROUTER_MODEL", "").strip() or DEFAULT_CHAT_MODEL
-    return None, (clean, api_key, model)
+    return clean, api_key, model
 
 
 def call_openrouter(clean, api_key, model, stream=False):
-    """Sends the conversation to OpenRouter.
-    Returns (response, None) if OpenRouter answered, or (None, error_response) if it couldn't be reached.
-    Error messages sent back never include the key, upstream details or tracebacks."""
+    """Sends the conversation to OpenRouter and returns its successful response, or raises ChatError."""
     body = {
         "model": model,
         "messages": [{"role": "system", "content": CHAT_SYSTEM_PROMPT}] + clean,
@@ -192,37 +173,25 @@ def call_openrouter(clean, api_key, model, stream=False):
         )
     except requests.Timeout:
         current_app.logger.warning("OpenRouter request timed out")
-        return None, chat_error("The assistant took too long to reply. Please try again.", 504)
+        raise ChatError(TOO_SLOW, 504)
     except requests.RequestException as exc:
         current_app.logger.warning("OpenRouter request failed: %s", type(exc).__name__)
-        return None, chat_error("Couldn't reach the assistant service. Please try again later.", 502)
-    return resp, None
+        raise ChatError(UNREACHABLE, 502)
 
-
-def upstream_status_error(resp):
-    """Returns an error response if OpenRouter answered with an error status, or None if it's fine."""
-    if 200 <= resp.status_code < 300:
-        return None
-    current_app.logger.warning("OpenRouter error %s: %s", resp.status_code, resp.text[:300])
-    if resp.status_code == 429:  # OpenRouter (or the free model) is rate limiting us.
-        return chat_error("The assistant is busy right now. Please try again in a minute.", 503)
-    return chat_error("The assistant is temporarily unavailable. Please try again later.", 502)  # e.g. a bad key (401/403).
+    if not 200 <= resp.status_code < 300:
+        current_app.logger.warning("OpenRouter error %s: %s", resp.status_code, resp.text[:300])
+        resp.close()
+        if resp.status_code == 429:  # OpenRouter (or the free model) is rate limiting us.
+            raise ChatError(BUSY, 503)
+        raise ChatError(UNAVAILABLE, 502)  # e.g. a bad key (401/403).
+    return resp
 
 
 @chat_bp.route("/api/chat", methods=["POST"])
+@chat_limit
 def chat():
     """Returns the whole reply as {"reply": "..."}, or {"error": "..."}."""
-    error, ctx = check_chat_request()
-    if error:
-        return error
-    resp, error = call_openrouter(*ctx)
-    if error:
-        return error
-    error = upstream_status_error(resp)
-    if error:
-        return error
-
-    no_reply = "The assistant couldn't come up with a reply. Please try again."
+    resp = call_openrouter(*check_chat_request())
     try:
         data = resp.json()
         content = None
@@ -233,14 +202,14 @@ def chat():
                 current_app.logger.warning("OpenRouter reply hit max_tokens")
     except ValueError:
         current_app.logger.warning("OpenRouter returned invalid JSON: %s", resp.text[:300])
-        return chat_error(no_reply, 502)
+        raise ChatError(NO_REPLY, 502)
     except Exception:  # Unexpected shape, e.g. no "choices".
         current_app.logger.exception("Unexpected OpenRouter response")
-        return chat_error(no_reply, 502)
+        raise ChatError(NO_REPLY, 502)
 
     if not isinstance(content, str) or not content.strip():
         current_app.logger.warning("OpenRouter gave no reply text: %s", resp.text[:300])
-        return chat_error(no_reply, 502)
+        raise ChatError(NO_REPLY, 502)
 
     return jsonify({"reply": content.strip()})
 
@@ -253,11 +222,6 @@ def chat():
 #   {"error": "message"}     - something went wrong (the stream ends after this)
 # Problems found before streaming starts (bad request, rate limit, no key, OpenRouter down)
 # are sent back as normal JSON errors with a status code, like /api/chat.
-
-STREAM_NO_REPLY = "The assistant couldn't come up with a reply. Please try again."
-STREAM_INTERRUPTED = "The assistant's reply was interrupted. Please try again."
-STREAM_UPSTREAM_ERROR = "The assistant is temporarily unavailable. Please try again later."
-STREAM_TOO_LONG = "The assistant took too long to reply. Please try again."
 
 
 def sse(obj):
@@ -276,7 +240,7 @@ def generate_chat_stream(resp):
         for raw in resp.iter_lines():
             if time.monotonic() > deadline:
                 current_app.logger.warning("OpenRouter stream took longer than %s seconds", CHAT_STREAM_MAX_SECONDS)
-                yield sse({"error": STREAM_TOO_LONG})
+                yield sse({"error": TOO_SLOW})
                 return
             line = raw.decode("utf-8", "replace") if isinstance(raw, bytes) else raw
             if not line or line.startswith(":"):  # Blank separators and comments like ": OPENROUTER PROCESSING".
@@ -296,7 +260,7 @@ def generate_chat_stream(resp):
                 continue
             if "error" in chunk:  # OpenRouter hit a problem part-way through.
                 current_app.logger.warning("OpenRouter stream error: %s", str(chunk["error"])[:300])
-                yield sse({"error": STREAM_UPSTREAM_ERROR})
+                yield sse({"error": UNAVAILABLE})
                 return
             choices = chunk.get("choices")
             if not isinstance(choices, list) or not choices or not isinstance(choices[0], dict):
@@ -314,7 +278,7 @@ def generate_chat_stream(resp):
             reason = choice.get("finish_reason")
             if reason == "error":
                 current_app.logger.warning("OpenRouter stream finished with an error")
-                yield sse({"error": STREAM_UPSTREAM_ERROR})
+                yield sse({"error": UNAVAILABLE})
                 return
             if reason == "length":
                 current_app.logger.warning("OpenRouter reply hit max_tokens")
@@ -323,39 +287,31 @@ def generate_chat_stream(resp):
     # A dropped connection or slow reply (read timeouts arrive as ConnectionError).
     except requests.RequestException as exc:
         current_app.logger.warning("OpenRouter stream failed: %s", type(exc).__name__)
-        yield sse({"error": STREAM_INTERRUPTED})
+        yield sse({"error": INTERRUPTED})
         return
     except Exception:
         current_app.logger.exception("Unexpected error while streaming")
-        yield sse({"error": STREAM_INTERRUPTED})
+        yield sse({"error": INTERRUPTED})
         return
     finally:
         resp.close()  # Free the connection to OpenRouter, even if the visitor left.
 
     if not started:
         current_app.logger.warning("OpenRouter stream gave no reply text")
-        yield sse({"error": STREAM_NO_REPLY})
+        yield sse({"error": NO_REPLY})
         return
     if not finished:
         current_app.logger.warning("OpenRouter stream ended early")
-        yield sse({"error": STREAM_INTERRUPTED})
+        yield sse({"error": INTERRUPTED})
         return
     yield sse({"done": True})
 
 
 @chat_bp.route("/api/chat/stream", methods=["POST"])
+@chat_limit
 def chat_stream():
     """Like /api/chat, but sends the reply as Server-Sent Events while it's being written."""
-    error, ctx = check_chat_request()
-    if error:
-        return error
-    resp, error = call_openrouter(*ctx, stream=True)
-    if error:
-        return error
-    error = upstream_status_error(resp)
-    if error:
-        resp.close()
-        return error
+    resp = call_openrouter(*check_chat_request(), stream=True)
 
     # stream_with_context keeps the request (and current_app, used for logging) available
     # while generate_chat_stream runs, which is after this function has returned.

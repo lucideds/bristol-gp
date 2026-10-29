@@ -1,24 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Page not found – T Level Connect</title>
-  <!-- Paths start with "/" so styles still load on missing pages deeper in the site, e.g. /t-levels/xyz -->
-  <link rel="stylesheet" href="/Sources/css/tokens.css">
-  <link rel="stylesheet" href="/Sources/css/topNavBar.css">
-  <link rel="stylesheet" href="/Sources/css/accessibility.css">
-  <link rel="stylesheet" href="/Sources/css/motion.css">
-  <script src="/Sources/js/accessibility.js"></script>
-  <link rel="stylesheet" href="/Sources/css/footer.css">
-  <link rel="stylesheet" href="/Sources/css/chatWidget.css">
-  <script src="/Sources/js/topNavBar.js" defer></script>
-  <script src="/Sources/js/footer.js" defer></script>
-  <script src="/Sources/js/chatWidget.js" defer></script>
-  <script src="/Sources/js/errorPage.js" defer></script>
-  <link rel="stylesheet" href="/Sources/css/errorPage.css">
-</head>
-<body>
+{% extends "base.html" %}
+{% set page_css = ["errorPage"] %}
+{% set page_js = ["errorPage"] %}
+{% block title %}Page not found{% endblock %}
+{% block content %}
   <main class="error-page">
     <section class="error-card" aria-labelledby="error-title">
       <p class="error-code" aria-hidden="true"><span>4</span><span><!-- Compass in place of the 0, needle searching around because we're "lost" -->
@@ -54,5 +38,4 @@
       </nav>
     </section>
   </main>
-</body>
-</html>
+{% endblock %}

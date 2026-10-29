@@ -1,36 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Advice</title>
-  <link rel="stylesheet" href="Sources/css/tokens.css">
-  <link rel="stylesheet" href="Sources/css/topNavBar.css">
-  <link rel="stylesheet" href="Sources/css/accessibility.css">
-  <link rel="stylesheet" href="Sources/css/motion.css">
-  <script src="Sources/js/accessibility.js"></script>
-  <script src="Sources/js/topNavBar.js" defer></script>
-  <link rel="stylesheet" href="Sources/css/footer.css">
-  <link rel="stylesheet" href="Sources/css/chatWidget.css">
-  <link rel="stylesheet" href="Sources/css/tlevel.css">
-  <link rel="stylesheet" href="Sources/css/advice.css">
-  <script src="Sources/js/footer.js" defer></script>
-  <script src="Sources/js/chatWidget.js" defer></script>
-  <script src="Sources/js/advice.js" defer></script>
-</head>
-<body>
-  <!-- Reuses tlevel.css for the breadcrumb, title, callout, FAQ accordion and button; advice.css adds the rest -->
+{% extends "base.html" %}
+{% set page_css = ["components", "advice"] %}
+{% set page_js = ["advice"] %}
+{% block title %}Advice{% endblock %}
+{% block content %}
+  <!-- components.css supplies the breadcrumb, title, callout, FAQ accordion and buttons; advice.css adds the rest -->
   <main class="tlevel-page advice-page">
     <nav class="tlevel-breadcrumb" aria-label="Breadcrumb">
       <ol>
-        <li><a href="home.html">Home</a></li>
+        <li><a href="/">Home</a></li>
         <li aria-current="page">Advice</li>
       </ol>
     </nav>
 
     <h1 class="tlevel-title">Advice</h1>
     <p class="advice-lead">Thinking about a T Level? Here is why it could be right for you, how to apply for a placement, and where it can lead.</p>
-    <a class="tlevel-btn advice-quiz-link" href="quiz.html">Take the quiz to find your T Level</a>
+    <a class="tlevel-btn advice-quiz-link" href="/quiz">Take the quiz to find your T Level</a>
 
     <div class="advice-layout">
       <!-- advice.js marks the link for the section in view with aria-current -->
@@ -45,8 +29,8 @@
         <p class="advice-nav-label" id="advice-other-label">Advice for someone else?</p>
         <!-- TODO: point these at the parents/carers and schools/colleges pages once they exist -->
         <ul aria-labelledby="advice-other-label">
-          <li><a href="contact.html">Parents and careers</a></li>
-          <li><a href="contact.html">Schools and colleges</a></li>
+          <li><a href="/contact">Parents and careers</a></li>
+          <li><a href="/contact">Schools and colleges</a></li>
         </ul>
       </nav>
 
@@ -114,7 +98,7 @@
             </li>
           </ol>
 
-          <a class="tlevel-btn advice-register" href="login.html#register">Register your interest</a>
+          <a class="tlevel-btn advice-register" href="/login#register">Register your interest</a>
         </section>
 
         <section id="your-path" class="advice-section path-section" aria-labelledby="your-path-title">
@@ -146,7 +130,7 @@
                   <p class="path-step-when">Year 10</p>
                   <h4>Explore your options</h4>
                   <p>Find out what T Levels are and how they compare with A levels and apprenticeships. Our quiz suggests which of the five routes might suit you.</p>
-                  <a class="path-link" href="quiz.html">Take the quiz</a>
+                  <a class="path-link" href="/quiz">Take the quiz</a>
                 </div>
               </li>
               <li class="path-step" id="step-adviser">
@@ -192,7 +176,7 @@
                   <p class="path-step-when">Year 12</p>
                   <h4>Register your interest</h4>
                   <p>Tell us which routes you like. We'll email you when Amazon placements open. You can change your answers later.</p>
-                  <a class="path-link" href="login.html#register">Register your interest</a>
+                  <a class="path-link" href="/login#register">Register your interest</a>
                 </div>
               </li>
               <li class="path-step" id="step-school">
@@ -240,7 +224,7 @@
               <li class="path-next-card">
                 <h4>University</h4>
                 <p>T Levels carry UCAS points. A Distinction* is worth the same as three A* grades at A level.</p>
-                <a class="path-link" href="faqs.html#after-your-t-level">How T Levels count for university</a>
+                <a class="path-link" href="/faqs#after-your-t-level">How T Levels count for university</a>
               </li>
               <li class="path-next-card">
                 <h4>Work</h4>
@@ -253,8 +237,8 @@
           <div class="path-end">
             <p class="path-note">Dates vary between schools and colleges. Ask yours for the exact dates.</p>
             <div class="path-end-actions">
-              <a class="tlevel-btn" href="login.html#register">Register your interest</a>
-              <a class="advice-action" href="quiz.html">Take the quiz</a>
+              <a class="tlevel-btn" href="/login#register">Register your interest</a>
+              <a class="advice-action" href="/quiz">Take the quiz</a>
             </div>
           </div>
         </section>
@@ -263,10 +247,10 @@
           <h2 class="advice-section-title" id="where-it-leads-title">Where it can lead</h2>
           <p>A T Level can lead to university, an apprenticeship or work. These are example jobs in each route. They depend on what you study and where you work.</p>
 
-          <!-- Card colours come from the route card rules in tlevel.css -->
+          <!-- Card colours come from the route card rules in components.css -->
           <ul class="advice-routes">
             <li class="route-card route-card--digital advice-route">
-              <h3><a href="TLevel.html#digital">Digital</a></h3>
+              <h3><a href="/t-levels#digital">Digital</a></h3>
               <ul>
                 <li>Software developer</li>
                 <li>Data analyst</li>
@@ -275,7 +259,7 @@
               </ul>
             </li>
             <li class="route-card route-card--business advice-route">
-              <h3><a href="TLevel.html#business">Business</a></h3>
+              <h3><a href="/t-levels#business">Business</a></h3>
               <ul>
                 <li>Project manager</li>
                 <li>Business analyst</li>
@@ -284,7 +268,7 @@
               </ul>
             </li>
             <li class="route-card route-card--media advice-route">
-              <h3><a href="TLevel.html#media">Media</a></h3>
+              <h3><a href="/t-levels#media">Media</a></h3>
               <ul>
                 <li>Content producer</li>
                 <li>Video editor</li>
@@ -293,7 +277,7 @@
               </ul>
             </li>
             <li class="route-card route-card--finance advice-route">
-              <h3><a href="TLevel.html#finance">Finance</a></h3>
+              <h3><a href="/t-levels#finance">Finance</a></h3>
               <ul>
                 <li>Accountant</li>
                 <li>Financial analyst</li>
@@ -302,7 +286,7 @@
               </ul>
             </li>
             <li class="route-card route-card--engineering advice-route">
-              <h3><a href="TLevel.html#engineering">Engineering</a></h3>
+              <h3><a href="/t-levels#engineering">Engineering</a></h3>
               <ul>
                 <li>Mechanical engineer</li>
                 <li>Electrical engineer</li>
@@ -334,20 +318,19 @@
             <h3>Still unsure?</h3>
             <p>Take our short quiz to find a T Level that suits you, ask the assistant for a quick answer, or send a message to the team. You can also read our guide for students.</p>
             <div class="advice-actions">
-              <a class="advice-action" href="quiz.html">Take the quiz</a>
-              <!-- advice.js shows this button and opens the chat widget; it needs JavaScript -->
-              <button type="button" class="advice-action" data-open-chat hidden>
+              <a class="advice-action" href="/quiz">Take the quiz</a>
+              <!-- chatWidget.js shows this button and makes it open the chat; it needs JavaScript -->
+              <button type="button" class="advice-action" data-open-chat data-needs-chat hidden>
                 <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
                   <path d="M8 2l1.333 4 4 1.333-4 1.334L8 12.667 6.667 8.667l-4-1.334 4-1.333L8 2Z" fill="none" stroke="currentColor" stroke-width="1.333" stroke-linejoin="round"/>
                 </svg>
                 Ask a question
               </button>
-              <a class="advice-action" href="contact.html">Contact us</a>
+              <a class="advice-action" href="/contact">Contact us</a>
             </div>
           </div>
         </section>
       </div>
     </div>
   </main>
-</body>
-</html>
+{% endblock %}

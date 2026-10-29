@@ -5,6 +5,7 @@ and out. The chat widget's API lives in chat_api.py.
 """
 
 import difflib
+import logging
 import os
 import re
 import secrets
@@ -14,22 +15,25 @@ from functools import wraps
 from urllib.parse import urlparse
 
 from dotenv import load_dotenv
-from flask import Flask, abort, g, redirect, render_template, request, send_from_directory, session, url_for
+from flask import Flask, abort, g, jsonify, redirect, render_template, request, send_from_directory, session, url_for
 from flask_wtf.csrf import CSRFError, CSRFProtect
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from chat_api import chat_bp
+from chat_api import CHAT_RATE_LIMITED, chat_bp
+from extensions import limiter
+
+log = logging.getLogger(__name__)
 
 # bot/bot.py posts each contact message to Slack. Without slack_bolt the site still works.
 try:
     from bot.bot import is_configured as is_slack_configured, send_to_slack, start_in_background as start_slack_bot
 except ImportError:
-    print("WARNING: slack_bolt is not installed, so contact messages won't be sent to Slack. "
-          "Run: pip install -r requirements.txt")
+    log.warning("slack_bolt is not installed, so contact messages won't be sent to Slack. "
+                "Run: pip install -r requirements.txt")
     def is_slack_configured():
         return False
+    def send_to_slack(payload):
+        pass
     def start_slack_bot():
         pass
 
@@ -44,6 +48,9 @@ DOWNLOADS_DIR = os.path.join(BASE_DIR, "resources", "specs")
 load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 DEBUG = os.environ.get("FLASK_DEBUG") == "1"
+# Turns on the secure cookie and HSTS. Off by default because local testing uses http://,
+# where the browser would drop a secure cookie and nobody could stay signed in.
+HTTPS = os.environ.get("HTTPS") == "1"
 
 MAX_NAME_LENGTH = 100
 MAX_EMAIL_LENGTH = 254
@@ -52,7 +59,7 @@ MAX_PASSWORD_LENGTH = 128
 MIN_PASSWORD_LENGTH = 8
 
 # A capital, a number and a special character (anything but a letter, digit or space).
-# auth.js checks the same rules in the browser, so keep the two in step.
+# auth.js checks the same rules, with the same messages, in the browser. Keep the two in step.
 PASSWORD_CAPITAL = re.compile(r"[A-Z]")
 PASSWORD_NUMBER = re.compile(r"[0-9]")
 PASSWORD_SPECIAL = re.compile(r"[^A-Za-z0-9\s]")
@@ -96,21 +103,18 @@ app = Flask(
 # Without SECRET_KEY a random key is used, which signs everyone out whenever the app restarts.
 secret_key = os.environ.get("SECRET_KEY")
 if not secret_key:
-    print("WARNING: SECRET_KEY is not set, using a random key. "
-          "Users will be signed out whenever the app restarts.")
+    log.warning("SECRET_KEY is not set, using a random key. Users will be signed out whenever the app restarts.")
     secret_key = secrets.token_hex(32)
 app.config["SECRET_KEY"] = secret_key
 app.config["TEMPLATES_AUTO_RELOAD"] = True
-
-# SECURE is opt-in (HTTPS=1) because local testing uses http://, where the browser would drop the cookie.
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
-app.config["SESSION_COOKIE_SECURE"] = os.environ.get("HTTPS") == "1"
+app.config["SESSION_COOKIE_SECURE"] = HTTPS
 
 # The forms are tiny. chat_api.py raises this limit for chat requests.
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024
 
 csrf = CSRFProtect(app)
-limiter = Limiter(get_remote_address, app=app, storage_uri="memory://")
+limiter.init_app(app)
 
 
 # ---------- Security headers ----------
@@ -138,16 +142,22 @@ def set_security_headers(response):
     response.headers["X-Frame-Options"] = "DENY"  # frame-ancestors for older browsers.
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-    # Same switch as SESSION_COOKIE_SECURE, so local http:// testing isn't affected.
-    if os.environ.get("HTTPS") == "1":
+    if HTTPS:
         response.headers["Strict-Transport-Security"] = "max-age=31536000"
     return response
 
 
 # ---------- Database ----------
 
+_db_initialised_for = None  # The DATABASE path init_db() last ran for, so it runs once per file.
+
+
 def get_db():
-    """Returns this request's database connection, opening it on first use."""
+    """Returns this request's database connection, opening it (and creating the tables) on first use."""
+    global _db_initialised_for
+    if _db_initialised_for != DATABASE:
+        init_db()
+        _db_initialised_for = DATABASE
     if "db" not in g:
         g.db = sqlite3.connect(DATABASE)
         g.db.row_factory = sqlite3.Row
@@ -245,52 +255,97 @@ def is_safe_redirect(target):
     return not parts.scheme and not parts.netloc
 
 
+def redirect_after_sign_in():
+    """Sends a user who has just signed in or signed up to the ?next= page, or their account."""
+    next_page = request.args.get("next", "")
+    return redirect(next_page if is_safe_redirect(next_page) else url_for("account"))
+
+
 def is_valid_email(email):
     return len(email) <= MAX_EMAIL_LENGTH and EMAIL_PATTERN.fullmatch(email) is not None
 
 
-# ---------- Public pages ----------
-# The nav bar and footer link to the ".html" file names, so each page answers on both its file
-# name and its short URL. The short URL is listed last so url_for() builds that one.
+# ---------- Form checks ----------
+# Each returns the error message to show, or None if the value is fine. The messages match
+# the ones auth.js shows in the browser.
 
-@app.route("/home.html")
+def name_error(name):
+    if not name:
+        return "Enter your name"
+    if len(name) > MAX_NAME_LENGTH:
+        return f"Name must be {MAX_NAME_LENGTH} characters or fewer"
+    return None
+
+
+def email_error(email):
+    if not email:
+        return "Enter your email address"
+    if not is_valid_email(email):
+        return "Enter an email address in the correct format, like name@example.com"
+    return None
+
+
+def password_error(password, confirm):
+    if not password:
+        return "Enter your password"
+    if len(password) < MIN_PASSWORD_LENGTH:
+        return f"Password must be at least {MIN_PASSWORD_LENGTH} characters"
+    if len(password) > MAX_PASSWORD_LENGTH:
+        return f"Password must be {MAX_PASSWORD_LENGTH} characters or fewer"
+    if not PASSWORD_CAPITAL.search(password):
+        return "Password must include a capital letter"
+    if not PASSWORD_NUMBER.search(password):
+        return "Password must include a number"
+    if not PASSWORD_SPECIAL.search(password):
+        return "Password must include a special character, such as ! ? # or @"
+    if not confirm:
+        return "Type your password again"
+    if password != confirm:
+        return "Passwords do not match"
+    return None
+
+
+def message_error(message):
+    if not message:
+        return "Enter your message"
+    if len(message) > MAX_MESSAGE_LENGTH:
+        return f"Message must be {MAX_MESSAGE_LENGTH} characters or fewer"
+    return None
+
+
+# ---------- Public pages ----------
+
 @app.route("/")
 def home():
     return render_template("home.html")
 
 
-@app.route("/accessibility.html")
 @app.route("/accessibility")
 def accessibility():
     # Old links. The settings are now a popup on every page.
     return redirect(url_for("home") + "#accessibility")
 
 
-@app.route("/faqs.html")
 @app.route("/faqs")
 def faqs():
     return render_template("faqs.html")
 
 
-@app.route("/TLevel.html")
 @app.route("/t-levels")
 def t_levels():
     return render_template("TLevel.html")
 
 
-@app.route("/advice.html")
 @app.route("/advice")
 def advice():
     return render_template("advice.html")
 
 
-@app.route("/privacy.html")
 @app.route("/privacy")
 def privacy():
     return render_template("privacy.html")
 
 
-@app.route("/quiz.html")
 @app.route("/quiz")
 def quiz():
     return render_template("quiz.html")
@@ -325,6 +380,24 @@ def api_track():
     return "", 204
 
 
+# The pages used to be linked by their file names, e.g. /faqs.html. Those addresses still work
+# for old links and bookmarks, by redirecting to the short URL.
+OLD_PAGE_URLS = {
+    "home": "home", "accessibility": "accessibility", "faqs": "faqs", "tlevel": "t_levels",
+    "advice": "advice", "privacy": "privacy", "quiz": "quiz", "contact": "contact",
+    "account": "account", "analytics": "analytics", "login": "login", "signin": "login",
+}
+
+
+@app.route("/<page>.html")
+def old_page_url(page):
+    endpoint = OLD_PAGE_URLS.get(page.lower())
+    if endpoint is None:
+        abort(404)
+    query = request.query_string.decode()
+    return redirect(url_for(endpoint) + ("?" + query if query else ""), code=301)
+
+
 @app.route("/api/session")
 def api_session():
     """Used by topNavBar.js to show "Sign in" or "Account"."""
@@ -335,7 +408,6 @@ def api_session():
 
 # ---------- Contact ----------
 
-@app.route("/contact.html", methods=["GET", "POST"])
 @app.route("/contact", methods=["GET", "POST"])
 @limiter.limit("5 per minute", methods=["POST"])
 def contact():
@@ -349,20 +421,10 @@ def contact():
         email = request.form.get("email", "").strip().lower()
         message = request.form.get("message", "").strip()
 
-        if not name:
-            errors["name"] = "Enter your name"
-        elif len(name) > MAX_NAME_LENGTH:
-            errors["name"] = f"Name must be {MAX_NAME_LENGTH} characters or fewer"
-
-        if not email:
-            errors["email"] = "Enter your email address"
-        elif not is_valid_email(email):
-            errors["email"] = "Enter an email address in the correct format, like name@example.com"
-
-        if not message:
-            errors["message"] = "Enter your message"
-        elif len(message) > MAX_MESSAGE_LENGTH:
-            errors["message"] = f"Message must be {MAX_MESSAGE_LENGTH} characters or fewer"
+        for field, error in (("name", name_error(name)), ("email", email_error(email)),
+                             ("message", message_error(message))):
+            if error:
+                errors[field] = error
 
         if not errors:
             db = get_db()
@@ -374,9 +436,9 @@ def contact():
             if is_slack_configured():
                 try:
                     send_to_slack({"name": name, "email": email, "message": message})
-                except Exception as e:
+                except Exception:
                     # The message is already saved, so Slack being down mustn't break the form.
-                    print("Could not send message to Slack:", e)
+                    log.exception("Could not send message to Slack")
             # Post/Redirect/GET, so refreshing the thank-you page can't send the message again.
             # The GET below pops this, so the confirmation shows only once.
             session["contact_sent"] = {"name": name, "email": email}
@@ -396,24 +458,9 @@ def try_register(form):
     password = form.get("password", "")  # Not stripped: spaces could be deliberate.
     confirm = form.get("confirm_password", "")
 
-    if not name or not email or not password:
-        return "Please fill in every field."
-    if len(name) > MAX_NAME_LENGTH:
-        return f"Name must be {MAX_NAME_LENGTH} characters or fewer."
-    if not is_valid_email(email):
-        return "Please enter a valid email address."
-    if len(password) < MIN_PASSWORD_LENGTH:
-        return f"Password must be at least {MIN_PASSWORD_LENGTH} characters."
-    if len(password) > MAX_PASSWORD_LENGTH:
-        return f"Password must be {MAX_PASSWORD_LENGTH} characters or fewer."
-    if not PASSWORD_CAPITAL.search(password):
-        return "Password must include a capital letter."
-    if not PASSWORD_NUMBER.search(password):
-        return "Password must include a number."
-    if not PASSWORD_SPECIAL.search(password):
-        return "Password must include a special character, such as ! ? # or @."
-    if password != confirm:
-        return "Passwords do not match."
+    error = name_error(name) or email_error(email) or password_error(password, confirm)
+    if error:
+        return error
 
     db = get_db()
     try:
@@ -434,13 +481,13 @@ def try_register(form):
 def record_failed_login(db, email):
     """Counts one wrong password for this email, locks it on the last attempt,
     and returns the error message showing which attempt this was."""
-    # An old lock that has run out counts as a fresh start, so the count goes back to 1.
+    # Clear out locks that have run out, so the table doesn't keep growing. Clearing this
+    # email's old lock also makes this attempt count as the first one again.
+    db.execute("DELETE FROM login_attempts WHERE locked_until > 0 AND locked_until <= ?", (time.time(),))
     db.execute(
         """
         INSERT INTO login_attempts (email, failed_count, locked_until) VALUES (?, 1, 0)
-        ON CONFLICT(email) DO UPDATE SET
-            failed_count = CASE WHEN locked_until > 0 THEN 1 ELSE failed_count + 1 END,
-            locked_until = 0
+        ON CONFLICT(email) DO UPDATE SET failed_count = failed_count + 1
         """,
         (email,),
     )
@@ -464,7 +511,8 @@ def try_login(form):
     """Signs a user in. Returns an error message, or None if it worked."""
     email = form.get("email", "").strip().lower()
     password = form.get("password", "")
-    if not email or not password:  # Empty boxes don't count as an attempt.
+    # Empty boxes, or an email too long to be real, don't count as an attempt.
+    if not email or not password or len(email) > MAX_EMAIL_LENGTH:
         return "Incorrect email or password."
     db = get_db()
 
@@ -519,7 +567,6 @@ def download(name):
     return response
 
 
-@app.route("/account.html")
 @app.route("/account")
 @login_required
 def account():
@@ -547,7 +594,6 @@ def count_by_route(db, kind):
     return [{"key": key, "name": name, "count": counts.get(key, 0)} for key, name in ROUTES]
 
 
-@app.route("/analytics.html")
 @app.route("/analytics")
 @login_required
 def analytics():
@@ -565,7 +611,7 @@ def analytics():
         return count("SELECT COUNT(*) FROM analytics_events WHERE kind = ? AND created_at >= datetime('now', ?)",
                      kind, since)
 
-    week = "-7 days"                                       # SQLite's way of saying "7 days ago".
+    week = "-7 days"  # SQLite's way of saying "7 days ago".
     totals = {
         "enquiries": count("SELECT COUNT(*) FROM messages"),
         "accounts": count("SELECT COUNT(*) FROM users"),
@@ -595,10 +641,8 @@ def analytics():
 
 
 # login.html holds both the sign-in and the sign-up form. Sign-in posts to /login and
-# sign-up to /register; both show login.html again on error.
+# sign-up to /register; both show login.html again on error, keeping any ?next= page.
 
-@app.route("/login.html", methods=["GET", "POST"])
-@app.route("/signin.html")  # The nav bar's "Sign in" button links here.
 @app.route("/login", methods=["GET", "POST"])
 @limiter.limit("10 per minute", methods=["POST"])
 def login():
@@ -608,10 +652,7 @@ def login():
     if request.method == "POST":
         error = try_login(request.form)
         if error is None:
-            next_page = request.args.get("next", "")
-            if is_safe_redirect(next_page):
-                return redirect(next_page)
-            return redirect(url_for("account"))
+            return redirect_after_sign_in()
     return render_template("login.html", login_error=error)
 
 
@@ -624,7 +665,7 @@ def register():
     if request.method == "POST":
         error = try_register(request.form)
         if error is None:
-            return redirect(url_for("account"))
+            return redirect_after_sign_in()
     return render_template("login.html", register_error=error)
 
 
@@ -650,7 +691,6 @@ def visitable_pages():
         rule.rule for rule in app.url_map.iter_rules()
         if "GET" in rule.methods
         and not rule.arguments
-        and not rule.rule.endswith(".html")
         and not rule.rule.startswith(("/api", "/static", "/Sources"))
         and rule.rule != "/analytics"  # Team-only, so don't suggest it on the 404 page.
     })
@@ -702,7 +742,15 @@ def csrf_error(e):
 
 @app.errorhandler(429)
 def too_many_requests(e):
-    return "Too many attempts. Please wait a minute and try again.", 429
+    if not request.path.startswith("/api/"):
+        return "Too many attempts. Please wait a minute and try again.", 429
+    # The chat widget reads {"error": ...} from the API, so it gets JSON and a Retry-After.
+    response = jsonify({"error": CHAT_RATE_LIMITED})
+    response.status_code = 429
+    current = limiter.current_limit
+    if current is not None:
+        response.headers["Retry-After"] = str(max(1, int(current.reset_at - time.time()) + 1))
+    return response
 
 
 @app.errorhandler(413)
@@ -712,9 +760,8 @@ def too_large(e):
 
 # ---------- Run ----------
 
-init_db()
-
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
     # In debug mode Flask runs this file twice (a file watcher and the server); only the server starts the bot.
     if not DEBUG or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         start_slack_bot()

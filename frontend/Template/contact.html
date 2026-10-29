@@ -1,23 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% if errors %}Error: {% endif %}Contact us – T Level Connect</title>
-  <link rel="stylesheet" href="Sources/css/tokens.css">
-  <link rel="stylesheet" href="Sources/css/topNavBar.css">
-  <link rel="stylesheet" href="Sources/css/accessibility.css">
-  <link rel="stylesheet" href="Sources/css/motion.css">
-  <script src="Sources/js/accessibility.js"></script>
-  <script src="Sources/js/topNavBar.js" defer></script>
-  <link rel="stylesheet" href="Sources/css/footer.css">
-  <link rel="stylesheet" href="Sources/css/chatWidget.css">
-  <link rel="stylesheet" href="Sources/css/contact.css">
-  <script src="Sources/js/footer.js" defer></script>
-  <script src="Sources/js/chatWidget.js" defer></script>
-  <script src="Sources/js/contact.js" defer></script>
-</head>
-<body>
+{% extends "base.html" %}
+{% set page_css = ["contact"] %}
+{% set page_js = ["contact"] %}
+{% block title %}{% if errors %}Error: {% endif %}Contact us{% endblock %}
+{% block content %}
   {#- One form field: label, optional hint, the box, and its error (if the server sent one). -#}
   {% macro field(name, label, type='text', autocomplete=None, maxlength=None, hint=None, value='') -%}
     {%- set error = errors.get(name) -%}
@@ -38,7 +23,7 @@
              {%- if ids %} aria-describedby="{{ ids|join(' ') }}"{% endif %}{% if error %} aria-invalid="true"{% endif %}>
       {%- endif %}
       {%- if error %}
-      <p class="contact-error" id="contact-{{ name }}-error"><span class="contact-error-icon" aria-hidden="true"></span><span><span class="contact-visually-hidden">Error: </span>{{ error }}</span></p>
+      <p class="contact-error" id="contact-{{ name }}-error"><span class="contact-error-icon" aria-hidden="true"></span><span><span class="visually-hidden">Error: </span>{{ error }}</span></p>
       {%- endif %}
     </div>
   {%- endmacro %}
@@ -46,7 +31,7 @@
   <main class="contact-page">
     <nav class="contact-breadcrumb" aria-label="Breadcrumb">
       <ol>
-        <li><a href="home.html">Home</a></li>
+        <li><a href="/">Home</a></li>
         <li aria-current="page">Contact us</li>
       </ol>
     </nav>
@@ -87,7 +72,7 @@
         {{ field('message', 'Message', type='textarea', maxlength=2000,
                  hint='Please don’t include sensitive personal details.',
                  value=request.form.message or '') }}
-        <p class="contact-privacy">We only use these details to reply to you. <a href="privacy.html">Read the privacy notice</a>.</p>
+        <p class="contact-privacy">We only use these details to reply to you. <a href="/privacy">Read the privacy notice</a>.</p>
         <button type="submit" class="contact-btn contact-btn--primary">Send message</button>
       </form>
       {% endif %}
@@ -96,12 +81,13 @@
         <section class="contact-panel">
           <h2 class="contact-panel-title">Look for an answer first</h2>
           <p class="contact-small">Many questions are answered in our FAQs.</p>
-          <a class="contact-btn contact-btn--secondary" href="faqs.html">Read the FAQs</a>
+          <a class="contact-btn contact-btn--secondary" href="/faqs">Read the FAQs</a>
         </section>
-        <section class="contact-panel" id="contact-assistant" hidden>
+        <!-- chatWidget.js shows this panel and makes the button open the chat; it needs JavaScript -->
+        <section class="contact-panel" data-needs-chat hidden>
           <h2 class="contact-panel-title">Ask the assistant</h2>
           <p class="contact-small">Get a quick answer from T buddy, our AI assistant. Check anything important with us.</p>
-          <button type="button" class="contact-btn contact-btn--secondary" id="contact-open-chat">
+          <button type="button" class="contact-btn contact-btn--secondary" data-open-chat>
             <span class="contact-btn-icon" aria-hidden="true"></span> Ask a question
           </button>
         </section>
@@ -112,5 +98,4 @@
       </aside>
     </div>
   </main>
-</body>
-</html>
+{% endblock %}

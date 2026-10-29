@@ -140,7 +140,7 @@
       matchCard.className = 'route-card quiz-result-card route-card--' + key;
       matchCard.querySelector('.quiz-match-name').textContent = ROUTES[key].name;
       matchCard.querySelector('.quiz-match-text').textContent = ROUTES[key].text;
-      matchLink.href = 'TLevel.html#' + key;
+      matchLink.href = '/t-levels#' + key;
       matchLink.textContent = 'Read about the ' + ROUTES[key].name + ' T Level';
     });
 

@@ -147,11 +147,6 @@
   color: var(--color-link-hover);
 }
 
-.error-suggestion a:focus-visible {
-  outline: 2px solid var(--color-focus-ring);
-  outline-offset: 2px;
-}
-
 /* Orange button, same tokens as the primary buttons on the other pages */
 .error-button {
   display: inline-flex;
@@ -171,11 +166,6 @@
 
 .error-button:hover {
   background: var(--color-orange-hover);
-}
-
-.error-button:focus-visible {
-  outline: 2px solid var(--color-focus-ring);
-  outline-offset: 2px;
 }
 
 /* Go back button: reset <button> defaults so it matches the links */
@@ -235,7 +225,3 @@ button.error-button {
   text-underline-offset: 6px;
 }
 
-.error-links a:focus-visible {
-  outline: 2px solid var(--color-focus-ring);
-  outline-offset: 2px;
-}
