@@ -7,6 +7,7 @@
 # =====================================================================
 
 import json        # Turns Python dicts into JSON text (used for the streaming chat replies).
+import logging     # Lets us warn in the server log if the knowledge file is missing.
 import os          # Lets us read environment variables like OPENROUTER_API_KEY.
 import threading   # Gives us a Lock so two requests can't change the rate-limit data at the same time.
 import time        # Used to get the current time for the chat rate limit.
@@ -37,10 +38,12 @@ You help with:
 - What T Levels are: two-year technical qualifications in England, taken after GCSEs, worth the same as three A levels. Each one includes an industry placement of at least 315 hours (about 45 days) with an employer.
 - T Level placements at Amazon: Amazon offers placements in Digital, Business, Media, Finance and Engineering. Explain what a placement involves, the skills it builds, and how it can lead to apprenticeships, university or work.
 - Practical advice: choosing a T Level, preparing for a placement, CVs and interviews, and what to expect on a first day at work.
-- Finding your way around this website, including the Advice, FAQ, quiz and Contact pages, and signing up or logging in to register interest or access member content.
-- Related Amazon routes, such as Amazon Apprenticeships (amazonapprenticeships.co.uk) and Step Up work experience.
+- Finding your way around this website, including the T Levels, Advice, Quiz, FAQs and Contact pages, the accessibility settings, downloading course specifications, and creating an account to register interest.
+- Related Amazon routes, such as Amazon Apprenticeships and Step Up work experience.
 
 Rules:
+- Answer from the reference information below whenever it covers the question, and do not contradict it. When you send someone to a page on this website, name the page and give its path, for example "the T Levels page (/t-levels)".
+- If the reference information does not cover a question about this website or Amazon placements, say you are not sure rather than guessing.
 - You cannot see application systems, placement availability, dates, deadlines, locations, pay or eligibility decisions. Never invent these, or names, contact details or policies. If you are not sure, say so and point them to the Contact page or the official Amazon T Level placements page: https://www.aboutamazon.co.uk/amazon-for-schools/online-hub-offerings/t-level-placements
 - Never promise that anyone will get a placement or job.
 - Many visitors are under 18. Do not ask for personal details such as full names, addresses, phone numbers, email addresses or dates of birth. If someone shares them, do not repeat them.
@@ -49,6 +52,20 @@ Rules:
 - Be fair and inclusive. Do not make assumptions about people based on gender, ethnicity, disability, background or any other characteristic.
 - Keep replies short, clear, friendly and encouraging, in plain UK English. Use plain text only, with no markdown.
 """.strip()
+
+# Facts about T Levels, the five routes and this website's pages, taken from the site itself.
+# It lives in its own file so it can be updated without touching the code. It is read once, when the
+# server starts, so restart the server after editing it.
+CHAT_KNOWLEDGE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "chat_knowledge.md")
+try:
+    with open(CHAT_KNOWLEDGE_FILE, encoding="utf-8") as f:
+        CHAT_KNOWLEDGE = f.read().strip()
+except OSError:
+    # Keep the chat working with just the rules above, but make the problem easy to spot.
+    logging.getLogger(__name__).warning("Chat knowledge file not found: %s", CHAT_KNOWLEDGE_FILE)
+    CHAT_KNOWLEDGE = ""
+if CHAT_KNOWLEDGE:
+    CHAT_SYSTEM_PROMPT += "\n\nReference information:\n\n" + CHAT_KNOWLEDGE
 
 CHAT_MAX_MESSAGES = 20          # Most messages we accept in one request.
 CHAT_MAX_MESSAGE_CHARS = 4000   # Longest single message we accept.
@@ -59,8 +76,8 @@ CHAT_TIMEOUT = (5, 90)          # Seconds to wait for OpenRouter: (to connect, t
                                 # When streaming, "to reply" is the longest gap allowed between bits of the reply.
 CHAT_STREAM_MAX_SECONDS = 120   # Longest a whole streamed reply may take.
 CHAT_MAX_TOKENS = 4096          # Most tokens (roughly word pieces) the AI may use for one reply, thinking included.
-# The model "thinks" before replying. "effort": "medium" lets OpenRouter use about half of
-# CHAT_MAX_TOKENS for thinking, leaving the rest for the reply so it isn't cut off mid-sentence.
+# The model "thinks" before replying. "effort": "low" keeps thinking to a small share of
+# CHAT_MAX_TOKENS, leaving the rest for the reply so it isn't cut off mid-sentence.
 # "exclude" makes sure the thinking is never sent back to us (or to visitors).
 CHAT_REASONING = {"effort": "low", "exclude": True}
 
@@ -177,7 +194,7 @@ def call_openrouter(clean, api_key, model, stream=False):
         "messages": [{"role": "system", "content": CHAT_SYSTEM_PROMPT}] + clean,
         "max_tokens": CHAT_MAX_TOKENS,
         "temperature": 0.3,
-        "reasoning": dict(CHAT_REASONING),     # Medium thinking, never sent back.
+        "reasoning": dict(CHAT_REASONING),     # Low thinking, never sent back.
     }
     if stream:
         body["stream"] = True                  # Ask OpenRouter to send the reply a few words at a time.
