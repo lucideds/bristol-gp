@@ -347,39 +347,53 @@ def api_session():
 @app.route("/contact", methods=["GET", "POST"])  # GET = viewing the page, POST = submitting the form.
 @limiter.limit("5 per minute", methods=["POST"])  # At most 5 messages a minute from one person (stops spam).
 def contact():
-    """Shows the contact page, and saves the message to the database when the form is sent."""
-    error = None                                # No error message to start with.
-    success = False                             # Becomes True once a message is saved.
+    """Shows the contact page, and saves the message to the database when the form is sent.
+    Every field is checked and each problem is reported against its own field, so the page
+    can list them all in the error summary and show each one next to its box."""
+    errors = {}                                 # Field name -> error message, e.g. {"email": "Enter ..."}.
+    sent = None                                 # Name and email of a message that was just sent.
 
     if request.method == "POST":                # Only do this when the form has been submitted.
         name = request.form.get("name", "").strip()               # Read the "name" box; strip() removes extra spaces.
         email = request.form.get("email", "").strip().lower()     # Read the "email" box; lower() to match account emails.
         message = request.form.get("message", "").strip()         # Read the "message" box.
 
-        if not name or not email or not message:                  # If any box is empty...
-            error = "Please fill in every field."                 # ...set an error to show on the page.
-        elif len(name) > MAX_NAME_LENGTH:                         # Name too long?
-            error = f"Name must be {MAX_NAME_LENGTH} characters or fewer."
-        elif not is_valid_email(email):                           # Email doesn't look real?
-            error = "Please enter a valid email address."
-        elif len(message) > MAX_MESSAGE_LENGTH:                   # Message too long?
-            error = f"Message must be {MAX_MESSAGE_LENGTH} characters or fewer."
-        else:                                                     # Otherwise everything is fine, so:
+        if not name:
+            errors["name"] = "Enter your name"
+        elif len(name) > MAX_NAME_LENGTH:
+            errors["name"] = f"Name must be {MAX_NAME_LENGTH} characters or fewer"
+
+        if not email:
+            errors["email"] = "Enter your email address"
+        elif not is_valid_email(email):
+            errors["email"] = "Enter an email address in the correct format, like name@example.com"
+
+        if not message:
+            errors["message"] = "Enter your message"
+        elif len(message) > MAX_MESSAGE_LENGTH:
+            errors["message"] = f"Message must be {MAX_MESSAGE_LENGTH} characters or fewer"
+
+        if not errors:                                            # Everything is fine, so:
             db = get_db()                                         # Get the database connection.
             db.execute(                                           # Add a new row to the messages table.
                 "INSERT INTO messages (name, email, message) VALUES (?, ?, ?)",
                 (name, email, message),                           # The values that fill in the three ?s.
             )
             db.commit()                                           # Save it.
-            success = True                                        # Tell the page to show the thank-you message.
             if is_slack_configured():                             # Also post it to Slack, if Slack is set up.
                 try:
                     send_to_slack({"name": name, "email": email, "message": message})
                 except Exception as e:                            # Slack being down mustn't break the form;
                     print("Could not send message to Slack:", e)  # the message is already saved in the database.
+            # Post/Redirect/GET: send the browser to a normal GET of this page, so refreshing the
+            # thank-you page can't send the message again. The session carries the name and
+            # email across the redirect; the GET below takes them out so they show only once.
+            session["contact_sent"] = {"name": name, "email": email}
+            return redirect(url_for("contact"))
+    else:
+        sent = session.pop("contact_sent", None)
 
-    # Show the contact page, passing in error and success so the HTML can display them.
-    return render_template("contact.html", error=error, success=success)
+    return render_template("contact.html", errors=errors, sent=sent)
 
 
 # ---------- Accounts ----------

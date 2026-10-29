@@ -1,55 +1,29 @@
-/* Theme variables. Colour values come from tokens.css. */
-/* Light mode (default): light grey page, navy nav bars */
-:root,
-[data-theme="light"] {
-  --accent: var(--color-orange);
-  --page-bg: var(--color-page);
-  --page-text: var(--color-ink);
-  --nav-top-bg: var(--color-navy);
-  --nav-second-bg: var(--color-navy-deep);
-  --nav-text: var(--color-on-navy);
-}
-
-/* Dark mode: navy page, white text (no dark tokens yet, so these stay as before) */
-[data-theme="dark"] {
-  --page-bg: #232F3E;
-  --page-text: #FFFFFF;
-  --nav-top-bg: var(--color-navy);
-  --nav-second-bg: var(--color-navy-deep);
-  --nav-text: var(--color-on-navy);
-}
-
+/* Colours come from tokens.css, which also sets the page background and text for each theme. */
 body {
   margin: 0;
-  background: var(--page-bg);
-  color: var(--page-text);
   font-family: var(--font-sans);
 }
 
 /* ---------- Site header (Figma "header") ---------- */
-/* Header-only tokens: same values in light and dark themes */
 .site-header {
-  --hdr-navy: var(--color-navy);
-  --hdr-dark: var(--color-navy-deep);
-  --hdr-ink: var(--color-ink);
-  --hdr-placeholder: var(--color-ink-muted);
-  --hdr-orange: var(--color-orange);
-  --hdr-orange-hover: var(--color-orange-hover);
-  --hdr-orange-border: var(--color-orange-border);
-  --hdr-white: var(--color-on-navy);
   font-family: var(--font-sans);
-  color: var(--hdr-white);
+  color: var(--color-on-navy);
+}
+
+/* High contrast: the header is black like the page, so a white edge separates them */
+[data-theme="high-contrast"] .site-header {
+  border-bottom: 2px solid var(--color-on-navy);
 }
 
 /* Two full-width stacked bars, no gap between them */
 .nav-top {
   margin: 0;
-  background: var(--hdr-navy);
+  background: var(--color-navy);
 }
 
 .nav-second {
   margin: 0;
-  background: var(--hdr-dark);
+  background: var(--color-navy-deep);
 }
 
 /* Centred 1200px content column inside each bar */
@@ -103,10 +77,10 @@ body {
   margin: 0;
   padding: 8px 12px;
   background: var(--color-surface);
-  color: var(--hdr-ink);
-  border: 1px solid var(--hdr-orange-border);
+  color: var(--color-ink);
+  border: 1px solid var(--color-orange-edge);
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-raised);
   font-size: 14px;
   line-height: 20px;
 }
@@ -123,17 +97,18 @@ body {
   padding: 0 12px;
   box-sizing: border-box;
   background: var(--color-surface);
-  color: var(--hdr-ink);
+  color: var(--color-ink);
   font: inherit;
   font-size: 16px;
   font-weight: 400;
   line-height: 24px;
-  border: 1.6px solid #fff;
+  /* Control border, so the box keeps a 3:1 edge on the navy bar in every theme */
+  border: 1.6px solid var(--color-border-control);
   border-radius: 8px 0 0 8px;
 }
 
 .nav-search input::placeholder {
-  color: var(--hdr-placeholder);
+  color: var(--color-ink-muted);
   opacity: 1;
 }
 
@@ -146,14 +121,14 @@ body {
   height: 44px;
   padding: 0;
   box-sizing: border-box;
-  background: var(--hdr-orange);
-  border: 1.6px solid var(--hdr-orange-border);
+  background: var(--color-orange);
+  border: 1.6px solid var(--color-orange-edge);
   border-radius: 0 8px 8px 0;
   cursor: pointer;
 }
 
 .nav-search button:hover {
-  background: var(--hdr-orange-hover);
+  background: var(--color-orange-hover);
 }
 
 .nav-search button img {
@@ -215,11 +190,11 @@ button.nav-tool {
 }
 
 .nav-tool:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--color-navy-deep);
 }
 
 .nav-tool.active {
-  box-shadow: inset 0 -4px 0 var(--hdr-orange);
+  box-shadow: inset 0 -4px 0 var(--color-orange);
 }
 
 /* Page links in the dark nav bar */
@@ -246,12 +221,12 @@ button.nav-tool {
 }
 
 .nav-link:hover {
-  box-shadow: inset 0 -2px 0 rgba(255, 153, 0, 0.6);
+  box-shadow: inset 0 -2px 0 var(--color-on-navy-muted);
 }
 
 /* Current page: 4px inset orange bar, so the text does not shift */
 .nav-link.active {
-  box-shadow: inset 0 -4px 0 var(--hdr-orange);
+  box-shadow: inset 0 -4px 0 var(--color-orange);
 }
 
 .nav-second-right {
@@ -290,14 +265,14 @@ button.nav-tool {
 }
 
 .theme-toggle:hover {
-  box-shadow: inset 0 -2px 0 rgba(255, 153, 0, 0.6);
+  box-shadow: inset 0 -2px 0 var(--color-on-navy-muted);
 }
 
 /* Visible keyboard focus */
 .site-header a:focus-visible,
 .site-header button:focus-visible,
 .site-header input:focus-visible {
-  outline: 2px solid var(--hdr-orange);
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
 }
 
@@ -314,7 +289,7 @@ button.nav-tool {
   padding: 0;
   background: transparent;
   color: var(--color-on-navy);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--color-on-navy-muted);
   border-radius: 4px;
   font-size: 1.25rem;
   line-height: 1;
@@ -322,7 +297,7 @@ button.nav-tool {
 }
 
 .nav-toggle:hover {
-  border-color: var(--hdr-orange);
+  border-color: var(--color-orange);
 }
 
 /* Desktop: the collapsible wrapper is transparent to the dark bar's flex layout.

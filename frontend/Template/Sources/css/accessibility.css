@@ -1,5 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap");
-/* Accessibility popup, styled to the Figma "Accessibility" frame (node 49:95, Light mode).
+/* Accessibility popup, styled to the Figma "Accessibility" frame (node 49:95).
    The first part applies the saved settings to the whole site; the rest styles the popup. */
 
 /* ---------- Site-wide settings (set on <html> by accessibility.js) ---------- */
@@ -11,18 +11,6 @@ html[data-text-size="large"] {
 
 html[data-text-size="extra-large"] {
   font-size: 150%;
-}
-
-/* High contrast: black page, white text, same nav bars */
-[data-theme="high-contrast"] {
-  --accent: var(--color-orange);
-  --page-bg: #000000;
-  --page-text: #FFFFFF;
-  --nav-top-bg: var(--color-navy);
-  --nav-second-bg: var(--color-navy-deep);
-  --nav-text: var(--color-on-navy);
-  --auth-error: #FF5D64;
-  --auth-muted: #FFFFFF;
 }
 
 /* Dyslexia-friendly font */
@@ -52,7 +40,7 @@ html.a11y-highlight-links a {
 }
 
 /* ---------- The popup ---------- */
-/* Fixed Figma light colours in every theme, sized in px so it doesn't grow with the text size.
+/* Colours follow the theme through tokens.css. Sized in px so it doesn't grow with the text size.
    No "display" here: that would show the dialog while it is closed. */
 .a11y-panel {
   position: fixed;
@@ -71,9 +59,9 @@ html.a11y-highlight-links a {
   box-sizing: border-box;
   background: var(--color-surface);
   color: var(--color-ink);
-  border: 0.8px solid var(--color-divider);
+  border: var(--card-border-width) solid var(--color-border-subtle);
   border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(15, 17, 17, 0.12), 0 1px 1.5px rgba(15, 17, 17, 0.2);
+  box-shadow: var(--shadow-raised);
   font-family: var(--font-sans);
   font-size: 16px;
   line-height: 24px;
@@ -82,7 +70,7 @@ html.a11y-highlight-links a {
 }
 
 .a11y-panel::backdrop {
-  background: rgba(15, 17, 17, 0.2);
+  background: var(--color-scrim);
 }
 
 /* Padding lives on this inner box, so a click on the dialog itself means the backdrop */
@@ -121,6 +109,7 @@ html.a11y-highlight-links a {
 }
 
 .a11y-close {
+  color: var(--color-ink);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -138,10 +127,14 @@ html.a11y-highlight-links a {
   background: var(--color-page);
 }
 
-.a11y-close img {
+/* The cross is drawn as a mask so it takes the button's text colour in every theme */
+.a11y-close-icon {
   display: block;
   width: 24px;
   height: 24px;
+  background-color: currentColor;
+  -webkit-mask: url("../assests/a11y-close.svg") center / 24px 24px no-repeat;
+  mask: url("../assests/a11y-close.svg") center / 24px 24px no-repeat;
 }
 
 /* Groups */
@@ -191,7 +184,7 @@ html.a11y-highlight-links a {
   padding: 12px 8px;
   background: var(--color-surface);
   color: var(--color-ink);
-  border: 1.6px solid var(--color-border);
+  border: 1.6px solid var(--color-border-control);
   border-radius: 8px;
   text-align: center;
 }
@@ -233,7 +226,8 @@ html.a11y-highlight-links a {
   background: var(--color-orange-tint);
 }
 
-/* Hidden with visibility (not display) so the tick image loads before it is needed */
+/* Hidden with visibility (not display) so the tick image loads before it is needed.
+   The tick is a mask in the surface colour, so it shows on the ink circle in every theme. */
 .a11y-tile-check {
   visibility: hidden;
   position: absolute;
@@ -242,7 +236,16 @@ html.a11y-highlight-links a {
   width: 20px;
   height: 20px;
   border-radius: 10px;
-  background: var(--color-ink) url("../assests/a11y-check.svg") center / 14px 14px no-repeat;
+  background: var(--color-ink);
+}
+
+.a11y-tile-check::before {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  background-color: var(--color-surface);
+  -webkit-mask: url("../assests/a11y-check.svg") center / contain no-repeat;
+  mask: url("../assests/a11y-check.svg") center / contain no-repeat;
 }
 
 .a11y-tile input:checked + .a11y-tile-box .a11y-tile-check {
@@ -250,11 +253,11 @@ html.a11y-highlight-links a {
 }
 
 .a11y-tile input:focus-visible + .a11y-tile-box {
-  outline: 2px solid var(--color-link);
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
 }
 
-/* Colour swatches */
+/* Colour swatches: fixed previews of each theme, so they don't change with the current theme */
 .a11y-swatch {
   display: block;
   width: 89.6px;
@@ -269,21 +272,21 @@ html.a11y-highlight-links a {
 }
 
 .a11y-swatch--light {
-  background: var(--color-page);
-  border: 0.8px solid var(--color-border);
-  color: var(--color-ink);
+  background: var(--preview-light-bg);
+  border: 0.8px solid var(--preview-light-edge);
+  color: var(--preview-light-text);
 }
 
 .a11y-swatch--dark {
-  background: #0b1016;
-  border: 0.8px solid #8a96a3;
-  color: #f2f4f4;
+  background: var(--preview-dark-bg);
+  border: 0.8px solid var(--preview-dark-edge);
+  color: var(--preview-dark-text);
 }
 
 .a11y-swatch--contrast {
-  background: #000;
-  border: 0.8px solid #fff;
-  color: #fff;
+  background: var(--preview-contrast-bg);
+  border: 0.8px solid var(--preview-contrast-edge);
+  color: var(--preview-contrast-text);
 }
 
 /* On / off rows */
@@ -293,7 +296,7 @@ html.a11y-highlight-links a {
   align-items: center;
   gap: 8px;
   padding: 12px 0;
-  border-top: 0.8px solid var(--color-divider);
+  border-top: 0.8px solid var(--color-border-subtle);
   cursor: pointer;
 }
 
@@ -362,7 +365,7 @@ html.a11y-highlight-links a {
 }
 
 .a11y-toggle-row input:focus-visible + .a11y-switch {
-  outline: 2px solid var(--color-link);
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
 }
 
@@ -372,7 +375,7 @@ html.a11y-highlight-links a {
   justify-content: space-between;
   align-items: center;
   padding-top: 16px;
-  border-top: 0.8px solid var(--color-divider);
+  border-top: 0.8px solid var(--color-border-subtle);
 }
 
 .a11y-reset {
@@ -391,8 +394,8 @@ html.a11y-highlight-links a {
   height: 44px;
   padding: 0 24px;
   background: var(--color-orange);
-  color: var(--color-ink);
-  border: 1.6px solid var(--color-orange-border);
+  color: var(--color-on-orange);
+  border: 1.6px solid var(--color-orange-edge);
   border-radius: 22px;
   font-size: 16px;
   font-weight: 700;
@@ -407,7 +410,7 @@ html.a11y-highlight-links a {
 .a11y-close:focus-visible,
 .a11y-reset:focus-visible,
 .a11y-done:focus-visible {
-  outline: 2px solid var(--color-link);
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
 }
 

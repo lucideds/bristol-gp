@@ -1,5 +1,5 @@
 /* Quiz page. Load after tlevel.css, which supplies the breadcrumb, title,
-   button and route card colours. White cards keep dark text in every theme. */
+   button and route card colours. Colours are tokens from tokens.css. */
 /* Everything except the breadcrumb sits in a centred column */
 .quiz-page > .tlevel-title,
 .quiz-page > .quiz-lead {
@@ -32,7 +32,7 @@
 }
 
 /* ---------- Questions ---------- */
-/* Each question sits on the page background; each answer is its own white tile */
+/* Each question sits on the page background; each answer is its own tile */
 .quiz-question {
   margin: 0 0 32px;
   padding: 0;
@@ -50,7 +50,7 @@
   font-weight: 700;
 }
 
-/* Answer tiles: white with a grey border; dark text in every theme */
+/* Answer tiles: surface fill with a control border */
 .quiz-question label {
   clear: left;
   display: flex;
@@ -61,7 +61,7 @@
   box-sizing: border-box;
   background: var(--color-surface);
   color: var(--color-ink);
-  border: 3px solid var(--color-border);
+  border: 3px solid var(--color-border-control);
   border-radius: 10px;
   font-size: 1.25rem;
   line-height: 1.75rem;
@@ -78,7 +78,7 @@
   border-color: var(--color-ink);
 }
 .quiz-question--missing label {
-  border-color: #b12704;
+  border-color: var(--color-danger);
 }
 
 /* Custom radio: grey ring, teal ring and dot when selected */
@@ -92,7 +92,7 @@
   height: 32px;
   margin: 0;
   background: var(--color-surface);
-  border: 2px solid #767676;
+  border: 2px solid var(--color-border-control);
   border-radius: 50%;
   cursor: pointer;
 }
@@ -111,7 +111,7 @@
   transform: scale(1);
 }
 .quiz-question input[type="radio"]:focus-visible {
-  outline: 2px solid var(--color-link);
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 3px;
 }
 @media (forced-colors: active) {
@@ -160,7 +160,7 @@
   text-decoration: underline;
 }
 .quiz-reset:focus-visible {
-  outline: 2px solid var(--color-link);
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
 }
 

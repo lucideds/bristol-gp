@@ -1,32 +1,158 @@
-/* Design tokens from the Figma token file (core + light theme).
-   Load this before every other stylesheet. Component CSS reads the --color-* values;
-   the page themes (light / dark / high contrast) are set in topNavBar.css and
-   accessibility.css through --page-bg, --page-text and --accent.
+/* Design tokens: the single source of every colour on the site.
+   Values come from the "Amazon T Level Placements" design system (source/tokens.json), with the
+   design-system names prefixed --color-. Load this before every other stylesheet.
 
-   Colours marked "assumed" were cut off in the pasted token file. Their values come from
-   the earlier Figma specs in .agents/tasks/ and should be checked against the full file. */
+   Themes switch by the data-theme attribute that accessibility.js sets on <html>
+   (light | dark | high-contrast). Stylesheets use these tokens only: never a hex value, and never
+   a [data-theme] rule just to change a colour. A [data-theme] rule is only for a structural
+   difference, such as an extra edge in high contrast where the design draws one.
 
-:root {
-  /* ---------- Colour: light ---------- */
+   Pairings (text on fill) follow the design system:
+     page, surface, surface-muted ......... ink, ink-muted, link
+     navy, navy-deep ...................... on-navy, on-navy-muted
+     orange, orange-hover ................. on-orange
+     link (as a fill) ..................... on-link
+     selected ............................. on-selected
+     orange-tint .......................... ink (orange-text for orange words or edges)
+     success-bg / danger-bg / warning-bg .. success / danger / warning, ink
+     info-bg .............................. ink, link
+   Light and dark meet WCAG AA; every text pairing in high contrast is at least 7:1. */
+
+:root,
+[data-theme="light"] {
   --color-page: #f0f2f2;           /* Page background behind cards and panels */
   --color-surface: #ffffff;        /* Card, panel, input and table background */
-  --color-surface-muted: #e7eaea;  /* Assistant messages, icon tiles, hover rows */
-  --color-navy: #232f3e;           /* Header, hero, user chat messages, selected controls */
+  --color-surface-muted: #e7eaea;  /* Assistant messages, locked icon tiles, hover rows */
+  --color-navy: #232f3e;           /* Amazon Dark Blue: header, hero, user chat messages */
   --color-navy-deep: #131a22;      /* Main navigation bar and footer */
   --color-on-navy: #ffffff;        /* Text and icons on navy and navy-deep */
   --color-on-navy-muted: #d5dbdb;  /* Secondary text on navy: hero lead, footer legal line */
-  --color-ink: #0f1111;            /* Body text, headings and icons on light fills */
+  --color-ink: #0f1111;            /* Body text, headings and icons */
+  --color-ink-muted: #565959;      /* Hints, meta lines and captions. Not for body copy */
+  --color-orange: #ff9900;         /* Amazon Orange: primary buttons, CTA band. Never text on a light ground */
+  --color-orange-hover: #e47911;   /* Hover fill for primary buttons */
+  --color-orange-edge: #a35c00;    /* 2px edge on primary buttons */
+  --color-on-orange: #0f1111;      /* Text on orange and orange-hover */
+  --color-orange-tint: #fff0d6;    /* Selected choice cards and route tags */
+  --color-orange-text: #a84900;    /* Orange used as text or a border on page / surface / tint */
+  --color-link: #007185;           /* Links and info icons, always underlined */
+  --color-link-hover: #a63d00;     /* Link hover */
+  --color-on-link: #ffffff;        /* Text on link fills (Business route card) */
+  --color-border-subtle: #d5d9d9;  /* Decorative dividers and card edges */
+  --color-border-control: #6f7777; /* Inputs, choice cards, switches: 3:1 against page and surface */
+  --color-focus-ring: #cc6600;     /* Keyboard focus outline */
+  --color-success: #05654f;
+  --color-success-bg: #e3f4ef;
+  --color-danger: #b12704;
+  --color-danger-bg: #fdeae6;
+  --color-warning: #7a4f00;
+  --color-warning-bg: #fff3d1;
+  --color-info-bg: #e0f3f7;
 
-  /* Assumed (missing from the pasted file) */
-  --color-ink-muted: #565959;      /* Secondary text on light fills */
-  --color-link: #007185;           /* Links and focus rings on light fills */
-  --color-orange: #ff9900;         /* Primary buttons and active indicators */
-  --color-orange-hover: #fa8900;
-  --color-orange-border: #a35c00;
-  --color-orange-tint: #fff0d6;    /* Selected tiles, highlighted cards */
-  --color-border: #6f7777;         /* Input and card borders */
-  --color-divider: #d5d9d9;        /* Hairline dividers */
+  /* Selected tabs, side-nav items and segmented controls. Navy in light; it flips to a light
+     fill in dark and high contrast, where navy would vanish into the page (site addition,
+     not in the design system export). */
+  --color-selected: #232f3e;
+  --color-on-selected: #ffffff;
 
+  /* Card edges: 1px with a soft shadow; high contrast swaps the shadow for a 2px edge */
+  --card-border-width: 1px;
+  --shadow-card: 0 1px 3px rgba(15, 17, 17, 0.2), 0 2px 8px rgba(15, 17, 17, 0.12);
+  --shadow-raised: 0 4px 16px rgba(15, 17, 17, 0.28);
+  --shadow-lift: 0 6px 16px rgba(15, 17, 17, 0.14);  /* Cards on hover (motion.css) */
+  --color-scrim: rgba(15, 17, 17, 0.2);               /* Behind the accessibility popup */
+}
+
+[data-theme="dark"] {
+  --color-page: #0b1016;
+  --color-surface: #16202a;
+  --color-surface-muted: #232f3e;
+  --color-navy: #232f3e;
+  --color-navy-deep: #05080b;
+  --color-on-navy: #ffffff;
+  --color-on-navy-muted: #d5dbdb;
+  --color-ink: #f2f4f4;
+  --color-ink-muted: #b7c0c7;
+  --color-orange: #ff9900;
+  --color-orange-hover: #ffad33;
+  --color-orange-edge: #ffc266;
+  --color-on-orange: #0f1111;
+  --color-orange-tint: #3a2a10;
+  --color-orange-text: #ffad33;
+  --color-link: #4cc9e0;
+  --color-link-hover: #ffad33;
+  --color-on-link: #0f1111;
+  --color-border-subtle: #35424f;
+  --color-border-control: #8a96a3;
+  --color-focus-ring: #ff9900;
+  --color-success: #5ad1b0;
+  --color-success-bg: #0f2e26;
+  --color-danger: #ff8a73;
+  --color-danger-bg: #3a1510;
+  --color-warning: #ffc233;
+  --color-warning-bg: #35290a;
+  --color-info-bg: #0e2d35;
+
+  --color-selected: #f2f4f4;
+  --color-on-selected: #0b1016;
+
+  --shadow-lift: 0 6px 16px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="high-contrast"] {
+  --color-page: #000000;
+  --color-surface: #000000;
+  --color-surface-muted: #1a1a1a;
+  --color-navy: #000000;
+  --color-navy-deep: #000000;
+  --color-on-navy: #ffffff;
+  --color-on-navy-muted: #ffffff;
+  --color-ink: #ffffff;
+  --color-ink-muted: #e6e6e6;
+  --color-orange: #ff9900;
+  --color-orange-hover: #ffb84d;
+  --color-orange-edge: #ffffff;
+  --color-on-orange: #000000;
+  --color-orange-tint: #1a1100;
+  --color-orange-text: #ffb84d;
+  --color-link: #7fe0f5;
+  --color-link-hover: #ffe600;
+  --color-on-link: #000000;
+  --color-border-subtle: #ffffff;
+  --color-border-control: #ffffff;
+  --color-focus-ring: #ffe600;
+  --color-success: #7dffd6;
+  --color-success-bg: #00261c;
+  --color-danger: #ff9d8a;
+  --color-danger-bg: #2b0a05;
+  --color-warning: #ffd666;
+  --color-warning-bg: #2b2000;
+  --color-info-bg: #00232b;
+
+  --color-selected: #ffffff;
+  --color-on-selected: #000000;
+
+  --card-border-width: 2px;
+  --shadow-card: none;
+  --shadow-raised: none;
+  --shadow-lift: none;
+}
+
+/* Fixed previews of each theme for the colour tiles in the accessibility popup.
+   They must not follow the current theme, so they repeat the page / ink / border-control values above. */
+:root {
+  --preview-light-bg: #f0f2f2;
+  --preview-light-text: #0f1111;
+  --preview-light-edge: #6f7777;
+  --preview-dark-bg: #0b1016;
+  --preview-dark-text: #f2f4f4;
+  --preview-dark-edge: #8a96a3;
+  --preview-contrast-bg: #000000;
+  --preview-contrast-text: #ffffff;
+  --preview-contrast-edge: #ffffff;
+}
+
+:root {
   /* ---------- Font ---------- */
   --font-sans: "Amazon Ember", Arial, sans-serif;
 
@@ -51,10 +177,6 @@
   --target-min: 44px;
   --container-max: 1200px;
   --reading-width: 680px;
-
-  /* ---------- Shadow ---------- */
-  --shadow-card: 0 1px 3px 0 rgba(15, 17, 17, 0.2), 0 2px 8px 0 rgba(15, 17, 17, 0.12);
-  --shadow-raised: 0 4px 16px 0 rgba(15, 17, 17, 0.28);
 }
 
 /* Every page uses Amazon Ember. Form controls don't inherit the font by default, so set them too. */
@@ -65,4 +187,10 @@ input,
 select,
 textarea {
   font-family: var(--font-sans);
+}
+
+/* Page ground and text for every theme */
+body {
+  background: var(--color-page);
+  color: var(--color-ink);
 }

@@ -1,13 +1,12 @@
 /* Home page (Figma "Light mode" home frame, see .agents/tasks/home-figma-spec.md).
    The route cards reuse tlevel.css (same Figma colours and theme rules); the overrides below are
    scoped to .home-routes so the T Level page is unchanged.
-   The hero, its panel, the cards and the CTA band keep their fixed Figma fills in every theme;
-   only the light-grey band and edges change per theme. Text and min-heights are in rem so the
-   Large / Extra large text settings apply. */
+   Every colour is a token from tokens.css, so the whole page follows the theme.
+   Text and min-heights are in rem so the Large / Extra large text settings apply. */
 .home-page {
   width: 100%;
   font-family: var(--font-sans);
-  color: var(--page-text);
+  color: var(--color-ink);
   font-size: 1rem;
   line-height: 1.5rem;
 }
@@ -43,13 +42,12 @@
   font-weight: 700;
 }
 
-/* #d5d9d9 on #232f3e is about 10:1 */
 .home-hero-lead {
   margin: 16px 0 0;
   max-width: 36rem;
   font-size: 1.125rem;
   line-height: 1.75rem;
-  color: var(--color-divider);
+  color: var(--color-on-navy-muted);
 }
 
 .home-actions {
@@ -60,8 +58,8 @@
 }
 
 .home-hero-panel {
-  background: #161d26;
-  border: 1.5px solid #8a96a3;
+  background: var(--color-navy-deep);
+  border: 1.5px solid var(--color-on-navy-muted);
   border-radius: 8px;
   padding: 32px 40px;
 }
@@ -95,7 +93,7 @@
 }
 
 .home-route-list a:focus-visible {
-  outline: 2px solid #fff;
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 4px;
   border-radius: 2px;
 }
@@ -123,8 +121,8 @@
 
 .home-btn--primary {
   background: var(--color-orange);
-  color: var(--color-ink);
-  border: 1.6px solid var(--color-orange-border);
+  color: var(--color-on-orange);
+  border: 1.6px solid var(--color-orange-edge);
 }
 
 .home-btn--primary:hover {
@@ -134,11 +132,11 @@
 .home-btn--outline {
   background: transparent;
   color: var(--color-on-navy);
-  border: 2px solid #fff;
+  border: 2px solid var(--color-on-navy);
 }
 
 .home-btn--outline:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--color-navy-deep);
 }
 
 .home-btn--dark {
@@ -152,13 +150,13 @@
 }
 
 .home-hero .home-btn:focus-visible {
-  outline: 2px solid var(--color-orange);
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
 }
 
-/* An orange ring would vanish on the orange band */
+/* The focus-ring colour would vanish on the orange band, so use the band's text colour */
 .home-cta .home-btn:focus-visible {
-  outline: 2px solid var(--color-ink);
+  outline: 2px solid var(--color-on-orange);
   outline-offset: 2px;
 }
 
@@ -185,19 +183,6 @@
   color: var(--color-ink);
 }
 
-/* A pale grey band would glare on the navy / black pages */
-[data-theme="dark"] .home-audience {
-  background: #161d26;
-  color: #fff;
-}
-
-[data-theme="high-contrast"] .home-audience {
-  background: #000;
-  color: #fff;
-  border-top: 1px solid #fff;
-  border-bottom: 1px solid #fff;
-}
-
 .home-audience-grid {
   list-style: none;
   margin: 0;
@@ -215,7 +200,7 @@
   padding: 20px;
   background: var(--color-surface);
   color: var(--color-ink);
-  border: 2px solid var(--color-border);
+  border: 2px solid var(--color-border-control);
   border-radius: 8px;
 }
 
@@ -251,7 +236,7 @@
 }
 
 /* Stretched link: the title link covers the whole card. The ring moves to the overlay,
-   in the card's own text colour so it shows on every fill. */
+   which sits just outside the card on the page or band behind it. */
 .home-card-title a::after,
 .home-routes .route-card-title a::after {
   content: "";
@@ -267,14 +252,14 @@
 
 .home-card-title a:focus-visible::after,
 .home-routes .route-card-title a:focus-visible::after {
-  outline: 2px solid currentColor;
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
 }
 
 /* ---------- CTA band ---------- */
 .home-cta {
   background: var(--color-orange);
-  color: var(--color-ink);
+  color: var(--color-on-orange);
 }
 
 .home-cta-inner {
@@ -298,17 +283,9 @@
   margin: 4px 0 0;
 }
 
-/* ---------- High contrast: white edges between the fixed fills and the black page ---------- */
+/* ---------- High contrast: the hero is black like the page, so a white edge closes it off ---------- */
 [data-theme="high-contrast"] .home-hero {
-  border-bottom: 2px solid #fff;
-}
-
-[data-theme="high-contrast"] .home-hero-panel {
-  border-color: #fff;
-}
-
-[data-theme="high-contrast"] .home-cta {
-  border-top: 2px solid #fff;
+  border-bottom: 2px solid var(--color-on-navy);
 }
 
 /* ---------- Responsive ---------- */

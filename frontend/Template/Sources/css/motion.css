@@ -116,20 +116,8 @@ select,
   .route-card:hover,
   .route-card:has(a:focus-visible) {
     transform: translateY(var(--motion-lift));
-    box-shadow: 0 6px 16px rgba(15, 17, 17, 0.14);
-  }
-  [data-theme="dark"] .home-audience-card:hover,
-  [data-theme="dark"] .home-audience-card:has(a:focus-visible),
-  [data-theme="dark"] .route-card:hover,
-  [data-theme="dark"] .route-card:has(a:focus-visible) {
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
-  }
-  /* High contrast keeps its flat look: lift only, no soft shadow */
-  [data-theme="high-contrast"] .home-audience-card:hover,
-  [data-theme="high-contrast"] .home-audience-card:has(a:focus-visible),
-  [data-theme="high-contrast"] .route-card:hover,
-  [data-theme="high-contrast"] .route-card:has(a:focus-visible) {
-    box-shadow: none;
+    /* Set per theme in tokens.css; none in high contrast, which keeps its flat look */
+    box-shadow: var(--shadow-lift);
   }
 
   /* FAQ chevron turns a little more softly */
