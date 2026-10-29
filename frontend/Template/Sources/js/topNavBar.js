@@ -9,6 +9,19 @@
     return new URL(path, SITE_ROOT).href;
   }
 
+  // 2. Analytics: records a search, route view or quiz result for the analytics page.
+  //    Shared on window so tlevelTabs.js and quiz.js can use it (this script loads before them).
+  //    keepalive lets the request finish even if the page is changing (search moves to a new page).
+  //    Failures are ignored: analytics must never get in the visitor's way.
+  window.tlcTrack = function (kind, value) {
+    fetch(link('api/track'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ kind: kind, value: value }),
+      keepalive: true
+    }).catch(function () {});
+  };
+
   // 3. Page links in the middle of the top bar, in order.
   var PAGES = [
     { label: 'Home', path: 'home.html' },
@@ -275,6 +288,7 @@
         searchInput.focus();
         return;
       }
+      window.tlcTrack('search', query.slice(0, 100));
       var match = findBestMatch(query);
       if (!match) {
         searchStatus.textContent = 'No results for "' + query + '". Try "T Levels", "placement" or "contact".';

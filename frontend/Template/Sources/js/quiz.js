@@ -132,6 +132,7 @@
     // Most answers first; equal counts keep ROUTE_ORDER (sort is stable)
     var ranked = ROUTE_ORDER.slice().sort(function (a, b) { return counts[b] - counts[a]; });
     var top = ranked.slice(0, matchCards.length);
+    if (window.tlcTrack) window.tlcTrack('quiz', top[0]);   // The top match, for the analytics page
 
     top.forEach(function (key, i) {
       var matchCard = matchCards[i];

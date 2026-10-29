@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Site analytics – T Level Connect</title>
+  <link rel="stylesheet" href="Sources/css/tokens.css">
+  <link rel="stylesheet" href="Sources/css/topNavBar.css">
+  <link rel="stylesheet" href="Sources/css/accessibility.css">
+  <link rel="stylesheet" href="Sources/css/motion.css">
+  <script src="Sources/js/accessibility.js"></script>
+  <script src="Sources/js/topNavBar.js" defer></script>
+  <link rel="stylesheet" href="Sources/css/footer.css">
+  <link rel="stylesheet" href="Sources/css/chatWidget.css">
+  <link rel="stylesheet" href="Sources/css/tlevel.css">
+  <link rel="stylesheet" href="Sources/css/home.css">
+  <link rel="stylesheet" href="Sources/css/analytics.css">
+  <script src="Sources/js/footer.js" defer></script>
+  <script src="Sources/js/chatWidget.js" defer></script>
+</head>
+<body>
+  <!-- Same layout and classes as home.html; analytics.css adds the numbers and lists -->
+  <main class="home-page analytics-page">
+    <section class="home-hero" aria-labelledby="analytics-title">
+      <div class="home-container home-hero-inner">
+        <div class="home-hero-text">
+          <h1 id="analytics-title" class="home-hero-title">Site analytics</h1>
+          <p class="home-hero-lead">See what visitors search for, which placement routes they look at and what the quiz suggests for them.</p>
+          <div class="home-actions">
+            <a class="home-btn home-btn--primary" href="#analytics-views-title">Programme views</a>
+            <a class="home-btn home-btn--outline" href="#analytics-quiz-title">Quiz results</a>
+          </div>
+        </div>
+        <div class="home-hero-panel">
+          <dl class="analytics-totals" aria-label="Totals since the site started">
+            <div><dt>Total enquiries</dt><dd>{{ totals.enquiries }}</dd></div>
+            <div><dt>Accounts</dt><dd>{{ totals.accounts }}</dd></div>
+            <div><dt>Searches</dt><dd>{{ totals.searches }}</dd></div>
+            <div><dt>Quizzes completed</dt><dd>{{ totals.quizzes }}</dd></div>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <section class="home-section home-audience" aria-labelledby="analytics-activity-title">
+      <div class="home-container">
+        <h2 id="analytics-activity-title" class="home-section-title">What visitors are doing</h2>
+        <p class="home-section-lead">The most common searches from the search bar, and activity over the last 7 days.</p>
+        <div class="analytics-grid">
+          <article class="home-audience-card">
+            <h3 class="home-card-title">Top searches</h3>
+            {% if searches %}
+            <ol class="analytics-rows">
+              {% for row in searches %}
+              <li><span>{{ row.value }}</span><strong>{{ row.n }}</strong></li>
+              {% endfor %}
+            </ol>
+            {% else %}
+            <p class="home-card-body">No searches yet.</p>
+            {% endif %}
+          </article>
+          <article class="home-audience-card">
+            <h3 class="home-card-title">Last 7 days</h3>
+            <ul class="analytics-rows">
+              {% for label, value in this_week %}
+              <li><span>{{ label }}</span><strong>{{ value }}</strong></li>
+              {% endfor %}
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="home-section home-routes" aria-labelledby="analytics-views-title">
+      <div class="home-container">
+        <h2 id="analytics-views-title" class="home-section-title">Programme views</h2>
+        <p class="home-section-lead">How many times each route was opened on the T Level page.</p>
+        <ul class="route-cards-grid">
+          {% for route in views %}
+          <li class="route-card route-card--{{ route.key }}">
+            <h3 class="route-card-title"><a href="TLevel.html#{{ route.key }}">{{ route.name }}</a></h3>
+            <p class="route-card-body"><span class="analytics-metric">{{ route.count }}</span> {{ "view" if route.count == 1 else "views" }}</p>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </section>
+
+    <section class="home-section home-routes" aria-labelledby="analytics-quiz-title">
+      <div class="home-container">
+        <h2 id="analytics-quiz-title" class="home-section-title">Quiz results</h2>
+        <p class="home-section-lead">How often each route was the top match in the "Which T Level suits you?" quiz.</p>
+        <ul class="route-cards-grid">
+          {% for route in quiz_results %}
+          <li class="route-card route-card--{{ route.key }}">
+            <h3 class="route-card-title"><a href="TLevel.html#{{ route.key }}">{{ route.name }}</a></h3>
+            <p class="route-card-body"><span class="analytics-metric">{{ route.count }}</span> top {{ "match" if route.count == 1 else "matches" }}</p>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </section>
+
+    <section class="home-cta" aria-labelledby="analytics-cta-title">
+      <div class="home-container home-cta-inner">
+        <div>
+          <h2 id="analytics-cta-title" class="home-cta-title">{{ totals.enquiries }} {{ "enquiry" if totals.enquiries == 1 else "enquiries" }} so far</h2>
+          <p class="home-cta-lead">Every contact form message is also posted to Slack.</p>
+        </div>
+        <a class="home-btn home-btn--dark" href="contact.html">View the contact page</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

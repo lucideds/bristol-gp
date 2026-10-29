@@ -1,0 +1,25 @@
+---
+title: "2. Asking the chat assistant a question"
+---
+flowchart TD
+    S([Visitor sends a message<br/>to the chat assistant]):::start --> A{More than 10 messages<br/>in the last minute?}:::question
+    A -- Yes --> AX([Ask them to wait a moment]):::stop
+    A -- No --> B{Is the message OK?<br/>not empty, not too long, and not<br/>trying to change the assistant's rules}:::question
+    B -- No --> BX([Explain the message<br/>couldn't be sent]):::stop
+    B -- Yes --> C[Add our instructions for the assistant<br/>and send the conversation<br/>to the AI service]:::step
+    C --> D{Did the AI<br/>service answer?}:::question
+    D -- No --> DX([Say the assistant is busy,<br/>please try again later]):::stop
+    D -- Yes --> E[Show the reply on screen<br/>bit by bit as it arrives]:::step
+    E --> F{Did the whole reply<br/>arrive within 2 minutes?}:::question
+    F -- Yes --> OK([Reply complete]):::good
+    F -- No --> FX([Tell them the reply<br/>was interrupted]):::stop
+
+    N["The AI service's password (API key) stays on our server, so visitors can never see or misuse it."]:::note
+    C -.- N
+
+    classDef start fill:#232f3e,stroke:#232f3e,color:#ffffff,font-weight:bold
+    classDef step fill:#ffffff,stroke:#232f3e,color:#0f1111
+    classDef question fill:#fff0d6,stroke:#a35c00,color:#0f1111
+    classDef good fill:#e6f4ea,stroke:#1e7e34,color:#0f1111,font-weight:bold
+    classDef stop fill:#fdecea,stroke:#b3261e,color:#0f1111
+    classDef note fill:#f0f2f2,stroke:#6f7777,color:#0f1111,stroke-dasharray:4 3

@@ -1,0 +1,23 @@
+---
+title: "4. Downloading a course guide (members only)"
+---
+flowchart TD
+    S([Visitor opens the<br/>T Levels page]):::start --> A{Are they<br/>signed in?}:::question
+    A -- No --> B["Show a grey, locked button:<br/>'Log in to download PDF'"]:::step
+    B --> C[They click it and are taken<br/>to the sign-in page]:::step
+    C --> D[After signing in, they come<br/>back to the same subject]:::step
+    D --> A
+    A -- Yes --> E["Show an orange<br/>'Download PDF' button"]:::step
+    E --> F{They click it. Our server checks again:<br/>still signed in, and is it<br/>one of our files?}:::question
+    F -- No --> FX([Don't send the file]):::stop
+    F -- Yes --> OK([The PDF downloads]):::good
+
+    N["The files are kept in a private folder, so this check is the only way to get them."]:::note
+    F -.- N
+
+    classDef start fill:#232f3e,stroke:#232f3e,color:#ffffff,font-weight:bold
+    classDef step fill:#ffffff,stroke:#232f3e,color:#0f1111
+    classDef question fill:#fff0d6,stroke:#a35c00,color:#0f1111
+    classDef good fill:#e6f4ea,stroke:#1e7e34,color:#0f1111,font-weight:bold
+    classDef stop fill:#fdecea,stroke:#b3261e,color:#0f1111
+    classDef note fill:#f0f2f2,stroke:#6f7777,color:#0f1111,stroke-dasharray:4 3

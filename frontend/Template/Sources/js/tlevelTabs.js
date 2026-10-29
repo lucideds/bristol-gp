@@ -12,6 +12,8 @@
     });
     var DEFAULT_ID = panels[0].id;
     var crumbs = document.getElementById('tlevel-breadcrumb');
+    // Routes already counted on this visit, so flicking between tabs counts each route once
+    var viewed = {};
 
     // Home / T Levels on "General info"; Home / T Levels / <Route> on a route tab.
     // Earlier items are links; the last one is the current page.
@@ -43,6 +45,13 @@
         panels[i].hidden = !on;
       });
       updateBreadcrumb(index);
+
+      // A programme view for the analytics page ("General info" isn't a route)
+      var routeId = panels[index].id;
+      if (index !== 0 && !viewed[routeId] && window.tlcTrack) {
+        viewed[routeId] = true;
+        window.tlcTrack('view', routeId);
+      }
 
       if (options.updateUrl) {
         var id = panels[index].id;

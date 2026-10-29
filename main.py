@@ -98,6 +98,26 @@ LOCKOUT_MINUTES = 15
 # A simple pattern for an email: some text, an @, some text, a dot, some text, no spaces.
 EMAIL_PATTERN = re.compile(r"[^@\s]+@[^@\s]+\.[^@\s]+")
 
+# Analytics: the five T Level routes, in the order the site shows them. Programme views and
+# quiz results are only recorded for these names, so the counts can't fill up with junk.
+ROUTES = [
+    ("digital", "Digital"),
+    ("business", "Business"),
+    ("media", "Media"),
+    ("finance", "Finance"),
+    ("engineering", "Engineering"),
+]
+ROUTE_KEYS = {key for key, _ in ROUTES}
+MAX_SEARCH_LENGTH = 100
+
+# Who may open the analytics page: a comma-separated list of account emails in ANALYTICS_EMAILS.
+# If it's empty, nobody can (the page shows "not found"), so the stats are never public by accident.
+ANALYTICS_EMAILS = {
+    email.strip().lower()
+    for email in os.environ.get("ANALYTICS_EMAILS", "").split(",")
+    if email.strip()
+}
+
 # Create the Flask web application.
 #   template_folder - the HTML pages live in frontend/Template
 #   static_folder   - the CSS and JavaScript live in frontend/Template/Sources
@@ -228,6 +248,15 @@ def init_db():
             failed_count INTEGER NOT NULL DEFAULT 0,   -- Wrong passwords in a row since the last success or lock.
             locked_until REAL NOT NULL DEFAULT 0       -- Unix time when the lock ends (0 = not locked).
         );
+
+        -- Things visitors do in the browser, shown on the analytics page.
+        -- No user id or IP is stored, only what happened.
+        CREATE TABLE IF NOT EXISTS analytics_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            kind TEXT NOT NULL,                        -- "search", "view" (a route tab opened) or "quiz" (the quiz's top match).
+            value TEXT NOT NULL,                       -- The search text, or the route name, e.g. "digital".
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
         """
     )
     db.commit()                                 # Save the changes to the file.
@@ -331,6 +360,35 @@ def privacy():
 @app.route("/quiz")                             # URL: /quiz
 def quiz():
     return render_template("quiz.html")         # Show the quiz page.
+
+
+@app.route("/api/track", methods=["POST"])      # topNavBar.js, tlevelTabs.js and quiz.js send events here.
+@limiter.limit("30 per minute")                 # Stops anyone flooding the analytics with fake events.
+def api_track():
+    """Records one visitor event for the analytics page.
+    Body: {"kind": "search" | "view" | "quiz", "value": "..."}. Returns 204 (nothing to send back)."""
+    data = request.get_json(silent=True)        # None unless the request really is JSON.
+    if not isinstance(data, dict):
+        return {"error": "Expected a JSON object."}, 400
+    kind = data.get("kind")
+    value = data.get("value")
+    if not isinstance(value, str):
+        return {"error": "value must be text."}, 400
+
+    if kind == "search":
+        value = " ".join(value.lower().split())     # "  Digital   JOBS " and "digital jobs" count as one search.
+        if not value or len(value) > MAX_SEARCH_LENGTH:
+            return {"error": f"Searches must be 1 to {MAX_SEARCH_LENGTH} characters."}, 400
+    elif kind in ("view", "quiz"):
+        if value not in ROUTE_KEYS:                 # Only the five real routes.
+            return {"error": "Unknown route."}, 400
+    else:
+        return {"error": "Unknown kind."}, 400
+
+    db = get_db()
+    db.execute("INSERT INTO analytics_events (kind, value) VALUES (?, ?)", (kind, value))
+    db.commit()
+    return "", 204
 
 
 @app.route("/api/session")                      # Used by topNavBar.js to show "Sign in" or "Account".
@@ -527,6 +585,74 @@ def account():
     return render_template("account.html")                 # The page reads the details from current_user.
 
 
+def can_see_analytics(user):
+    """True if this signed-in user's email is listed in ANALYTICS_EMAILS."""
+    return user is not None and user["email"] in ANALYTICS_EMAILS
+
+
+@app.context_processor
+def inject_analytics_access():
+    """Lets templates show the analytics link only to people who can open it."""
+    return {"can_see_analytics": can_see_analytics(g.get("user"))}
+
+
+def count_by_route(db, kind):
+    """Counts the events of one kind for each route, including routes with none.
+    Returns e.g. [{"key": "digital", "name": "Digital", "count": 4}, ...] in the site's route order."""
+    rows = db.execute(
+        "SELECT value, COUNT(*) AS n FROM analytics_events WHERE kind = ? GROUP BY value", (kind,)
+    ).fetchall()
+    counts = {row["value"]: row["n"] for row in rows}
+    return [{"key": key, "name": name, "count": counts.get(key, 0)} for key, name in ROUTES]
+
+
+@app.route("/analytics.html")
+@app.route("/analytics")                                   # URL: /analytics
+@login_required                                            # Not signed in? Go to the sign-in page first.
+def analytics():
+    """Site analytics for the team: enquiries, accounts, searches, programme views and quiz results."""
+    if not can_see_analytics(g.user):                      # Signed in, but not on the list?
+        abort(404)                                         # Act as if the page doesn't exist.
+    db = get_db()
+
+    def count(sql, *args):
+        return db.execute(sql, args).fetchone()[0]
+
+    def count_events(kind, since=None):
+        if since is None:
+            return count("SELECT COUNT(*) FROM analytics_events WHERE kind = ?", kind)
+        return count("SELECT COUNT(*) FROM analytics_events WHERE kind = ? AND created_at >= datetime('now', ?)",
+                     kind, since)
+
+    week = "-7 days"                                       # SQLite's way of saying "7 days ago".
+    totals = {
+        "enquiries": count("SELECT COUNT(*) FROM messages"),
+        "accounts": count("SELECT COUNT(*) FROM users"),
+        "searches": count_events("search"),
+        "quizzes": count_events("quiz"),
+    }
+    this_week = [
+        ("Enquiries", count("SELECT COUNT(*) FROM messages WHERE created_at >= datetime('now', ?)", week)),
+        ("New accounts", count("SELECT COUNT(*) FROM users WHERE created_at >= datetime('now', ?)", week)),
+        ("Searches", count_events("search", week)),
+        ("Programme views", count_events("view", week)),
+        ("Quizzes completed", count_events("quiz", week)),
+    ]
+    searches = db.execute(
+        "SELECT value, COUNT(*) AS n FROM analytics_events WHERE kind = 'search' "
+        "GROUP BY value ORDER BY n DESC, value LIMIT 10"
+    ).fetchall()
+
+    return render_template(
+        "analytics.html",
+        totals=totals,
+        this_week=this_week,
+        searches=searches,
+        views=count_by_route(db, "view"),
+        quiz_results=count_by_route(db, "quiz"),
+    )
+
+
 # login.html holds both the sign-in and the sign-up form. The sign-in form posts to
 # /login and the sign-up form posts to /register; both show login.html again on error.
 
@@ -576,6 +702,7 @@ def logout():
 
 csrf.exempt(chat_bp)
 app.register_blueprint(chat_bp)
+csrf.exempt(api_track)                                     # JSON only too, for the same reason.
 
 
 # ---------- Error pages ----------
@@ -587,7 +714,8 @@ def visitable_pages():
         if "GET" in rule.methods                           # ...that can be visited,
         and not rule.arguments                             # ...has no <variables> in the URL,
         and not rule.rule.endswith(".html")                # ...is the clean URL (not the old .html one),
-        and not rule.rule.startswith(("/api", "/static", "/Sources"))  # ...and is a page, not data or files.
+        and not rule.rule.startswith(("/api", "/static", "/Sources"))  # ...and is a page, not data or files,
+        and rule.rule != "/analytics"                      # ...and isn't the team-only analytics page.
     })
 
 

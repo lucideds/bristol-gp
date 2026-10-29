@@ -1,0 +1,25 @@
+---
+title: "3. Registering interest in a placement (planned)"
+---
+flowchart TD
+    S([Person fills in the<br/>'Register your interest' form]):::start --> A{Are they<br/>signed in?}:::question
+    A -- No --> AX([Ask them to sign in first]):::stop
+    A -- Yes --> B{Are the answers valid?<br/>a real route, who they are,<br/>and a school name that isn't too long}:::question
+    B -- No --> BX([Show what needs fixing]):::stop
+    B -- Yes --> C{Have they agreed<br/>to be contacted?}:::question
+    C -- No --> CX([Explain we need their<br/>permission to contact them]):::stop
+    C -- Yes --> D{Already registered interest<br/>in this route?}:::question
+    D -- No --> E[Save their interest]:::step
+    E --> OK1([Thank them: interest registered]):::good
+    D -- Yes --> F[Update their earlier answers<br/>instead of adding a duplicate]:::step
+    F --> OK2([Thank them: details updated]):::good
+
+    N["Routes: Digital, Business, Media,<br/>Finance or Engineering"]:::note
+    B -.- N
+
+    classDef start fill:#232f3e,stroke:#232f3e,color:#ffffff,font-weight:bold
+    classDef step fill:#ffffff,stroke:#232f3e,color:#0f1111
+    classDef question fill:#fff0d6,stroke:#a35c00,color:#0f1111
+    classDef good fill:#e6f4ea,stroke:#1e7e34,color:#0f1111,font-weight:bold
+    classDef stop fill:#fdecea,stroke:#b3261e,color:#0f1111
+    classDef note fill:#f0f2f2,stroke:#6f7777,color:#0f1111,stroke-dasharray:4 3

@@ -1,0 +1,86 @@
+/* Analytics page. Reuses home.css (hero, bands, cards, CTA) and tlevel.css (route cards);
+   this file only adds the numbers and the count lists. */
+
+/* ---------- Totals in the hero panel ---------- */
+.analytics-totals {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem 24px;
+}
+
+.analytics-totals dt {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  color: var(--color-on-navy-muted);
+}
+
+/* Orange on #161d26 is about 8:1 */
+.analytics-totals dd {
+  margin: 4px 0 0;
+  font-size: 2.75rem;
+  line-height: 3rem;
+  font-weight: 700;
+  color: var(--color-orange);
+}
+
+/* ---------- Count lists in the grey band ---------- */
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.analytics-rows {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+}
+
+.analytics-rows li {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.analytics-rows li:last-child {
+  border-bottom: none;
+}
+
+/* Long searches wrap instead of pushing the count off the card */
+.analytics-rows span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.analytics-rows strong {
+  flex: none;
+}
+
+[data-theme="dark"] .analytics-rows li,
+[data-theme="high-contrast"] .analytics-rows li {
+  border-bottom-color: #8a96a3;
+}
+
+/* ---------- Route card numbers ---------- */
+.analytics-metric {
+  display: block;
+  font-size: 2.75rem;
+  line-height: 3rem;
+  font-weight: 700;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .analytics-totals {
+    grid-template-columns: 1fr;
+  }
+}

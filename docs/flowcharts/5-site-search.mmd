@@ -1,0 +1,21 @@
+---
+title: "5. Searching the site"
+---
+flowchart TD
+    S([Visitor types into the<br/>search box and presses Enter]):::start --> A{Did they type<br/>anything?}:::question
+    A -- No --> AX(["Show a hint, e.g. try 'digital'"]):::stop
+    A -- Yes --> B[Tidy up the words: ignore capitals,<br/>punctuation and filler words<br/>like 'the' or 'how']:::step
+    B --> C[Give every page on the site<br/>a score for how well it matches]:::step
+    C --> D{Did any page<br/>score points?}:::question
+    D -- No --> DX([Say there are no results<br/>and suggest other words]):::stop
+    D -- Yes --> OK([Take them straight to the<br/>best-scoring page]):::good
+
+    N["<b>How a page earns points</b><br/>exact title match: top score<br/>word in the title: more points<br/>word in its keywords: some points<br/>part of a word, like 'eng': a few points"]:::note
+    C -.- N
+
+    classDef start fill:#232f3e,stroke:#232f3e,color:#ffffff,font-weight:bold
+    classDef step fill:#ffffff,stroke:#232f3e,color:#0f1111
+    classDef question fill:#fff0d6,stroke:#a35c00,color:#0f1111
+    classDef good fill:#e6f4ea,stroke:#1e7e34,color:#0f1111,font-weight:bold
+    classDef stop fill:#fdecea,stroke:#b3261e,color:#0f1111
+    classDef note fill:#f0f2f2,stroke:#6f7777,color:#0f1111,stroke-dasharray:4 3

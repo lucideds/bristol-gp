@@ -39,6 +39,7 @@ Settings are read from environment variables. `main.py` and `bot/bot.py` also lo
 | `SLACK_CHANNEL_ID` | For Slack | Channel that receives contact form messages. |
 | `SLACK_APP_TOKEN` | For Slack buttons | App-level token (`xapp-...`) for Socket Mode, so the buttons on Slack messages respond. |
 | `FLASK_DEBUG` | No | Set to `1` for debug mode. |
+| `ANALYTICS_EMAILS` | For the analytics page | Comma-separated account emails that may open `/analytics`. If it's empty, nobody can. |
 | `HTTPS` | When served over HTTPS | Set to `1` to mark the session cookie `Secure`. Leave it unset for local `http://` testing, or the browser drops the cookie and nobody can stay signed in. |
 
 The chat and Slack settings are read when they are used, so a missing value turns off that feature without stopping the site.
@@ -61,6 +62,7 @@ bristol-gp/
     ├── login.html          Sign-in and sign-up forms on one page
     ├── signin.html         Redirects to login.html (the nav bar links here)
     ├── account.html        Signed-in users only
+    ├── analytics.html      Site analytics, for emails listed in ANALYTICS_EMAILS
     ├── quiz.html           Placeholder, no content yet
     ├── 404.html, 500.html
     └── Sources/            Static files (Flask's static_folder, served at /Sources/...)
@@ -90,7 +92,9 @@ Each page answers on its short URL and on its `.html` file name, because the nav
 | `/register` | GET, POST | `login.html`, sign-up tab. Limited to 10 POSTs per minute. |
 | `/logout` | POST | Clears the session and redirects home. |
 | `/account`, `/account.html` | GET | `account.html`. Requires sign-in. |
+| `/analytics`, `/analytics.html` | GET | `analytics.html`. Requires sign-in with an email in `ANALYTICS_EMAILS`; anyone else signed in gets a 404. |
 | `/accessibility`, `/accessibility.html` | GET | Redirects to `/#accessibility`. The settings are now a popup on every page. |
+| `/api/track` | POST | Records an analytics event, `{"kind": "search" \| "view" \| "quiz", "value": "..."}`. JSON only, 30 per minute per IP. Views and quiz results must be one of the five route names; searches are lower-cased and up to 100 characters. |
 | `/api/session` | GET | `{"signed_in": bool, "name": ...}`, used by `topNavBar.js`. |
 | `/api/chat` | POST | Chat reply as JSON. |
 | `/api/chat/stream` | POST | Chat reply as Server-Sent Events. |
@@ -114,10 +118,11 @@ The 404 handler builds its list of pages from the routes, so a new page is inclu
 
 ### Database
 
-`init_db()` in `main.py` creates two tables if they don't exist:
+`init_db()` in `main.py` creates these tables if they don't exist:
 
 - `users`: `id`, `name`, `email` (unique, stored in lower case), `password_hash`, `created_at`
 - `messages`: `id`, `name`, `email`, `message`, `created_at`
+- `analytics_events`: `id`, `kind` (`search`, `view` or `quiz`), `value`, `created_at`. Sent by `topNavBar.js` (searches), `tlevelTabs.js` (each route tab, once per visit) and `quiz.js` (the top match). No user id or IP is stored.
 
 There are no migrations. `CREATE TABLE IF NOT EXISTS` does not change existing tables, so if you change a schema, either alter `site.db` by hand or delete it and let the app recreate it.
 
