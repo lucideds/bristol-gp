@@ -6,7 +6,7 @@ The site is a small Flask app. It serves HTML pages, stores user accounts and co
 
 ## Quick start
 
-You need Python 3.9 or newer.
+You need Python 3.9 or newer. 
 
 ```bash
 cd bristol-gp
