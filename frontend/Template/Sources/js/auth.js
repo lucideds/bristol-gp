@@ -137,14 +137,9 @@
     'register-email': checkEmail,
     'register-password': checkNewPassword,
     'register-confirm': checkConfirm('register-password'),
-    'details-name': checkName,
-    'details-email': checkEmail,
-    // Only needed when the email is being changed, as in main.py.
-    'details-current-password': function (input) {
-      var email = document.getElementById('details-email');
-      var changed = email.value.trim().toLowerCase() !== email.getAttribute('data-saved-email');
-      return changed ? checkCurrentPassword(input) : '';
-    },
+    'account-name': checkName,
+    'account-email': checkEmail,
+    'email-current-password': checkCurrentPassword,
     'password-current': checkCurrentPassword,
     'password-new': checkNewPassword,
     'password-confirm': checkConfirm('password-new')
@@ -208,6 +203,56 @@
       });
     });
   }
+
+  // ---------- Account page: pencil opens one form at a time, Cancel closes it ----------
+  // Without JavaScript the pencil and Cancel are plain links to /account?edit=<form> and /account.
+
+  function accountRow(el) {
+    var row = el.closest('.account-row');
+    return {
+      edit: row.querySelector('.account-edit'),
+      value: row.querySelector('.account-value'),
+      form: row.querySelector('.account-form')
+    };
+  }
+
+  function closeAccountForm(row) {
+    if (row.form.hidden) return;
+    row.form.reset();
+    clearAll(row.form);
+    eachToggle(row.form, function (toggle, input) { setPasswordVisible(toggle, input, false); });
+    row.form.hidden = true;
+    row.value.hidden = false;
+    row.edit.hidden = false;
+  }
+
+  var editLinks = document.querySelectorAll('[data-account-edit]');
+
+  Array.prototype.forEach.call(editLinks, function (link) {
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      Array.prototype.forEach.call(editLinks, function (other) { closeAccountForm(accountRow(other)); });
+      hideSummary();
+      var row = accountRow(link);
+      row.value.hidden = true;
+      row.edit.hidden = true;
+      row.form.hidden = false;
+      row.form.querySelector('input:not([type="hidden"]):not([hidden])').focus();
+    });
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll('[data-account-cancel]'), function (link) {
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      var row = accountRow(link);
+      closeAccountForm(row);
+      hideSummary();
+      row.edit.focus();
+    });
+  });
+
+  // Drop ?edit= from the address once the page has loaded, so a refresh shows the plain page.
+  if (editLinks.length && location.search) history.replaceState(null, '', location.pathname);
 
   // ---------- Submit: block only when invalid, otherwise post natively ----------
 

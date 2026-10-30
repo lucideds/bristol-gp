@@ -608,23 +608,29 @@ def download(name):
     return response
 
 
-def try_update_details(form):
-    """Saves a new name and email for the signed-in user. Returns an error message, or None if it worked."""
+def try_change_name(form):
+    """Saves a new name for the signed-in user. Returns an error message, or None if it worked."""
     name = form.get("name", "").strip()
-    email = form.get("email", "").strip().lower()
-    error = name_error(name) or email_error(email)
+    error = name_error(name)
     if error:
         return error
+    db = get_db()
+    db.execute("UPDATE users SET name = ? WHERE id = ?", (name, g.user["id"]))
+    db.commit()
+    return None
+
+
+def try_change_email(form):
+    """Saves a new email for the signed-in user. Returns an error message, or None if it worked."""
+    email = form.get("email", "").strip().lower()
     # The email is what people sign in with, so changing it needs the current password, in case
     # someone else is using a computer that was left signed in.
-    if email != g.user["email"]:
-        error = current_password_error(g.user["id"], form.get("current_password", ""))
-        if error:
-            return error
-
+    error = email_error(email) or current_password_error(g.user["id"], form.get("current_password", ""))
+    if error:
+        return error
     db = get_db()
     try:
-        db.execute("UPDATE users SET name = ?, email = ? WHERE id = ?", (name, email, g.user["id"]))
+        db.execute("UPDATE users SET email = ? WHERE id = ?", (email, g.user["id"]))
         db.commit()
     except sqlite3.IntegrityError:  # Another account already has this email.
         return "An account with that email already exists."
@@ -651,35 +657,36 @@ def try_change_password(form):
     return None
 
 
+# The account page shows the details, each with a pencil that opens a form to change just that one.
+# The pencil links to /account?edit=<form>, so it works without JavaScript; auth.js opens it in place.
+ACCOUNT_FORMS = {
+    "name": (try_change_name, "Your name has been changed."),
+    "email": (try_change_email, "Your email has been changed."),
+    "password": (try_change_password, "Your password has been changed."),
+}
+
+
 @app.route("/account")
 @login_required
 def account():
-    return render_template("account.html")
+    edit = request.args.get("edit")
+    return render_template("account.html", open_form=edit if edit in ACCOUNT_FORMS else None)
 
 
-# Both forms show account.html again on error (with what was typed, apart from passwords),
-# and redirect back to /account with a message when they work, so a refresh doesn't resend them.
-# Rate-limited like sign-in, because both check the current password.
-
-@app.route("/account/details", methods=["POST"])
+# Each form shows account.html again on error, with that form still open, and redirects back to
+# /account with a message when it works, so a refresh doesn't resend it.
+# Rate-limited like sign-in, because the email and password forms check the current password.
+@app.route("/account/<form_name>", methods=["POST"])
 @login_required
 @limiter.limit("10 per minute")
-def update_details():
-    error = try_update_details(request.form)
+def update_account(form_name):
+    if form_name not in ACCOUNT_FORMS:
+        abort(404)
+    try_change, success_message = ACCOUNT_FORMS[form_name]
+    error = try_change(request.form)
     if error:
-        return render_template("account.html", details_error=error)
-    flash("Your details have been updated.")
-    return redirect(url_for("account"))
-
-
-@app.route("/account/password", methods=["POST"])
-@login_required
-@limiter.limit("10 per minute")
-def change_password():
-    error = try_change_password(request.form)
-    if error:
-        return render_template("account.html", password_error=error)
-    flash("Your password has been changed.")
+        return render_template("account.html", open_form=form_name, form_error=error)
+    flash(success_message)
     return redirect(url_for("account"))
 
 
