@@ -20,7 +20,8 @@ except ImportError:
     fcntl = None
 
 from dotenv import dotenv_values, load_dotenv
-from flask import Flask, abort, g, jsonify, redirect, render_template, request, send_from_directory, session, url_for
+from flask import (Flask, abort, flash, g, jsonify, redirect, render_template, request, send_from_directory,
+                   session, url_for)
 from flask_wtf.csrf import CSRFError, CSRFProtect
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -335,6 +336,16 @@ def password_error(password, confirm):
     return None
 
 
+def current_password_error(user_id, password):
+    """Checks the password typed in to confirm a change to an account."""
+    if not password:
+        return "Enter your current password"
+    row = get_db().execute("SELECT password_hash FROM users WHERE id = ?", (user_id,)).fetchone()
+    if not check_password_hash(row["password_hash"], password):
+        return "Your current password is incorrect"
+    return None
+
+
 def message_error(message):
     if not message:
         return "Enter your message"
@@ -597,10 +608,79 @@ def download(name):
     return response
 
 
+def try_update_details(form):
+    """Saves a new name and email for the signed-in user. Returns an error message, or None if it worked."""
+    name = form.get("name", "").strip()
+    email = form.get("email", "").strip().lower()
+    error = name_error(name) or email_error(email)
+    if error:
+        return error
+    # The email is what people sign in with, so changing it needs the current password, in case
+    # someone else is using a computer that was left signed in.
+    if email != g.user["email"]:
+        error = current_password_error(g.user["id"], form.get("current_password", ""))
+        if error:
+            return error
+
+    db = get_db()
+    try:
+        db.execute("UPDATE users SET name = ?, email = ? WHERE id = ?", (name, email, g.user["id"]))
+        db.commit()
+    except sqlite3.IntegrityError:  # Another account already has this email.
+        return "An account with that email already exists."
+    return None
+
+
+def try_change_password(form):
+    """Sets a new password for the signed-in user. Returns an error message, or None if it worked."""
+    error = (current_password_error(g.user["id"], form.get("current_password", ""))
+             or password_error(form.get("new_password", ""), form.get("confirm_password", "")))
+    if error:
+        return error
+
+    db = get_db()
+    db.execute(
+        "UPDATE users SET password_hash = ? WHERE id = ?",
+        (generate_password_hash(form["new_password"], method="pbkdf2:sha256"), g.user["id"]),
+    )
+    db.commit()
+    # A fresh session after a password change, as after signing in.
+    user_id = g.user["id"]
+    session.clear()
+    session["user_id"] = user_id
+    return None
+
+
 @app.route("/account")
 @login_required
 def account():
     return render_template("account.html")
+
+
+# Both forms show account.html again on error (with what was typed, apart from passwords),
+# and redirect back to /account with a message when they work, so a refresh doesn't resend them.
+# Rate-limited like sign-in, because both check the current password.
+
+@app.route("/account/details", methods=["POST"])
+@login_required
+@limiter.limit("10 per minute")
+def update_details():
+    error = try_update_details(request.form)
+    if error:
+        return render_template("account.html", details_error=error)
+    flash("Your details have been updated.")
+    return redirect(url_for("account"))
+
+
+@app.route("/account/password", methods=["POST"])
+@login_required
+@limiter.limit("10 per minute")
+def change_password():
+    error = try_change_password(request.form)
+    if error:
+        return render_template("account.html", password_error=error)
+    flash("Your password has been changed.")
+    return redirect(url_for("account"))
 
 
 def can_see_analytics(user):

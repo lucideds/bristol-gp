@@ -316,17 +316,29 @@
 }
 
 /* ---------- Account page ---------- */
-.account-details {
-  margin: 16px 0;
+.auth-section-title {
+  margin: 20px 0 0;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 700;
+  color: var(--color-ink);
 }
 
-.account-details dt {
-  font-size: 0.8125rem;
-  color: var(--color-ink-muted);
+/* Shown after a change is saved */
+.auth-success {
+  margin: 0 0 20px;
+  padding: 12px 16px;
+  background: var(--color-success-bg);
+  color: var(--color-ink);
+  border: 1.6px solid var(--color-success);
+  border-radius: 8px;
+  font-weight: 700;
 }
 
-.account-details dd {
-  margin: 0 0 10px;
+/* Sign out is a button, not a link like the other secondary buttons */
+button.auth-secondary {
+  font-family: inherit;
+  cursor: pointer;
 }
 
 /* Narrow screens: tighter page padding */

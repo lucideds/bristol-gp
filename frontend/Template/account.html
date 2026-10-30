@@ -1,25 +1,90 @@
 {% extends "base.html" %}
 {% set page_css = ["auth"] %}
-{% set page_js = [] %}
+{% set page_js = ["auth"] %}
 {% block title %}Your account{% endblock %}
 {% block content %}
   <main class="auth-page">
     <section class="auth-card" aria-labelledby="account-title">
+      {% set auth_error = details_error or password_error %}
+      <div id="auth-error-summary" class="auth-error-summary" role="alert" tabindex="-1"{% if not auth_error %} hidden{% endif %}>
+        <p class="auth-error-summary-title">There is a problem</p>
+        <ul class="auth-error-summary-list">{% if auth_error %}<li>{{ auth_error }}</li>{% endif %}</ul>
+      </div>
+      {% for message in get_flashed_messages() %}
+      <p class="auth-success" role="status">{{ message }}</p>
+      {% endfor %}
       <h1 id="account-title" class="auth-title">Your account</h1>
-      <dl class="account-details">
-        <dt>Name</dt>
-        <dd>{{ current_user.name }}</dd>
-        <dt>Email</dt>
-        <dd>{{ current_user.email }}</dd>
-        <dt>Member since</dt>
-        <dd>{{ current_user.created_at[:10] }}</dd>
-      </dl>
+      <p class="auth-subtitle">Member since {{ current_user.created_at[:10] }}</p>
+
+      <h2 class="auth-section-title">Your details</h2>
+      {#- After a failed save, show what was typed rather than what's saved. #}
+      {% set name_value = request.form.name if details_error else current_user.name %}
+      {% set email_value = request.form.email if details_error else current_user.email %}
+      <form id="details-form" class="auth-form" method="post" action="/account/details" novalidate>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="auth-field">
+          <label for="details-name">Full name</label>
+          <input id="details-name" name="name" type="text" value="{{ name_value }}" autocomplete="name" required aria-describedby="details-name-error">
+          <p id="details-name-error" class="field-error" hidden><span class="field-error-icon" aria-hidden="true"></span><span class="field-error-text"></span></p>
+        </div>
+        <div class="auth-field">
+          <label for="details-email">Email</label>
+          <input id="details-email" name="email" type="email" value="{{ email_value }}" data-saved-email="{{ current_user.email }}" autocomplete="email" required aria-describedby="details-email-error">
+          <p id="details-email-error" class="field-error" hidden><span class="field-error-icon" aria-hidden="true"></span><span class="field-error-text"></span></p>
+        </div>
+        <div class="auth-field">
+          <label for="details-current-password">Current password</label>
+          <div class="password-wrap">
+            <input id="details-current-password" name="current_password" type="password" autocomplete="current-password" aria-describedby="details-current-password-hint details-current-password-error">
+            <button type="button" class="password-toggle" aria-controls="details-current-password" aria-label="Show password">Show</button>
+          </div>
+          <p id="details-current-password-hint" class="field-hint">Only needed if you change your email.</p>
+          <p id="details-current-password-error" class="field-error" hidden><span class="field-error-icon" aria-hidden="true"></span><span class="field-error-text"></span></p>
+        </div>
+        <button type="submit" class="auth-primary">Save details</button>
+      </form>
+
+      <hr class="auth-divider">
+      <h2 class="auth-section-title">Change password</h2>
+      <form id="password-form" class="auth-form" method="post" action="/account/password" novalidate>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        {#- Lets password managers match the new password to this account. #}
+        <input type="email" name="username" value="{{ current_user.email }}" autocomplete="username" hidden>
+        <div class="auth-field">
+          <label for="password-current">Current password</label>
+          <div class="password-wrap">
+            <input id="password-current" name="current_password" type="password" autocomplete="current-password" required aria-describedby="password-current-error">
+            <button type="button" class="password-toggle" aria-controls="password-current" aria-label="Show password">Show</button>
+          </div>
+          <p id="password-current-error" class="field-error" hidden><span class="field-error-icon" aria-hidden="true"></span><span class="field-error-text"></span></p>
+        </div>
+        <div class="auth-field">
+          <label for="password-new">New password</label>
+          <div class="password-wrap">
+            <input id="password-new" name="new_password" type="password" autocomplete="new-password" minlength="8" required aria-describedby="password-new-hint password-new-error">
+            <button type="button" class="password-toggle" aria-controls="password-new" aria-label="Show password">Show</button>
+          </div>
+          <p id="password-new-hint" class="field-hint">Passwords must be at least 8 characters and include a capital letter, a number and a special character (such as ! ? # or @).</p>
+          <p id="password-new-error" class="field-error" hidden><span class="field-error-icon" aria-hidden="true"></span><span class="field-error-text"></span></p>
+        </div>
+        <div class="auth-field">
+          <label for="password-confirm">Confirm new password</label>
+          <div class="password-wrap">
+            <input id="password-confirm" name="confirm_password" type="password" autocomplete="new-password" required aria-describedby="password-confirm-error">
+            <button type="button" class="password-toggle" aria-controls="password-confirm" aria-label="Show password">Show</button>
+          </div>
+          <p id="password-confirm-error" class="field-error" hidden><span class="field-error-icon" aria-hidden="true"></span><span class="field-error-text"></span></p>
+        </div>
+        <button type="submit" class="auth-primary">Change password</button>
+      </form>
+
+      <hr class="auth-divider">
       {% if can_see_analytics %}
       <p><a href="/analytics">View site analytics</a></p>
       {% endif %}
       <form method="post" action="/logout">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <button type="submit" class="auth-primary">Sign out</button>
+        <button type="submit" class="auth-secondary">Sign out</button>
       </form>
     </section>
   </main>

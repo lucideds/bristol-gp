@@ -1,4 +1,5 @@
-// Sign in / sign up page: switches between the two forms and checks the fields before they're sent.
+// Sign in / sign up and account pages: checks the fields before they're sent, and on the sign-in
+// page switches between the sign-in and sign-up forms.
 // Loaded with defer, so the page's HTML is ready when this runs.
 (function () {
   var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -9,9 +10,6 @@
     register: document.getElementById('panel-register')
   };
   var heading = document.getElementById('auth-title');
-  var signinForm = document.getElementById('signin-form');
-  var registerForm = document.getElementById('register-form');
-  if (!panels.signin || !panels.register) return;
 
   // ---------- Inline errors ----------
 
@@ -93,6 +91,13 @@
   // ---------- Field rules: each returns an error message, or '' if valid ----------
   // The same rules and messages as the form checks in main.py, which checks everything again.
 
+  function checkName(input) {
+    var v = input.value.trim();
+    if (!v) return 'Enter your name';
+    if (v.length > 100) return 'Name must be 100 characters or fewer';
+    return '';
+  }
+
   function checkEmail(input) {
     var v = input.value.trim();
     if (!v) return 'Enter your email address';
@@ -100,33 +105,49 @@
     return '';
   }
 
+  function checkNewPassword(input) {
+    var v = input.value;
+    if (!v) return 'Enter your password';
+    if (v.length < 8) return 'Password must be at least 8 characters';
+    if (v.length > 128) return 'Password must be 128 characters or fewer';
+    if (!/[A-Z]/.test(v)) return 'Password must include a capital letter';
+    if (!/[0-9]/.test(v)) return 'Password must include a number';
+    if (!/[^A-Za-z0-9\s]/.test(v)) return 'Password must include a special character, such as ! ? # or @';
+    return '';
+  }
+
+  function checkConfirm(passwordId) {
+    return function (input) {
+      if (!input.value) return 'Type your password again';
+      if (input.value !== document.getElementById(passwordId).value) return 'Passwords do not match';
+      return '';
+    };
+  }
+
+  function checkCurrentPassword(input) {
+    return input.value ? '' : 'Enter your current password';
+  }
+
   var rules = {
     'signin-email': checkEmail,
     'signin-password': function (input) {
       return input.value ? '' : 'Enter your password';
     },
-    'register-name': function (input) {
-      var v = input.value.trim();
-      if (!v) return 'Enter your name';
-      if (v.length > 100) return 'Name must be 100 characters or fewer';
-      return '';
-    },
+    'register-name': checkName,
     'register-email': checkEmail,
-    'register-password': function (input) {
-      var v = input.value;
-      if (!v) return 'Enter your password';
-      if (v.length < 8) return 'Password must be at least 8 characters';
-      if (v.length > 128) return 'Password must be 128 characters or fewer';
-      if (!/[A-Z]/.test(v)) return 'Password must include a capital letter';
-      if (!/[0-9]/.test(v)) return 'Password must include a number';
-      if (!/[^A-Za-z0-9\s]/.test(v)) return 'Password must include a special character, such as ! ? # or @';
-      return '';
+    'register-password': checkNewPassword,
+    'register-confirm': checkConfirm('register-password'),
+    'details-name': checkName,
+    'details-email': checkEmail,
+    // Only needed when the email is being changed, as in main.py.
+    'details-current-password': function (input) {
+      var email = document.getElementById('details-email');
+      var changed = email.value.trim().toLowerCase() !== email.getAttribute('data-saved-email');
+      return changed ? checkCurrentPassword(input) : '';
     },
-    'register-confirm': function (input) {
-      if (!input.value) return 'Type your password again';
-      if (input.value !== document.getElementById('register-password').value) return 'Passwords do not match';
-      return '';
-    }
+    'password-current': checkCurrentPassword,
+    'password-new': checkNewPassword,
+    'password-confirm': checkConfirm('password-new')
   };
 
   function validate(input) {
@@ -140,51 +161,53 @@
     return !msg;
   }
 
-  // ---------- Sign in / Sign up switch ----------
+  // ---------- Sign in / Sign up switch (sign-in page only) ----------
 
-  // The first setMode runs on page load and must keep any server error in the summary.
-  var modeReady = false;
+  if (panels.signin && panels.register) {
+    // The first setMode runs on page load and must keep any server error in the summary.
+    var modeReady = false;
 
-  function setMode(mode) {
-    var other = mode === 'register' ? 'signin' : 'register';
-    panels[mode].hidden = false;
-    panels[other].hidden = true;
-    clearAll(panels[other].querySelector('form'));
-    if (modeReady) hideSummary();
+    function setMode(mode) {
+      var other = mode === 'register' ? 'signin' : 'register';
+      panels[mode].hidden = false;
+      panels[other].hidden = true;
+      clearAll(panels[other].querySelector('form'));
+      if (modeReady) hideSummary();
 
-    heading.textContent = TITLES[mode];
-    document.title = TITLES[mode] + ' – T Level placements at Amazon';
+      heading.textContent = TITLES[mode];
+      document.title = TITLES[mode] + ' – T Level placements at Amazon';
 
-    // Update the URL without reloading or adding a history entry.
-    history.replaceState(null, '', mode === 'register' ? '#register' : location.pathname + location.search);
-  }
-
-  function modeFromUrl() {
-    if (location.hash === '#register') return 'register';
-    if (new URLSearchParams(location.search).get('mode') === 'register') return 'register';
-    // The server shows this page at /register when sign-up fails, so open that form.
-    if (location.pathname === '/register') return 'register';
-    return 'signin';
-  }
-
-  setMode(modeFromUrl());
-  modeReady = true;
-
-  window.addEventListener('hashchange', function () {
-    if (location.hash === '#register' || location.hash === '#signin') {
-      setMode(location.hash === '#register' ? 'register' : 'signin');
+      // Update the URL without reloading or adding a history entry.
+      history.replaceState(null, '', mode === 'register' ? '#register' : location.pathname + location.search);
     }
-  });
 
-  // "Create an account" / "Sign in" buttons under the forms.
-  Array.prototype.forEach.call(document.querySelectorAll('[data-auth-switch]'), function (a) {
-    a.addEventListener('click', function (e) {
-      e.preventDefault();
-      var mode = a.getAttribute('data-auth-switch');
-      setMode(mode);
-      panels[mode].querySelector('input:not([type="hidden"])').focus();
+    function modeFromUrl() {
+      if (location.hash === '#register') return 'register';
+      if (new URLSearchParams(location.search).get('mode') === 'register') return 'register';
+      // The server shows this page at /register when sign-up fails, so open that form.
+      if (location.pathname === '/register') return 'register';
+      return 'signin';
+    }
+
+    setMode(modeFromUrl());
+    modeReady = true;
+
+    window.addEventListener('hashchange', function () {
+      if (location.hash === '#register' || location.hash === '#signin') {
+        setMode(location.hash === '#register' ? 'register' : 'signin');
+      }
     });
-  });
+
+    // "Create an account" / "Sign in" buttons under the forms.
+    Array.prototype.forEach.call(document.querySelectorAll('[data-auth-switch]'), function (a) {
+      a.addEventListener('click', function (e) {
+        e.preventDefault();
+        var mode = a.getAttribute('data-auth-switch');
+        setMode(mode);
+        panels[mode].querySelector('input:not([type="hidden"])').focus();
+      });
+    });
+  }
 
   // ---------- Submit: block only when invalid, otherwise post natively ----------
 
@@ -205,6 +228,7 @@
     }
   }
 
-  signinForm.addEventListener('submit', onSubmit);
-  registerForm.addEventListener('submit', onSubmit);
+  Array.prototype.forEach.call(document.querySelectorAll('form.auth-form'), function (form) {
+    form.addEventListener('submit', onSubmit);
+  });
 })();

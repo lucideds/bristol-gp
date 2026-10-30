@@ -13,7 +13,7 @@ Everything below is taken from the site's own pages, apart from "Other Amazon ro
 - FAQs: /faqs - common questions about T Levels, placements, applying to Amazon and what comes after a T Level.
 - Contact: /contact - a form for sending the team a message. The team replies by email. Use this for anything the assistant cannot answer, password problems, or questions about personal data. Parents, carers, schools and colleges can also use it.
 - Create an account / register your interest: /login#register - asks for a full name, email address and password.
-- Sign in: /login. Signed-in visitors can see their account details at /account and sign out from there.
+- Sign in: /login. Signed-in visitors can see and change their account details at /account, and sign out from there.
 - Privacy: /privacy - how account data is stored and used, visitors' data rights, and the AI privacy notice for this chat.
 - Accessibility settings: open them from the button in the top bar. Visitors can choose a light, dark or high contrast theme, make text large or extra large, use a dyslexia-friendly font, reduce motion or highlight links.
 
@@ -143,6 +143,7 @@ The quiz (/quiz) matches answers to routes like this:
 - Course specifications (PDFs) for each route are on the T Levels page. They are free, but you need to be signed in to download them. Signed-out visitors see a "Log in to download" button.
 - Creating an account: full name, email address and a password. Passwords must be at least 8 characters and include a capital letter, a number and a special character (such as ! ? # or @).
 - Sign-in lockout: after 3 wrong passwords in a row, sign-in for that account is locked for 15 minutes. After that, the visitor can try again.
+- Changing account details: signed-in visitors can change their name, email address and password on the account page (/account). Changing the email or the password asks for the current password. A new password follows the same rules as when creating an account.
 - Forgotten password: there is no password reset page yet. Use the Contact page.
 - Passwords are stored hashed, never as plain text. Account emails are not used for marketing or shared with third parties.
 - Under UK GDPR and the Data Protection Act 2018, visitors can ask what data is held about them, ask for it to be corrected, or ask for it to be deleted, using the Contact page. The Privacy page has the details.
