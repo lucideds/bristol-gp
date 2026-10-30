@@ -213,7 +213,7 @@
         '<div class="nav-top">' +
           '<div class="nav-container nav-top-inner">' +
             '<a class="brand" href="' + link('') + '">' +
-              '<img src="' + link('Sources/assets/amazon_logo.png') + '" alt="Home" width="102" height="34">' +
+              '<img src="' + link('Sources/assets/amazon_logo.png') + '" alt="Home" width="114" height="53">' +
             '</a>' +
             '<form class="nav-search" role="search" action="' + link('') + '">' +
               '<input type="search" name="q" placeholder="Search T Levels and placements" aria-label="Search the site"' +
