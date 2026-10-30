@@ -386,27 +386,30 @@
   line-height: 1.25rem;
   font-weight: 700;
 }
-/* Diamond marker on the line, level with the "when" text */
+/* Pin marker on the line, level with the "when" text, pointing at its step's text.
+   A box with one square corner, turned 45deg, puts that corner to the side; the round
+   part stays centred on the line. Left steps leave the bottom-left corner square
+   (points left); right steps leave the top-right corner square (points right). */
 .path-step-when::before {
   content: "";
   position: absolute;
   top: 50%;
   left: calc(100% + var(--path-gutter) / 2);
-  width: 14px;
-  height: 14px;
+  width: 24px;
+  height: 24px;
   box-sizing: border-box;
   transform: translate(-50%, -50%) rotate(45deg);
-  background: radial-gradient(circle, var(--color-page) 0 2px, var(--color-orange) 2.5px);
+  border-radius: 50% 50% 50% 0;
+  background: radial-gradient(circle, var(--color-page) 0 4px, var(--color-orange) 4.5px);
   border: 2px solid var(--color-orange-edge);
 }
 .path-step:nth-child(even) .path-step-when::before {
   left: calc(var(--path-gutter) / -2);
+  border-radius: 50% 0 50% 50%;
 }
-/* Current step: bigger marker with a dark centre */
+/* Current step: dark centre and edge */
 .path-step[aria-current="step"] .path-step-when::before {
-  width: 20px;
-  height: 20px;
-  background: radial-gradient(circle, var(--color-ink) 0 3.5px, var(--color-orange) 4px);
+  background: radial-gradient(circle, var(--color-ink) 0 4px, var(--color-orange) 4.5px);
   border-color: var(--color-ink);
 }
 .path-step-body .path-here {
@@ -454,8 +457,10 @@
   .path-step:nth-child(even) .path-step-body {
     grid-column: 2;
   }
+  /* Every step is right of the line, so every pin points right */
   .path-step .path-step-when::before,
   .path-step:nth-child(even) .path-step-when::before {
     left: calc(var(--path-gutter) / -2);
+    border-radius: 50% 0 50% 50%;
   }
 }
