@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% set page_css = ["auth"] %}
+{% set page_css = ["auth", "account"] %}
 {% set page_js = ["auth"] %}
 {% block title %}Your account{% endblock %}
 
-{% macro edit_link(form, label) -%}
-  <a class="account-edit" href="/account?edit={{ form }}" data-account-edit="{{ form }}" aria-controls="{{ form }}-form" aria-label="{{ label }}"{% if open_form == form %} hidden{% endif %}>
-    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
-  </a>
+{#- The "Change" link for a detail. It goes to /account?edit=<form>, so it works without JavaScript;
+    auth.js opens the form in place. #}
+{% macro edit_link(form, what) -%}
+  <a class="account-edit" href="/account?edit={{ form }}" data-account-edit="{{ form }}" aria-controls="{{ form }}-form"{% if open_form == form %} hidden{% endif %}>Change<span class="visually-hidden"> {{ what }}</span></a>
 {%- endmacro %}
 
 {% macro field_error(id) -%}
@@ -33,82 +33,114 @@
 {%- endmacro %}
 
 {% block content %}
-  <main class="auth-page">
-    <section class="auth-card" aria-labelledby="account-title">
-      <div id="auth-error-summary" class="auth-error-summary" role="alert" tabindex="-1"{% if not form_error %} hidden{% endif %}>
-        <p class="auth-error-summary-title">There is a problem</p>
-        <ul class="auth-error-summary-list">{% if form_error %}<li>{{ form_error }}</li>{% endif %}</ul>
+  <main class="account-page">
+    <nav class="account-breadcrumb" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li aria-current="page">Your account</li>
+      </ol>
+    </nav>
+
+    <div class="account-layout">
+      <nav class="account-sidenav" aria-label="Account">
+        <ul>
+          <li><a href="#account-details">Your details</a></li>
+          {% if can_see_analytics %}
+          <li><a href="#account-analytics">Site analytics</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+
+      <div class="account-main">
+        <div id="auth-error-summary" class="auth-error-summary" role="alert" tabindex="-1"{% if not form_error %} hidden{% endif %}>
+          <p class="auth-error-summary-title">There is a problem</p>
+          <ul class="auth-error-summary-list">{% if form_error %}<li>{{ form_error }}</li>{% endif %}</ul>
+        </div>
+        {% for message in get_flashed_messages() %}
+        <p class="auth-success" role="status">{{ message }}</p>
+        {% endfor %}
+
+        <h1 id="account-title" class="account-title">Your account</h1>
+
+        <section id="account-details" class="account-panel" aria-labelledby="account-details-title">
+          <h2 id="account-details-title" class="account-panel-title">Your details</h2>
+          {#- After a failed save, the open form shows what was typed rather than what's saved. #}
+          {% set typed = request.form if form_error else none %}
+          {#- auth.js finds each row's value, form and Change link through .account-row. #}
+          <dl class="account-summary">
+            <div class="account-row">
+              <dt>Name</dt>
+              <dd>
+                <span class="account-value"{% if open_form == "name" %} hidden{% endif %}>{{ current_user.name }}</span>
+                <form id="name-form" class="auth-form account-form" method="post" action="/account/name" novalidate{% if open_form != "name" %} hidden{% endif %}>
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <div class="auth-field">
+                    <label for="account-name">New name</label>
+                    <input id="account-name" name="name" type="text" value="{{ typed.name if typed is not none else current_user.name }}" autocomplete="name" required aria-describedby="account-name-error">
+                    {{ field_error("account-name") }}
+                  </div>
+                  {{ form_buttons() }}
+                </form>
+              </dd>
+              <dd class="account-row-action">{{ edit_link("name", "name") }}</dd>
+            </div>
+
+            <div class="account-row">
+              <dt>Email</dt>
+              <dd>
+                <span class="account-value"{% if open_form == "email" %} hidden{% endif %}>{{ current_user.email }}</span>
+                <form id="email-form" class="auth-form account-form" method="post" action="/account/email" novalidate{% if open_form != "email" %} hidden{% endif %}>
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <div class="auth-field">
+                    <label for="account-email">New email</label>
+                    <input id="account-email" name="email" type="email" value="{{ typed.email if typed is not none else current_user.email }}" autocomplete="email" required aria-describedby="account-email-error">
+                    {{ field_error("account-email") }}
+                  </div>
+                  {{ password_field("email-current-password", "current_password", "Current password", "current-password") }}
+                  {{ form_buttons() }}
+                </form>
+              </dd>
+              <dd class="account-row-action">{{ edit_link("email", "email") }}</dd>
+            </div>
+
+            <div class="account-row">
+              <dt>Password</dt>
+              <dd>
+                <span class="account-value"{% if open_form == "password" %} hidden{% endif %}><span aria-hidden="true">••••••••</span><span class="visually-hidden">Hidden</span></span>
+                <form id="password-form" class="auth-form account-form" method="post" action="/account/password" novalidate{% if open_form != "password" %} hidden{% endif %}>
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  {#- Lets password managers match the new password to this account. #}
+                  <input type="email" name="username" value="{{ current_user.email }}" autocomplete="username" hidden>
+                  {{ password_field("password-current", "current_password", "Current password", "current-password") }}
+                  {{ password_field("password-new", "new_password", "New password", "new-password",
+                       hint="Passwords must be at least 8 characters and include a capital letter, a number and a special character (such as ! ? # or @).") }}
+                  {{ password_field("password-confirm", "confirm_password", "Confirm new password", "new-password") }}
+                  {{ form_buttons() }}
+                </form>
+              </dd>
+              <dd class="account-row-action">{{ edit_link("password", "password") }}</dd>
+            </div>
+
+            <div class="account-row">
+              <dt>Member since</dt>
+              <dd>{{ current_user.created_at[:10] }}</dd>
+            </div>
+          </dl>
+        </section>
+
+        {% if can_see_analytics %}
+        <section id="account-analytics" class="account-panel" aria-labelledby="account-analytics-title">
+          <h2 id="account-analytics-title" class="account-panel-title">Site analytics</h2>
+          <p class="account-section-lead">Enquiries, accounts, searches and quiz results for the team.</p>
+          <a class="account-btn account-btn--secondary" href="/analytics">View site analytics</a>
+        </section>
+        {% endif %}
+
+        <form method="post" action="/logout">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="account-btn account-btn--navy">Sign out</button>
+        </form>
       </div>
-      {% for message in get_flashed_messages() %}
-      <p class="auth-success" role="status">{{ message }}</p>
-      {% endfor %}
-      <h1 id="account-title" class="auth-title">Your account</h1>
-
-      {#- After a failed save, the open form shows what was typed rather than what's saved. #}
-      {% set typed = request.form if form_error else none %}
-      <dl class="account-details">
-        <div class="account-row">
-          <div class="account-row-head"><dt>Name</dt>{{ edit_link("name", "Change name") }}</div>
-          <dd>
-            <span class="account-value"{% if open_form == "name" %} hidden{% endif %}>{{ current_user.name }}</span>
-            <form id="name-form" class="auth-form account-form" method="post" action="/account/name" novalidate{% if open_form != "name" %} hidden{% endif %}>
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <div class="auth-field">
-                <label for="account-name">New name</label>
-                <input id="account-name" name="name" type="text" value="{{ typed.name if typed is not none else current_user.name }}" autocomplete="name" required aria-describedby="account-name-error">
-                {{ field_error("account-name") }}
-              </div>
-              {{ form_buttons() }}
-            </form>
-          </dd>
-        </div>
-
-        <div class="account-row">
-          <div class="account-row-head"><dt>Email</dt>{{ edit_link("email", "Change email") }}</div>
-          <dd>
-            <span class="account-value"{% if open_form == "email" %} hidden{% endif %}>{{ current_user.email }}</span>
-            <form id="email-form" class="auth-form account-form" method="post" action="/account/email" novalidate{% if open_form != "email" %} hidden{% endif %}>
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <div class="auth-field">
-                <label for="account-email">New email</label>
-                <input id="account-email" name="email" type="email" value="{{ typed.email if typed is not none else current_user.email }}" autocomplete="email" required aria-describedby="account-email-error">
-                {{ field_error("account-email") }}
-              </div>
-              {{ password_field("email-current-password", "current_password", "Current password", "current-password") }}
-              {{ form_buttons() }}
-            </form>
-          </dd>
-        </div>
-
-        <div class="account-row">
-          <div class="account-row-head"><dt>Password</dt>{{ edit_link("password", "Change password") }}</div>
-          <dd>
-            <span class="account-value"{% if open_form == "password" %} hidden{% endif %}><span aria-hidden="true">••••••••</span><span class="visually-hidden">Hidden</span></span>
-            <form id="password-form" class="auth-form account-form" method="post" action="/account/password" novalidate{% if open_form != "password" %} hidden{% endif %}>
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              {#- Lets password managers match the new password to this account. #}
-              <input type="email" name="username" value="{{ current_user.email }}" autocomplete="username" hidden>
-              {{ password_field("password-current", "current_password", "Current password", "current-password") }}
-              {{ password_field("password-new", "new_password", "New password", "new-password",
-                   hint="Passwords must be at least 8 characters and include a capital letter, a number and a special character (such as ! ? # or @).") }}
-              {{ password_field("password-confirm", "confirm_password", "Confirm new password", "new-password") }}
-              {{ form_buttons() }}
-            </form>
-          </dd>
-        </div>
-
-        <div class="account-row">
-          <div class="account-row-head"><dt>Member since</dt></div>
-          <dd>{{ current_user.created_at[:10] }}</dd>
-        </div>
-      </dl>
-      {% if can_see_analytics %}
-      <p><a href="/analytics">View site analytics</a></p>
-      {% endif %}
-      <form method="post" action="/logout">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <button type="submit" class="auth-primary">Sign out</button>
-      </form>
-    </section>
+    </div>
   </main>
 {% endblock %}
