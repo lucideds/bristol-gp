@@ -24,8 +24,7 @@ A Flask + SQLite site about Amazon T Level placements, built by a six-person T L
 | Cloud | `pqYlzixy4wXx` | AWS hosting docs, cloud security risks, architecture diagram |
 | AI | `Oj5fospWECec` | AI Chatbot Design, AI Feasibility Assessment |
 | Security & Privacy | `3o6W34Ci1aAX` | Application Security, Privacy Page Content, Asset Log |
-| Testing & QA | `cC51OKDWrrnR` | Test Strategy |
-| xArchive | `6YOIDGQ5sz6P` | Superseded docs. Don't treat as current. |
+| Testing & QA | `cC51OKDWrrnR` | Test Strategy, Iterative Testing Document |
 
 - MCP: load `pippin-mcp::*` with `tool_load`. Single-doc tools accept a Pippin URL directly. `pippin_sync_project_to_local` with `recursive: true` is the quickest way to read or back up every doc.
 - There is no rollback or delete tool. Back up a doc before `pippin_update_artifact`. `string_replace` edits can flatten soft line breaks elsewhere in the same doc, so re-read the doc after editing.
