@@ -20,7 +20,7 @@ A Flask + SQLite site about Amazon T Level placements, built by a six-person T L
 |---|---|---|
 | Project & Admin | `Uyrr9Ur0qlHA` | Digital Brief, Role allocations, Website Requirements, Architecture, Feedback Plan, Mentor Feedback, Final Presentation Plans |
 | Frontend | `mM8yvH7hekmJ` | Frontend needs, Accessibility needs, Site Copy (all site wording), Frontend Development Log, Design Proposal subfolder |
-| Backend | `s1i8WvBCZGr1` | SQL Schema, Endpoint structures & schemas, Data Requirements |
+| Backend | `s1i8WvBCZGr1` | SQL Schema, Data Requirements, Endpoint structures & schemas, Backend development notes, Algorithm designs, Algorithm flowcharts |
 | Cloud | `pqYlzixy4wXx` | AWS hosting docs, cloud security risks, architecture diagram |
 | AI | `Oj5fospWECec` | AI Chatbot Design, AI Feasibility Assessment |
 | Security & Privacy | `3o6W34Ci1aAX` | Application Security, Privacy Page Content, Asset Log |
@@ -57,7 +57,7 @@ Team decisions: Slack integration is required (notification on contact submissio
 - Header search entries in `topNavBar.js` (`SEARCH_INDEX`) point at section ids such as `advice#your-path`. Renaming or removing a section id means updating them, and `chat_knowledge.md`.
 - Page CSS uses `--color-*` tokens from `tokens.css`, never raw hex. Check light, dark and high-contrast themes. (`analytics.css` still has one raw border colour.)
 - Pages arriving from other branches as standalone HTML (own `<head>`, `.html` links) must be converted to extend `base.html` and use short URLs. Old `.html` addresses go in `OLD_PAGE_URLS`, not new routes.
-- `docs/*.md` (and their .docx/.pdf copies) are partly out of date: old error messages, the old hand-written chat limiter, `init_db` at startup, the old random `SECRET_KEY`. Check against the code before quoting them.
+- `docs/*.md` were brought up to date with the code on 2 Nov 2026 and copied into the Pippin Backend folder (the flowcharts as Mermaid blocks). When you change a route, a limit, a form message or the search, update both copies. The `.docx` and `.pdf` files in `docs/` are older, so don't quote them.
 - `Tlevel.db` is an old leftover. The app uses `site.db`. Both are gitignored.
 - In browser automation, the injected nav bar has its own submit button (search). Scope form selectors to `main`.
 - The `.venv` is Python 3.9. Keep code 3.9-compatible (no `match`, no `X | Y` type hints evaluated at runtime).

@@ -1,34 +1,44 @@
 # Pippin: Algorithm designs
 
-Last updated 23 October 2026. Owners: Shea Palin and Leeam.
+Last updated 2 November 2026. Owners: Shea Palin and Leeam.
 
-This is Brief Task 1, Activity B. It sets out five of the more complex problems on the site as pseudocode. Designs 1, 2 and 5 match the code as it is now (main.py, chat_api.py and topNavBar.js). Designs 3 and 4 haven't been built yet, so they're the plan for building them.
+This is Brief Task 1, Activity B. It sets out five of the more complex problems on the site as pseudocode. Designs 1, 2 and 5 match the code as it is now (main.py, chat_api.py, extensions.py and topNavBar.js). Design 4 is partly built: the members-only spec downloads work, and the fuller resources design is still the plan. Design 3 hasn't been built yet, so it's the plan for building it.
 
 Pseudocode conventions: <- means assignment, and blocks close with END IF, END FOR and so on. RETURN ends the algorithm. RESPOND sends an HTTP status and body back to the browser. Text in quotes is the message the user sees.
 
 ## 1. Register and login validation
 
-Problem: create accounts and sign people in safely. Bad input is rejected with a clear message, passwords are never stored as plain text, a failed sign-in doesn't reveal which emails are registered, and users are only sent back to pages on this site. Inputs: the form fields and CSRF token. Outputs: a signed-in session and a redirect, or the form again with one error.
+Problem: create accounts and sign people in safely. Bad input is rejected with a clear message, passwords are never stored as plain text, a failed sign-in doesn't reveal which emails are registered, repeated wrong passwords lock that email for a while, and users are only sent back to pages on this site. Inputs: the form fields and CSRF token. Outputs: a signed-in session and a redirect, or the form again with one error.
 
-    CONSTANTS MAX_NAME <- 100, MAX_EMAIL <- 254, MIN_PW <- 8, MAX_PW <- 128
+    CONSTANTS MAX_NAME <- 100, MAX_EMAIL <- 254, MIN_PW <- 8, MAX_PW <- 128,
+              MAX_ATTEMPTS <- 3, LOCK_MINUTES <- 15
 
-    FUNCTION Register(form)
-        IF CSRF token missing or invalid THEN RESPOND 400 "Form expired, refresh and try again"
-        IF more than 10 attempts from this IP in the last minute THEN RESPOND 429
+    FUNCTION Register(form, nextPage)
+        IF CSRF token missing or invalid THEN
+            RESPOND 400 "Your form session expired or was invalid. Please go back, refresh the page and try again."
+        END IF
+        IF more than 10 attempts from this IP in the last minute THEN
+            RESPOND 429 "Too many attempts. Please wait a minute and try again."
+        END IF
         name <- TRIM(form.name)
         email <- LOWERCASE(TRIM(form.email))
         password <- form.password            // not trimmed, spaces may be deliberate
-        IF name = "" OR email = "" OR password = "" THEN RETURN "Please fill in every field."
-        IF LENGTH(name) > MAX_NAME THEN RETURN "Name must be 100 characters or fewer."
+        IF name = "" THEN RETURN "Enter your name"
+        IF LENGTH(name) > MAX_NAME THEN RETURN "Name must be 100 characters or fewer"
+        IF email = "" THEN RETURN "Enter your email address"
         IF LENGTH(email) > MAX_EMAIL OR email does not match "text@text.text" (no spaces) THEN
-            RETURN "Please enter a valid email address."
+            RETURN "Enter an email address in the correct format, like name@example.com"
         END IF
-        IF LENGTH(password) < MIN_PW THEN RETURN "Password must be at least 8 characters."
-        IF LENGTH(password) > MAX_PW THEN RETURN "Password must be 128 characters or fewer."
-        IF password has no capital letter THEN RETURN "Password must include a capital letter."
-        IF password has no number THEN RETURN "Password must include a number."
-        IF password has no special character THEN RETURN "Password must include a special character, such as ! ? # or @."
-        IF password <> form.confirm_password THEN RETURN "Passwords do not match."
+        IF password = "" THEN RETURN "Enter your password"
+        IF LENGTH(password) < MIN_PW THEN RETURN "Password must be at least 8 characters"
+        IF LENGTH(password) > MAX_PW THEN RETURN "Password must be 128 characters or fewer"
+        IF password has no capital letter THEN RETURN "Password must include a capital letter"
+        IF password has no number THEN RETURN "Password must include a number"
+        IF password has no special character THEN
+            RETURN "Password must include a special character, such as ! ? # or @"
+        END IF
+        IF form.confirm_password = "" THEN RETURN "Type your password again"
+        IF password <> form.confirm_password THEN RETURN "Passwords do not match"
         hash <- PBKDF2_SHA256(password)      // salted, never store the real password
         TRY
             userId <- INSERT INTO users (name, email, hash)
@@ -37,18 +47,42 @@ Problem: create accounts and sign people in safely. Bad input is rejected with a
         END TRY
         CLEAR session                        // stops an old session being reused
         session.user_id <- userId
-        REDIRECT to /account
+        GoToNextOrAccount(nextPage)
     END FUNCTION
 
     FUNCTION Login(form, nextPage)
         (same CSRF and rate-limit checks as Register)
         email <- LOWERCASE(TRIM(form.email))
-        user <- SELECT * FROM users WHERE email = email
-        IF user = NULL OR NOT CheckHash(user.hash, form.password) THEN
-            RETURN "Incorrect email or password."     // same message for both cases
+        password <- form.password
+        IF email = "" OR password = "" OR LENGTH(email) > MAX_EMAIL THEN
+            RETURN "Incorrect email or password."         // doesn't count as an attempt
         END IF
+        attempts <- SELECT FROM login_attempts WHERE email = email
+        IF attempts <> NULL AND attempts.locked_until > now THEN
+            minutesLeft <- whole minutes left on the lock, rounded up
+            RETURN "Too many failed attempts. This account is locked. Try again in minutesLeft minutes."
+        END IF                               // the password isn't even checked while locked
+        user <- SELECT * FROM users WHERE email = email
+        IF user = NULL OR NOT CheckHash(user.hash, password) THEN
+            RETURN RecordFailedLogin(email)
+        END IF
+        DELETE FROM login_attempts WHERE email = email    // a good sign-in resets the count
         CLEAR session
         session.user_id <- user.id
+        GoToNextOrAccount(nextPage)
+    END FUNCTION
+
+    FUNCTION RecordFailedLogin(email)
+        DELETE FROM login_attempts WHERE the lock has run out   // so the table doesn't keep growing
+        attempt <- this email's failed count + 1 (saved, starting at 1 if there's no row)
+        IF attempt >= MAX_ATTEMPTS THEN
+            SET this email's locked_until <- now + LOCK_MINUTES
+            RETURN "Incorrect email or password (attempt 3 out of 3). This account is now locked for 15 minutes."
+        END IF
+        RETURN "Incorrect email or password (attempt " + attempt + " out of 3)."
+    END FUNCTION
+
+    FUNCTION GoToNextOrAccount(nextPage)
         IF IsSafeRedirect(nextPage) THEN REDIRECT to nextPage ELSE REDIRECT to /account
     END FUNCTION
 
@@ -59,21 +93,22 @@ Problem: create accounts and sign people in safely. Bad input is rejected with a
         RETURN parts.scheme = "" AND parts.domain = ""  // a path on this site only
     END FUNCTION
 
-Test data: "Bob@X.com " gets stored as "bob@x.com". A 7-character password is rejected. Registering the same email twice gives the "already exists" message. A wrong password and an unknown email give the same message. A next value of "//evil.com" or "/\evil.com" goes to /account instead.
+Attempts are counted by the email typed in, not by account, so an email with no account counts and locks exactly like a real one. That way the messages never show which emails are registered. The lock is timed rather than permanent because there is no password reset yet, and a permanent lock would let anyone lock a real user out just by knowing their email.
+
+Test data: "Bob@X.com " gets stored as "bob@x.com". A 7-character password gets "Password must be at least 8 characters". Registering the same email twice gives the "already exists" message. A wrong password and an unknown email give the same message. Three wrong passwords give attempt 1, attempt 2, then the locked message, and a 4th try with the right password is still refused until the 15 minutes are up. A next value of "//evil.com" or "/\evil.com" goes to /account instead.
 
 ## 2. Chatbot request flow
 
 Problem: pass a visitor's conversation to the AI model (OpenRouter) and stream the reply back, keeping the API key secret, stopping overload and misuse, stopping visitors overriding the assistant's instructions, and never showing the model's hidden reasoning. Inputs: JSON {messages: [{role, content}, ...]}. Outputs: a stream of {delta}, then {done} or {error}.
 
-    CONSTANTS LIMIT <- 10 per 60 seconds, MAX_BODY <- 100 KB, MAX_MSGS <- 20,
+    CONSTANTS LIMIT <- 10 per minute, MAX_BODY <- 100 KB, MAX_MSGS <- 20,
               MAX_CHARS <- 4000, MAX_STREAM_SECONDS <- 120
 
     FUNCTION ChatStream(request)
-        // 1. Rate limit (sliding window per IP address, shared with /api/chat)
-        hits <- recentRequests[request.ip]
-        REMOVE from hits every time older than 60 seconds
-        IF COUNT(hits) >= LIMIT THEN RESPOND 429 "You're sending messages too quickly" + Retry-After
-        ADD now TO hits
+        // 1. Rate limit (Flask-Limiter, per IP address, one count shared with /api/chat)
+        IF this IP has already made LIMIT chat requests this minute THEN
+            RESPOND 429 "You're sending messages too quickly. Please wait a moment and try again." + Retry-After
+        END IF
 
         // 2. Size and shape
         IF request.size > MAX_BODY THEN RESPOND 413 "Your message is too long."
@@ -89,39 +124,47 @@ Problem: pass a visitor's conversation to the AI model (OpenRouter) and stream t
         IF LAST(clean).role <> "user" THEN RESPOND 400
 
         // 3. Call the model
-        IF API key not set THEN RESPOND 503 "The chat assistant is not available"
-        body <- {model, [SYSTEM_PROMPT] + clean, max_tokens 4096,
+        IF API key not set THEN RESPOND 503 "The chat assistant is not available: API key not configured."
+        body <- {model, [SYSTEM_PROMPT + site facts] + clean, max_tokens 4096, temperature 0.3,
                  reasoning {effort low, exclude}, stream TRUE}
         TRY
             upstream <- POST body TO OpenRouter (connect timeout 5 s, read timeout 90 s)
-        CATCH timeout: RESPOND 504    CATCH connection error: RESPOND 502
+        CATCH timeout: RESPOND 504 "The assistant took too long to reply."
+        CATCH connection error: RESPOND 502 "Couldn't reach the assistant service."
         END TRY
-        IF upstream.status = 429 THEN RESPOND 503 "The assistant is busy"
-        IF upstream.status is not 2xx THEN RESPOND 502   // details go to the log only
+        IF upstream.status = 429 THEN RESPOND 503 "The assistant is busy right now."
+        IF upstream.status is not 2xx THEN RESPOND 502 "The assistant is temporarily unavailable."
+                                            // details go to the server log only
 
         // 4. Relay the stream
         START event stream to browser
         started <- FALSE, finished <- FALSE, deadline <- now + MAX_STREAM_SECONDS
-        FOR EACH line IN upstream (decoded as UTF-8)
-            IF now > deadline THEN SEND {error: "took too long"}; STOP
-            IF line is blank or a comment THEN CONTINUE
-            IF line = "data: [DONE]" THEN finished <- TRUE; EXIT FOR
-            chunk <- PARSE_JSON(line) (if this fails, CONTINUE)
-            IF chunk has error THEN SEND {error: "temporarily unavailable"}; STOP
-            text <- chunk.choices[0].delta.content    // reasoning is never read
-            IF text <> "" THEN
-                IF NOT started THEN text <- TRIM_START(text)
-                IF text <> "" THEN started <- TRUE; SEND {delta: text}
-            END IF
-            IF chunk has finish_reason THEN finished <- TRUE
-        END FOR
-        ALWAYS close upstream connection
+        TRY
+            FOR EACH line IN upstream (decoded as UTF-8)
+                IF now > deadline THEN SEND {error: "took too long"}; STOP
+                IF line is blank or a comment THEN CONTINUE
+                IF line = "data: [DONE]" THEN finished <- TRUE; EXIT FOR
+                chunk <- PARSE_JSON(line) (if this fails, CONTINUE)
+                IF chunk has error THEN SEND {error: "temporarily unavailable"}; STOP
+                text <- chunk.choices[0].delta.content    // reasoning is never read
+                IF text <> "" THEN
+                    IF NOT started THEN text <- TRIM_START(text)
+                    IF text <> "" THEN started <- TRUE; SEND {delta: text}
+                END IF
+                IF chunk.finish_reason = "error" THEN SEND {error: "temporarily unavailable"}; STOP
+                IF chunk has finish_reason THEN finished <- TRUE
+            END FOR
+        CATCH connection dropped
+            SEND {error: "reply was interrupted"}; STOP
+        FINALLY
+            close upstream connection          // even if the visitor has left
+        END TRY
         IF NOT started THEN SEND {error: "couldn't come up with a reply"}
         ELSE IF NOT finished THEN SEND {error: "reply was interrupted"}
         ELSE SEND {done: TRUE}
     END FUNCTION
 
-The browser tries the stream first and falls back to /api/chat if streaming fails. Test data: an 11th request within a minute gets a 429. A message with role "system" gets a 400. A conversation ending on an assistant message gets a 400. If the connection drops mid-reply, the visitor sees "interrupted", not half an answer.
+The site facts come from chat_knowledge.md, a hand-kept copy of the site's page text that is added to the system prompt when the server starts. The browser tries the stream first and falls back to /api/chat if streaming fails. Test data: an 11th request within a minute gets a 429. A message with role "system" gets a 400. A conversation ending on an assistant message gets a 400. If the connection drops mid-reply, the visitor sees "interrupted", not half an answer.
 
 ## 3. Expression of interest submission (planned)
 
@@ -156,9 +199,30 @@ Problem: let a signed-in user register interest in a placement route, and change
 
 The table has UNIQUE(user_id, route), so if two requests arrive at the same moment the second one updates the row instead of making a duplicate. DELETE /api/interest/<route> uses the same sign-in and CSRF checks, removes the row and responds 204. Test data: a route of "Digital " is accepted as "digital". A route of "law" gets a 400. Sending the same route twice gives 201 then 200, and there's still only one row. A request with no session gets a 401.
 
-## 4. Gated download access check (planned)
+## 4. Gated download access check (partly built)
 
-Problem: serve resources like CV templates and placement guides. Public files are open to everyone, but members-only files need the user to be signed in. Nobody should be able to use the download link to read other files on the server. Inputs: a resource id in the URL, plus the session. Outputs: the file, or 401, 404 or 429.
+Problem: serve resources like course specifications, CV templates and placement guides. Public files are open to everyone, but members-only files need the user to be signed in. Nobody should be able to use the download link to read other files on the server.
+
+### Built: course specification downloads
+
+The T Levels page has a course specification PDF for each route, and they are all members-only. Inputs: a file name in the URL, plus the session. Outputs: the file, a redirect to sign in, or 404 or 429.
+
+    FUNCTION DownloadSpec(name, request)       // GET /download/<name>
+        IF more than 30 downloads from this IP in the last minute THEN RESPOND 429
+        IF session has no user THEN
+            REDIRECT to /login?next=/t-levels    // back to the T Levels page after signing in
+        END IF
+        filename <- DOWNLOADS[name]            // a fixed list in main.py
+        IF filename = NULL THEN RESPOND 404
+        RESPOND 200 with resources/specs/filename (Content-Disposition: attachment,
+                                                   Cache-Control: private, no-store)
+    END FUNCTION
+
+The PDFs are kept in resources/specs, outside the folder Flask serves to anyone, so this route is the only way to get them. The URL can only pick a name from the DOWNLOADS list, never a path. Signed-out visitors see a greyed-out "Log in to download" button on the T Levels page. Test data: a signed-out visitor is sent to sign in, then back to the T Levels page. A signed-in visitor gets the PDF. A name of "../main.py" or one not in the list gets a 404.
+
+### Planned: the full resources design
+
+When there are public files and more types of resource, the fixed list becomes a resources table. Inputs: a resource id in the URL, plus the session. Outputs: the file, or 401, 404 or 429.
 
     FUNCTION DownloadResource(id, request)
         IF more than 30 downloads from this IP in the last minute THEN RESPOND 429
@@ -183,7 +247,9 @@ The sign-in check comes after the 404 check, so a 401 does give away that the id
 
 ## 5. Site search
 
-Problem: the nav bar's search box should take any words the user types and go straight to the most relevant page or section. It has to cope with capitals, plurals, partial words and filler words, and give a helpful message if nothing matches. Inputs: the query text. Outputs: a jump to the best entry in SEARCH_INDEX (title, path, keywords), or a message.
+Problem: the nav bar's search box should take any words the user types, suggest matching pages and sections as they type, and go straight to the most relevant one. It has to cope with capitals, plurals, partial words and filler words, and give a helpful message if nothing matches. Inputs: the query text. Outputs: a list of up to 8 suggestions, then a jump to the chosen or best entry in SEARCH_INDEX (title, path, keywords), or a message.
+
+    CONSTANTS MAX_SUGGESTIONS <- 8
 
     FUNCTION Normalise(text)
         RETURN LOWERCASE(text) with punctuation replaced by spaces and repeated spaces removed
@@ -214,19 +280,37 @@ Problem: the nav bar's search box should take any words the user types and go st
         RETURN score
     END FUNCTION
 
-    FUNCTION Search(query)
-        query <- TRIM(query)
-        IF query = "" THEN SHOW 'Type a word to search, for example "digital"'; RETURN
-        best <- NULL, bestScore <- 0
-        FOR EACH entry IN SEARCH_INDEX
-            s <- ScoreEntry(entry, query)
-            IF s > bestScore THEN best <- entry; bestScore <- s      // first entry wins a tie
-        END FOR
-        IF best = NULL THEN SHOW 'No results for "query". Try "T Levels" or "contact"'; RETURN
-        CLEAR search box
-        IF best opens the accessibility menu THEN OPEN menu
-        ELSE IF best is the section already on screen THEN SCROLL to it
-        ELSE GO TO best.path
+    FUNCTION FindMatches(query)
+        RETURN every entry with ScoreEntry(entry, query) > 0,
+               highest score first (a tie keeps the SEARCH_INDEX order)
     END FUNCTION
 
-Each search checks every entry once, so it takes time in proportion to the size of the index. With 23 entries that's instant, and it runs in the browser without contacting the server. Test data: "FAQ" goes to the FAQ page itself, not one of its sections. "eng" goes to the Engineering route. "coding" finds Digital through its keywords. "xyzzy" shows the no-results message. An empty box shows the hint.
+    FUNCTION ShowSuggestions(query)              // on every key typed, and when the box gets focus
+        IF TRIM(query) = "" THEN HIDE the list; RETURN
+        suggestions <- first MAX_SUGGESTIONS of FindMatches(query)
+        IF suggestions is empty THEN HIDE the list; RETURN
+        SHOW suggestions under the box, with the typed text in bold in each title
+    END FUNCTION                                 // arrow keys move the highlight, Escape closes it
+
+    FUNCTION Search(query, highlighted)          // Enter, the search button, or a suggestion clicked
+        query <- TRIM(query)
+        IF highlighted <> NULL THEN Go(highlighted, query); RETURN
+        IF query = "" THEN SHOW 'Type a word to search, for example "digital" or "apply".'; RETURN
+        best <- FIRST(FindMatches(query))
+        IF best = NULL THEN
+            RECORD search query for the analytics page
+            SHOW 'No results for "query". Try "T Levels", "placement" or "contact".'
+            RETURN
+        END IF
+        Go(best, query)
+    END FUNCTION
+
+    FUNCTION Go(entry, query)
+        RECORD search query for the analytics page   // what was typed, not the title chosen
+        CLEAR search box and HIDE the list
+        IF entry opens the accessibility menu THEN OPEN menu
+        ELSE IF entry is the section already on screen THEN SCROLL to it
+        ELSE GO TO entry.path
+    END FUNCTION
+
+Each search checks every entry once, so it takes time in proportion to the size of the index. With 34 entries that's instant, and it runs in the browser without contacting the server, apart from recording the search. The recorded text is lower-cased and cut to 100 characters, and no user id or IP address is stored with it. Test data: "FAQ" goes to the FAQ page itself, not one of its sections. "eng" goes to the Engineering route. "coding" finds Digital through its keywords. "xyzzy" shows the no-results message. An empty box shows the hint.

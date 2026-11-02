@@ -2,17 +2,20 @@
 title: "5. Searching the site"
 ---
 flowchart TD
-    S([Visitor types into the<br/>search box and presses Enter]):::start --> A{Did they type<br/>anything?}:::question
+    S([Visitor types into the<br/>search box]):::start --> B[Tidy up the words: ignore capitals,<br/>punctuation and filler words<br/>like 'the' or 'how']:::step
+    B --> C[Give every page and section<br/>a score for how well it matches]:::step
+    C --> L[Show up to 8 of the best matches<br/>in a list under the box,<br/>updating with every letter]:::step
+    L --> P{Did they pick one<br/>from the list?}:::question
+    P -- Yes --> OK1([Take them to the page<br/>or section they picked]):::good
+    P -- "No, they pressed Enter" --> A{Did they type<br/>anything?}:::question
     A -- No --> AX(["Show a hint, e.g. try 'digital'"]):::stop
-    A -- Yes --> B[Tidy up the words: ignore capitals,<br/>punctuation and filler words<br/>like 'the' or 'how']:::step
-    B --> C[Give every page on the site<br/>a score for how well it matches]:::step
-    C --> D{Did any page<br/>score points?}:::question
+    A -- Yes --> D{Did anything<br/>score points?}:::question
     D -- No --> DX([Say there are no results<br/>and suggest other words]):::stop
-    D -- Yes --> OK([Take them straight to the<br/>best-scoring page]):::good
-
+    D -- Yes --> OK2([Take them straight to the<br/>best-scoring page]):::good
     N["<b>How a page earns points</b><br/>exact title match: top score<br/>word in the title: more points<br/>word in its keywords: some points<br/>part of a word, like 'eng': a few points"]:::note
     C -.- N
-
+    R["What was typed is counted for the team's<br/>analytics page, with no name or IP address."]:::note
+    OK2 -.- R
     classDef start fill:#232f3e,stroke:#232f3e,color:#ffffff,font-weight:bold
     classDef step fill:#ffffff,stroke:#232f3e,color:#0f1111
     classDef question fill:#fff0d6,stroke:#a35c00,color:#0f1111

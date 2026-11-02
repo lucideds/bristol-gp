@@ -13,7 +13,7 @@ flowchart TD
     U2 -- Yes --> U3{Is that email<br/>already registered?}:::question
     U3 -- Yes --> UX2([Suggest signing in instead]):::stop
     U3 -- No --> U4[Scramble the password so the<br/>real one is never stored,<br/>then create the account]:::step
-    U4 --> OK1([Signed in: show<br/>their account page]):::good
+    U4 --> OK1([Signed in: take them to<br/>the page they wanted]):::good
 
     F -- Signing in --> I1{Is sign-in locked after<br/>3 wrong tries?}:::question
     I1 -- Yes --> IX1([Ask them to try again<br/>in 15 minutes]):::stop
