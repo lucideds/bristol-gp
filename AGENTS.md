@@ -53,7 +53,9 @@ Team decisions: Slack integration is required (notification on contact submissio
 - Importing `main` without `SECRET_KEY` in the environment generates a key and appends it to the real `.env`. Scripts and tests must set `SECRET_KEY` before `import main`.
 - `chat_knowledge.md` is a hand-kept copy of the site's page text that the chat assistant answers from. It does not sync. Update the matching section when you change page wording, password rules, `MAX_LOGIN_ATTEMPTS`/`LOCKOUT_MINUTES` in `main.py`, or quiz text in `Sources/js/quiz.js`. Its whole content is sent to the model, so put nothing private in it.
 - The Content Security Policy blocks inline `<script>`, `<style>` and `onclick=""`. Page behaviour goes in `Sources/js/<page>.js`, listed in the template's `page_js`.
-- Form error messages exist twice, in `main.py` (`*_error()` functions) and `auth.js`. Change both.
+- Form error messages exist twice, in `main.py` (`*_error()` functions) and `auth.js`. Change both. `auth.js` serves both the login and account pages, so a new field needs an entry in its `rules` map keyed by the input id.
+- The account page has one form per detail. Each row's "Change" link goes to `/account?edit=<form>` (the `edit_link` macro) and posts to `/account/<form>`; a new editable detail needs a `try_change_*` function and an `ACCOUNT_FORMS` entry in `main.py`, plus a matching `.account-row` in `account.html`. The Downloads and Accessibility sections were removed on purpose; don't re-add them.
+- Header search entries in `topNavBar.js` (`SEARCH_INDEX`) point at section ids such as `advice#your-path`. Renaming or removing a section id means updating them, and `chat_knowledge.md`.
 - Page CSS uses `--color-*` tokens from `tokens.css`, never raw hex. Check light, dark and high-contrast themes. (`analytics.css` still has one raw border colour.)
 - Pages arriving from other branches as standalone HTML (own `<head>`, `.html` links) must be converted to extend `base.html` and use short URLs. Old `.html` addresses go in `OLD_PAGE_URLS`, not new routes.
 - `docs/*.md` (and their .docx/.pdf copies) are partly out of date: old error messages, the old hand-written chat limiter, `init_db` at startup, the old random `SECRET_KEY`. Check against the code before quoting them.
@@ -81,12 +83,15 @@ r = c.post("/register", data={"name": "Test User", "email": "test@example.com",
            "password": "Passw0rd!", "confirm_password": "Passw0rd!"})
 print("register", r.status_code, r.headers.get("Location"))  # 302 /account
 print("analytics", c.get("/analytics").status_code)          # 200
+print("edit", c.get("/account?edit=email").status_code)      # 200
+r = c.post("/account/password", data={"current_password": "Passw0rd!",
+           "new_password": "Newpass1!", "confirm_password": "Newpass1!"})
+print("password", r.status_code, r.headers.get("Location"))  # 302 /account
 EOF
 ```
 
 - A valid contact POST writes to the DB and calls Slack. Stub `main.is_slack_configured` and `main.send_to_slack` in tests.
 - Live chat check (uses the OpenRouter key in `.env`): `.venv/bin/python -W ignore -c "import main; c=main.app.test_client(); print(c.post('/api/chat', json={'messages':[{'role':'user','content':'What is a T Level?'}]}).get_json())" 2>/dev/null`
-- `.agents/` is gitignored, so it only exists on the machine that made it. On Leeam's machine, `.agents/tasks/2026-10-29-review-fixes/` has a local server (`serve.py`, port 5055) and Playwright scripts. They load Playwright from `~/.npm/_npx` and need `chromium.launch({ channel: 'chrome' })`.
 - Don't take screenshots to check layout or themes. Run the functional checks, then tell the user which pages, states and themes to look at in the browser.
 
 ## Conventions

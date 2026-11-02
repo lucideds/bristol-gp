@@ -72,8 +72,6 @@ bristol-gp/
         └── assets/         Images and icons
 ```
 
-`.agents/` holds Figma specs, plans and screenshots from earlier work. It is ignored by git, so it only exists on machines where it was created.
-
 ## Backend
 
 ### Routes
@@ -92,7 +90,8 @@ Every link on the site uses these short URLs. The old file-name addresses, such 
 | `/login` | GET, POST | `login.html`, sign-in form. Limited to 10 POSTs per minute. |
 | `/register` | GET, POST | `login.html`, sign-up form. Limited to 10 POSTs per minute. |
 | `/logout` | POST | Clears the session and redirects home. |
-| `/account` | GET | `account.html`. Requires sign-in. |
+| `/account` | GET | `account.html`. Requires sign-in. `?edit=name`, `?edit=email` or `?edit=password` opens that change form, so the "Change" links work without JavaScript. |
+| `/account/<form>` | POST | Saves one account detail: `name`, `email` or `password` (see `ACCOUNT_FORMS` in `main.py`). Redirects to `/account` with a success message, or shows the page again with the form open and the error. Requires sign-in. Limited to 10 POSTs per minute. |
 | `/analytics` | GET | `analytics.html`. Requires sign-in with an email in `ANALYTICS_EMAILS`; anyone else signed in gets a 404. |
 | `/download/<name>` | GET | A spec PDF from `resources/specs/`. Requires sign-in. Limited to 30 per minute. |
 | `/accessibility` | GET | Redirects to `/#accessibility`. The settings are now a popup on every page. |
@@ -152,7 +151,8 @@ sqlite3 site.db "SELECT id, name, email, created_at FROM messages ORDER BY id DE
 - Sign-in stores `user_id` in Flask's signed session cookie. `load_user()` loads the user into `g.user` on each request, and templates see it as `current_user`.
 - Every POST form needs a CSRF token from Flask-WTF. Add `<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">` to any new form. The chat blueprint is exempt because it only accepts JSON.
 - The `next` parameter on `/login` and `/register` is only followed if `is_safe_redirect()` confirms it is a path on this site.
-- The form checks (`name_error()`, `email_error()`, `password_error()`, `message_error()` in `main.py`) are shared by the contact and sign-up forms. `auth.js` repeats them in the browser with the same messages, so change both together.
+- On the account page, changing the email or the password needs the current password (`current_password_error()`), in case someone else is using a computer that was left signed in. Changing the name doesn't. A password change starts a fresh session, as signing in does.
+- The form checks (`name_error()`, `email_error()`, `password_error()`, `current_password_error()`, `message_error()` in `main.py`) are shared by the contact, sign-up and account forms. `auth.js` repeats them in the browser with the same messages, so change both together.
 - Form field limits: name 100 characters, email 254, message 2000, password 8 to 128. Requests over 16 KB are rejected, except chat requests, which allow 100 KB.
 - Rate limits use Flask-Limiter (set up in `extensions.py`). They are kept in memory, so they reset when the app restarts and are not shared between processes.
 
@@ -244,11 +244,14 @@ The navigation, footer and chat widget are injected by JavaScript, so you don't 
 | Quiz | `components.css`, `quiz.css` | `quiz.js` |
 | Contact | `contact.css` | `contact.js` (moves focus to the result after sending) |
 | Login | `auth.css` | `auth.js` (switches between sign-in and sign-up, client-side checks) |
-| Account | `auth.css` | |
+| Account | `auth.css`, `account.css` | `auth.js` (opens and closes the change forms in place, client-side checks) |
+| Analytics | `components.css`, `home.css`, `analytics.css` | |
 | Privacy | `privacy.css` | |
 | 404, 500 | `errorPage.css` | `errorPage.js` (404 only: the "Go back" button) |
 
-`components.css` holds the pieces several content pages share: page column, breadcrumb, title, callout, accordion, buttons, route cards and the "Still unsure?" card.
+`components.css` holds the pieces several content pages share: page column, breadcrumb, title, callout, accordion, buttons, route cards and the "Still unsure?" card. `auth.css` holds the form, field, error and success styles shared by the login and account pages; the account page's own layout is in `account.css`.
+
+The Advice page has four sections: `#why-choose`, `#your-path` (a timeline from Year 10 to Year 13 that includes how to apply for a placement), `#where-it-leads` and `#common-worries`. The "Years 12 and 13" stage of the timeline keeps `id="how-to-apply"` so older links still land there. The header search in `topNavBar.js` links to these ids (`SEARCH_INDEX` entries such as `advice#why-choose`), so update it when you rename or remove a section.
 
 ### Styling conventions
 
@@ -265,7 +268,7 @@ There is no automated test suite. Before committing, check by hand:
 - Each page you changed at desktop width and at a phone width of about 390px.
 - Light, dark and high-contrast themes, and the Large and Extra large text sizes, from the accessibility popup.
 - Keyboard use: Tab through the page and make sure focus is visible and nothing is unreachable.
-- Forms: sign up, sign in, sign out, and send a contact message. Check that errors show for empty or invalid fields.
+- Forms: sign up, sign in, change your name, email and password on the account page, sign out, and send a contact message. Check that errors show for empty or invalid fields.
 - The chat widget, if you have an OpenRouter key.
 
 ## Going live
