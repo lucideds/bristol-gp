@@ -212,13 +212,44 @@
     return badge;
   }
 
-  // Puts the text in a message bubble (as plain text, never HTML). AI replies also get the badge.
+  // Pages a reply may link to. Only these become links, so a made-up path stays plain text.
+  // Keep in step with the page routes in main.py and the paths in chat_knowledge.md.
+  var LINKABLE_PAGES = ['t-levels', 'advice', 'faqs', 'quiz', 'contact', 'privacy',
+    'accessibility', 'interest', 'account', 'login'];
+  // A site path such as /t-levels or /login#register, at the start of the text or after a space,
+  // bracket or quote. That rule skips the paths inside full URLs (https://example.com/students).
+  // "(/)" is the home page; a bare "/" isn't linked because it also appears in "parents / carers".
+  var PAGE_PATH = /(^|[\s(\[“"'])(\/([a-z][a-z0-9-]*)(#[A-Za-z0-9_-]+)?|\/(?=\)))/g;
+
+  // Adds text to el, with site paths turned into links. Built from text nodes and <a> elements,
+  // never HTML, because the reply comes from the model and could contain anything.
+  function appendWithLinks(el, text) {
+    var last = 0;
+    var match;
+    PAGE_PATH.lastIndex = 0;
+    while ((match = PAGE_PATH.exec(text)) !== null) {
+      var page = match[3];
+      if (page && LINKABLE_PAGES.indexOf(page) === -1) continue;
+      var start = match.index + match[1].length;
+      var path = match[2];
+      el.appendChild(document.createTextNode(text.slice(last, start)));
+      var a = document.createElement('a');
+      a.href = TLC.link(path.slice(1));
+      a.textContent = path;
+      el.appendChild(a);
+      last = start + path.length;
+    }
+    el.appendChild(document.createTextNode(text.slice(last)));
+  }
+
+  // Puts the text in a message bubble (as plain text, never HTML). AI replies also get the badge,
+  // and the site pages they mention become links.
   function fillMessage(msg, role, text) {
     if (role === 'assistant') {
       msg.appendChild(makeAiBadge());
       var body = document.createElement('span');
       body.className = 'chat-msg-text';
-      body.textContent = text;
+      appendWithLinks(body, text);
       msg.appendChild(body);
     } else {
       msg.textContent = text;

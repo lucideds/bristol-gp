@@ -66,6 +66,8 @@
     { title: 'Advice: Your path to a placement', path: 'advice#your-path',
       keywords: 'your path find timeline year 10 11 12 13 steps when gcse results start placement register interview journey plan' },
 
+    { title: 'Resources: quiz, FAQs, assistant and contact', path: 'advice#resources',
+      keywords: 'resources still unsure help support quiz faqs assistant chat contact' },
     { title: 'Which T Level suits you? (quiz)', path: 'quiz',
       keywords: 'quiz test which suits me match matches find my t level questions personality recommend' },
 

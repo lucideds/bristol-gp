@@ -234,7 +234,7 @@ The frontend is plain HTML, CSS and JavaScript, with no build step or package ma
 | `css/topNavBar.css`, `js/topNavBar.js` | Builds the top navigation, search box and sign-in or account link. |
 | `css/accessibility.css`, `js/accessibility.js` | Accessibility popup: text size, theme and reading aids, saved in `localStorage` (`tlc-theme` and `tlc-a11y`). |
 | `css/footer.css`, `js/footer.js` | Builds the footer and keeps it at the bottom of short pages. |
-| `css/chatWidget.css`, `js/chatWidget.js` | The "T buddy" chat button and panel. Uses `/api/chat/stream`, with `/api/chat` as a fallback. Any button with `data-open-chat` opens it, and elements with `data-needs-chat` (hidden in the HTML) are shown once it loads. |
+| `css/chatWidget.css`, `js/chatWidget.js` | The "T buddy" chat button and panel. Uses `/api/chat/stream`, with `/api/chat` as a fallback. Site paths in replies, such as `/t-levels#media`, become links if the page is in `LINKABLE_PAGES`. Any button with `data-open-chat` opens it, and elements with `data-needs-chat` (hidden in the HTML) are shown once it loads. |
 | `css/motion.css` | Shared transitions. Movement is turned off when the visitor asks for reduced motion in their system or in the accessibility popup. |
 
 `accessibility.js` loads in `<head>` without `defer`, so saved settings apply before the page is drawn and there is no flash of the wrong theme or text size. Every other script loads with `defer`, so it runs once the page's HTML is ready and doesn't need to wait for `DOMContentLoaded`.

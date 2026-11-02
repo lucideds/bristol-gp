@@ -53,10 +53,16 @@
         viewed[routeId] = true;
         window.tlcTrack('view', routeId);
       }
-
+      
       if (options.updateUrl) {
         var id = panels[index].id;
-        history.replaceState(null, '', id === DEFAULT_ID ? location.pathname + location.search : '#' + id);
+        var url = id === DEFAULT_ID ? location.pathname + location.search : '#' + id;
+        var currentId = location.hash.slice(1) || DEFAULT_ID;
+        if (options.replace || id === currentId) {
+          history.replaceState(null, '', url);
+        } else {
+          history.pushState(null, '', url);
+        }
       }
       if (options.focusTab) tabs[index].focus();
       if (options.focusPanel) panels[index].focus();
@@ -88,7 +94,7 @@
         default: return;
       }
       e.preventDefault();
-      select(next, { updateUrl: true, focusTab: true });
+      select(next, { updateUrl: true, replace: true, focusTab: true });
     });
 
     // Route pills and the "T Levels" breadcrumb open their tab and move focus to its content.
@@ -103,6 +109,8 @@
       select(index, { updateUrl: true, focusPanel: true });
     });
 
+    // Back/Forward between tab entries; popstate covers browsers that skip hashchange there.
+    window.addEventListener('popstate', selectFromHash);
     window.addEventListener('hashchange', selectFromHash);
 
     tablist.hidden = false;

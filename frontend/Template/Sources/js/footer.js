@@ -6,7 +6,7 @@
   var COLUMNS = [
     { heading: 'Explore', links: [
       { label: 'T Levels', path: 't-levels' },
-      { label: 'Resources', path: 'advice' }
+      { label: 'Resources', path: 'advice#resources' }
     ] },
     { heading: 'Help', links: [
       { label: 'Privacy notice', path: 'privacy' },

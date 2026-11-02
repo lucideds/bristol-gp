@@ -75,7 +75,8 @@
 }
 
 /* ---------- Sections ---------- */
-.advice-section {
+.advice-section,
+.advice-unsure {
   scroll-margin-top: 16px;
 }
 
