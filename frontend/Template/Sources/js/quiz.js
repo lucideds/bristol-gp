@@ -29,6 +29,7 @@
   if (!form) return;
 
   var error = document.getElementById('quiz-error');
+  var lead = document.getElementById('quiz-lead');
   var result = document.getElementById('quiz-result');
   var title = document.getElementById('quiz-result-title');
   var also = document.getElementById('quiz-result-also');
@@ -156,8 +157,9 @@
       also.hidden = true;
     }
 
-    // The result replaces the questions, like moving to a new page
+    // The result replaces the questions and their instructions, like moving to a new page
     form.hidden = true;
+    lead.hidden = true;
     result.hidden = false;
     window.scrollTo(0, 0);
     title.focus({ preventScroll: true });
@@ -170,6 +172,7 @@
 
   form.addEventListener('reset', function () {
     form.hidden = false;
+    lead.hidden = false;
     result.hidden = true;
     error.hidden = true;
     questions.forEach(function (question) {

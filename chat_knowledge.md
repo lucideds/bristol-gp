@@ -6,9 +6,9 @@ Everything below is taken from the site's own pages, apart from "Other Amazon ro
 
 ## Pages on this website
 
-- Home: / - an overview of the five placement routes, links for visitors after GCSEs, during a T Level and after a T Level, and a "Register your interest" button (it goes to /interest).
-- T Levels: /t-levels - general T Level information and a section for each route: Digital (/t-levels#digital), Business (/t-levels#business), Media (/t-levels#media), Finance (/t-levels#finance) and Engineering (/t-levels#engineering). Each route section has a course specification (PDF) to download.
-- Advice: /advice - why choose a T Level, "Your path to a placement" (a year-by-year timeline from Year 10 to Year 13 that includes how to apply for a placement), "Where it can lead" (apprenticeship, university or work, with example jobs by route), and common worries.
+- Home: / - an overview of the five placement routes, a "Where are you now?" section with links for visitors finishing their GCSEs, studying a T Level or who have finished their T Level, and a "Register your interest" button (it goes to /interest).
+- T Levels: /t-levels - opens with the five Amazon placement routes, then general T Level information ("What T Levels are" and frequently asked questions), and a section for each route: Digital (/t-levels#digital), Business (/t-levels#business), Media (/t-levels#media), Finance (/t-levels#finance) and Engineering (/t-levels#engineering). Each route section has a course specification (PDF) to download.
+- Advice: /advice - why choose a T Level, "Your path to a placement" (a year-by-year timeline from Year 10 to Year 13 that includes how to apply for a placement), "Where it can lead" (apprenticeship, university or work, with example jobs by route), and common questions.
 - Quiz: /quiz - "Which T Level suits you?" Five quick questions with no wrong answers. It shows your top two matching routes (best match and also a good fit). It is only a starting point, so talk to a careers adviser before choosing.
 - FAQs: /faqs - common questions about T Levels, placements, applying to Amazon and what comes after a T Level.
 - Contact: /contact - a form for sending the team a message. The team replies by email. Use this for anything the assistant cannot answer, password problems, or questions about personal data. Parents, carers, schools and colleges can also use it.
@@ -22,7 +22,7 @@ Everything below is taken from the site's own pages, apart from "Other Amazon ro
 
 - T Levels are two-year technical qualifications for students who have completed their GCSEs. They are equivalent to 3 A levels and combine classroom learning with an industry placement of at least 315 hours, approximately 45 working days. T Levels can help students progress into employment, apprenticeships or further education.
 - A Levels focus mainly on classroom study and exams across several subjects. A T Level focuses on one technical area and combines classroom learning with practical industry experience.
-- Who can apply: T Levels are generally aimed at students aged 16 to 19 who have completed their GCSEs. Entry requirements vary by school, college and subject, so students should check with their chosen provider to find out which grades they need.
+- Who can apply: students can apply for a T Level while they are in Year 11, usually from the autumn, and start the course after their GCSEs. Entry requirements vary by school, college and subject, so students should check with their chosen provider to find out which grades they need.
 - Finding a course: the government's T Level course finder is at https://www.tlevels.gov.uk/students/find. A careers adviser can say which schools and colleges nearby offer T Levels.
 - Subjects: there are more than 20 T Level subjects available across different industries. This website highlights five routes for Amazon industry placements: Digital, Business, Media, Finance and Engineering.
 - Grades: when you pass, you get a T Level certificate with an overall grade of Pass, Merit, Distinction or Distinction*. The certificate also shows your industry placement and the grades for each part of the course. You must complete your placement to pass.
@@ -128,11 +128,11 @@ The quiz (/quiz) matches answers to routes like this:
 ## After a T Level (from "Where it can lead" on the Advice page and the FAQs)
 
 - Options: a T Level can help students progress to university, an apprenticeship or employment. Students should always check the entry requirements for their chosen university course.
-- Apprenticeship: earn a wage while you train on the job. Amazon offers apprenticeships too (https://amazonapprenticeships.co.uk/our-programmes).
+- Apprenticeship: earn a salary while you train on the job. Amazon offers apprenticeships too (https://amazonapprenticeships.co.uk/our-programmes).
 - University: T Levels carry UCAS points based on the overall grade, and many universities accept them for relevant courses. A T Level Distinction* is worth 168 UCAS points, the same tariff points as three A* grades at A level. Students should check the entry requirements for the university and course they are interested in.
 - Work: go straight into a job, using the skills and contacts from the placement.
 
-## Common worries (from the Advice page)
+## Common questions (from the Advice page)
 
 - Never worked in a team like this: that is normal. A placement is for learning. Ask questions and say when you are unsure.
 - Needing adjustments: tell your school or college and your placement contact what you need before you start. They can plan support, such as changes to your hours, equipment or how tasks are explained.

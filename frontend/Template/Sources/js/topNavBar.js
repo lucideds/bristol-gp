@@ -33,8 +33,8 @@
   var SEARCH_INDEX = [
     { title: 'Home', path: '',
       keywords: 'home main start welcome amazon placement career' },
-    { title: 'Who are you?', path: '#home-audience-title',
-      keywords: 'students schools colleges teachers parents guardians audience after gcses gcse during t level educational step' },
+    { title: 'Where are you now?', path: '#home-audience-title',
+      keywords: 'who are you students schools colleges teachers parents guardians audience stage finishing after gcses gcse studying during finished t level educational next step' },
     { title: 'Explore placement routes', path: '#home-routes-title',
       keywords: 'routes pathways options explore five' },
     { title: 'Interested? Tell us.', path: '#home-cta-title',
@@ -61,8 +61,8 @@
       keywords: 'apply application steps how to apply interview prepare cv dates school college' },
     { title: 'Advice: Where it can lead', path: 'advice#where-it-leads',
       keywords: 'lead careers jobs example jobs by route future next step after university ucas apprenticeship work' },
-    { title: 'Advice: Common worries', path: 'advice#common-worries',
-      keywords: 'worries worried concerns common question team adjustments support change mind unsure nervous' },
+    { title: 'Advice: Common questions', path: 'advice#common-questions',
+      keywords: 'questions worries worried concerns common team adjustments support change mind unsure nervous' },
     { title: 'Advice: Your path to a placement', path: 'advice#your-path',
       keywords: 'your path find timeline year 10 11 12 13 steps when gcse results start placement register interview journey plan' },
 
