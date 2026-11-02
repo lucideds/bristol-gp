@@ -205,6 +205,12 @@
   gap: 12px;
 }
 
+/* The question on the "Remove your interest" confirmation */
+.account-confirm {
+  margin: 0 0 16px;
+  font-weight: 700;
+}
+
 .account-form-buttons .auth-primary,
 .account-form-buttons .auth-secondary {
   flex: 1;

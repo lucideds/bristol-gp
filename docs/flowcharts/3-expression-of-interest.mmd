@@ -1,21 +1,25 @@
 ---
-title: "3. Registering interest in a placement (planned)"
+title: "3. Registering interest in a placement"
 ---
 flowchart TD
-    S([Person fills in the<br/>'Register your interest' form]):::start --> A{Are they<br/>signed in?}:::question
-    A -- No --> AX([Ask them to sign in first]):::stop
-    A -- Yes --> B{Are the answers valid?<br/>a real route, who they are,<br/>and a school name that isn't too long}:::question
-    B -- No --> BX([Show what needs fixing]):::stop
-    B -- Yes --> C{Have they agreed<br/>to be contacted?}:::question
-    C -- No --> CX([Explain we need their<br/>permission to contact them]):::stop
-    C -- Yes --> D{Already registered interest<br/>in this route?}:::question
-    D -- No --> E[Save their interest]:::step
-    E --> OK1([Thank them: interest registered]):::good
-    D -- Yes --> F[Update their earlier answers<br/>instead of adding a duplicate]:::step
-    F --> OK2([Thank them: details updated]):::good
+    S([Person opens<br/>'Register your interest']):::start --> A{Are they<br/>signed in?}:::question
+    A -- No --> AX([Ask them to sign in<br/>or create an account first]):::stop
+    A -- Yes --> B[Step 1: who they are<br/>and their school or college]:::step
+    B --> B2{Are the answers valid?}:::question
+    B2 -- No --> BX([Show what needs fixing]):::stop
+    B2 -- Yes --> C[Step 2: routes,<br/>year group and consent]:::step
+    C --> C2{Valid, and have they agreed<br/>to be contacted?}:::question
+    C2 -- No --> CX([Show what needs fixing,<br/>or explain we need their permission]):::stop
+    C2 -- Yes --> D[Step 3: show their answers<br/>so they can check them]:::step
+    D --> E{Already registered<br/>interest before?}:::question
+    E -- No --> F[Save their interest]:::step
+    E -- Yes --> G[Replace their earlier answers<br/>instead of adding a duplicate]:::step
+    F --> H[Tell the team in Slack]:::step
+    G --> H
+    H --> OK([Thank them: interest registered<br/>or details updated]):::good
 
-    N["Routes: Digital, Business, Media,<br/>Finance or Engineering"]:::note
-    B -.- N
+    N["Routes: Digital, Business, Media,<br/>Finance or Engineering. They can<br/>remove their interest from their account."]:::note
+    C -.- N
 
     classDef start fill:#232f3e,stroke:#232f3e,color:#ffffff,font-weight:bold
     classDef step fill:#ffffff,stroke:#232f3e,color:#0f1111

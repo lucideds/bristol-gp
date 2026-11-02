@@ -30,6 +30,7 @@ The database is SQLite, stored in site.db next to main.py. A file database is en
 - messages: id, name, email, message and created_at.
 - login_attempts: email (the primary key), failed_count and locked_until, for the sign-in lockout.
 - analytics_events: id, kind, value and created_at, for the analytics page.
+- interests and interest_routes: registered interest, one interests row per user and one interest_routes row per route chosen (see "Register your interest" below).
 
 Each request opens one connection the first time it needs one (get_db() keeps it in g) and closes it when the request ends. Rows come back as sqlite3.Row, so columns can be read by name. Every query uses ? placeholders and never string formatting, which stops SQL injection.
 
@@ -123,21 +124,25 @@ POST /api/chat/stream sends the reply as Server-Sent Events, so it appears as it
 
 The widget uses streaming first and falls back to /api/chat if streaming doesn't work. The widget gives up on /api/chat after 40 seconds, but the server waits up to 90 seconds for OpenRouter, so a slow reply can time out in the browser while the server is still waiting. REQUEST_TIMEOUT_MS in the widget should be raised to match.
 
-## Interest endpoint (planned)
+## Register your interest
 
-This isn't built yet. The plan is for signed-in users to register interest in one or more placement areas (digital, business, media, finance or engineering). GET, POST and DELETE on /api/interest would be sign-in only (401 if not signed in), and POST and DELETE would need the X-CSRFToken header. The request and response shapes are in "Endpoint structures and schemas". To build it:
+Built on 2 November 2026. Signed-in users can register interest in one or more placement routes on /interest, in three steps (About you, Your interests, Check and send), or through GET, POST and DELETE on /api/interest. They can see, change and remove it from the account page. The request and response shapes are in "Endpoint structures and schemas".
 
-- Add an interests table: id, user_id (referencing users), route, role, school (optional), contact_consent, created_at and updated_at, with UNIQUE(user_id, route) so a POST updates an existing row instead of adding a duplicate.
-- Add it to init_db(). Because it's a new table, existing databases pick it up the next time the app opens them, without a migration.
-- Check route and role against fixed lists, keep school to 100 characters or fewer, and require contact_consent to be true.
-- Add a JSON-friendly sign-in check that returns 401, since @login_required redirects to the login page, and apply the 10 a minute limit on POST.
+- Storage: two tables, added to init_db(), so existing databases pick them up the next time the app opens them, without a migration. interests has one row per user (user_id as the primary key, role, school, year_group, contact_consent, created_at, updated_at). interest_routes has one row per route chosen, with (user_id, route) as the primary key. The first plan was one row per route with the role and school repeated on each. That suited a per-route API but not a form where you tick several routes, so the answers about the person and the routes were split.
+- One user, one interest: save_interest() upserts the interests row and replaces the user's interest_routes rows, so sending again updates rather than duplicates. remove_interest() deletes from both tables itself, because SQLite only enforces REFERENCES when PRAGMA foreign_keys is on.
+- Shared logic: the page and the API use the same checks (role_error(), school_error(), routes_error(), year_group_error(), consent_error()) and the same save and remove functions, so they can't disagree. Roles, routes and year groups are checked against fixed lists. School is 100 characters or fewer. contact_consent must be true.
+- Steps: one route, with the step picked by ?step=. The answers so far are kept in the session (interest_draft) until the last step saves them, so the page works without JavaScript. Consent is asked for again each time, even when updating saved answers, because a consent box should never be ticked for you.
+- Sign-in: the page shows a sign-in panel rather than redirecting, so visitors see what it's for first. The API has its own api_login_required(), which returns a 401 JSON error instead of redirecting to /login.
+- Slack: saving, updating and removing call send_interest_to_slack() in bot/bot.py. The message has the name, email, role, school, year group and routes (just name and email for a removal), with the Mark Handled and View JSON buttons. If Slack fails, the error is logged and the answers stay saved.
+- Removing: the account page's Remove link opens a confirmation (/account?edit=remove-interest), and only "Yes, remove it" deletes anything. Removing doesn't delete the earlier Slack messages about that person.
+- Limits: 10 POSTs a minute on /interest, and 10 POSTs or DELETEs a minute on /api/interest. The CSRF error handler returns JSON for /api/ paths.
 
 ## Hardening
 
 Most of this went in during the code reviews on 14 October (commits fcead4b and 27390e4) and 29 October.
 
 - CSRF: Flask-WTF protects every POST form, and each form has a hidden csrf_token. The chat blueprint and /api/track are exempt because they only accept application/json, which a normal HTML form on another site can't send.
-- Rate limits: Flask-Limiter (set up in extensions.py) allows 10 a minute on /login, /register and the account change forms, 5 a minute on /contact, 30 a minute on downloads and /api/track, and 10 a minute shared across the chat routes. The counts are kept in memory, so they reset on restart and aren't shared between server processes.
+- Rate limits: Flask-Limiter (set up in extensions.py) allows 10 a minute on /login, /register, the account change forms, /interest and /api/interest, 5 a minute on /contact, 30 a minute on downloads and /api/track, and 10 a minute shared across the chat routes. The counts are kept in memory, so they reset on restart and aren't shared between server processes.
 - Request size: anything over 16 KB is rejected with a 413, except chat, which allows up to 100 KB.
 - Secrets: there used to be a hardcoded fallback SECRET_KEY. The app now makes a random one and saves it to .env, and debug mode only turns on if you opt in.
 - Cookies: SameSite=Lax always, and Secure when HTTPS=1.

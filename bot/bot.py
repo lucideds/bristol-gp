@@ -1,4 +1,5 @@
-# Posts each contact form message to Slack, with buttons the team can use to triage it.
+# Posts each contact form message and each new, updated or removed expression of interest to
+# Slack, with buttons the team can use to triage them.
 # main.py starts it in the background. To run only the bot:  python -m bot.bot
 import json
 import logging
@@ -96,6 +97,63 @@ def send_to_slack(payload: dict):
         blocks=blocks,
         text="New contact form submission",
     )
+
+
+INTEREST_HEADERS = {
+    "new": "🙋 New interest registered",
+    "updated": "✏️ Interest updated",
+    "removed": "🗑️ Interest removed",
+}
+
+
+def send_interest_to_slack(payload: dict):
+    """Posts one expression of interest to SLACK_CHANNEL_ID. payload has "action" ("new", "updated"
+    or "removed"), "name" and "email", plus, unless removed, "role", "school", "year_group" and
+    "routes" (a list), all as the labels the site shows."""
+    header = INTEREST_HEADERS.get(payload.get("action"), INTEREST_HEADERS["new"])
+    pretty_json = json.dumps(payload, indent=2, ensure_ascii=False)[:MAX_BUTTON_VALUE]
+
+    fields = [
+        {"type": "mrkdwn", "text": f"*Name:*\n{escape(payload.get('name', ''))}"},
+        {"type": "mrkdwn", "text": f"*Email:*\n{escape(payload.get('email', ''))}"},
+    ]
+    if payload.get("action") != "removed":
+        fields += [
+            {"type": "mrkdwn", "text": f"*I am:*\n{escape(payload.get('role', ''))}"},
+            {"type": "mrkdwn", "text": f"*School or college:*\n{escape(payload.get('school') or 'Not given')}"},
+            {"type": "mrkdwn", "text": f"*Year group:*\n{escape(payload.get('year_group', ''))}"},
+            {"type": "mrkdwn", "text": f"*Routes:*\n{escape(', '.join(payload.get('routes', [])))}"},
+        ]
+
+    blocks = [
+        {"type": "header", "text": {"type": "plain_text", "text": header}},
+        {"type": "section", "fields": fields},
+    ]
+    if payload.get("action") == "removed":
+        blocks.append({
+            "type": "context",
+            "elements": [{"type": "mrkdwn", "text": "They removed their answers on the site. "
+                                                    "Earlier messages about them in this channel are still here."}],
+        })
+    blocks.append({
+        "type": "actions",
+        "elements": [
+            {
+                "type": "button",
+                "text": {"type": "plain_text", "text": "✅ Mark Handled"},
+                "style": "primary",
+                "action_id": "mark_handled",
+            },
+            {
+                "type": "button",
+                "text": {"type": "plain_text", "text": "📋 View JSON"},
+                "value": pretty_json,
+                "action_id": "view_json",
+            },
+        ],
+    })
+
+    app.client.chat_postMessage(channel=SLACK_CHANNEL_ID, blocks=blocks, text=header)
 
 
 def reply_in_thread(body, client, text):

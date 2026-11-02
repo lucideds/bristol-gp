@@ -237,7 +237,9 @@
       row.value.hidden = true;
       row.edit.hidden = true;
       row.form.hidden = false;
-      row.form.querySelector('input:not([type="hidden"]):not([hidden])').focus();
+      // The "Remove your interest" confirmation has no input, so its "Yes, remove it" button gets focus.
+      (row.form.querySelector('input:not([type="hidden"]):not([hidden])') ||
+        row.form.querySelector('button[type="submit"]')).focus();
     });
   });
 

@@ -1,0 +1,589 @@
+/* Register your interest page, laid out like the design system's InterestPage template:
+   breadcrumb, title and lead, a three-step stepper, then the step's form panel beside an aside.
+   Colours are tokens from tokens.css, so the page follows the theme. Text sizes are in rem so the
+   Large / Extra large text settings apply. */
+.interest-page {
+  flex: 1;
+  width: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  box-sizing: border-box;
+  /* Bottom padding clears the chat button */
+  padding: 24px 24px 96px;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+/* Elements with a display rule below still hide (the chat block before chatWidget.js runs) */
+.interest-page [hidden] {
+  display: none;
+}
+
+/* ---------- Breadcrumb, title and lead ---------- */
+.interest-breadcrumb ol {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.interest-breadcrumb li + li::before {
+  content: "/";
+  padding: 0 0.375rem;
+}
+
+.interest-breadcrumb a {
+  color: var(--color-link);
+  text-decoration: underline;
+}
+
+.interest-title {
+  margin: 24px 0 8px;
+  font-size: 2.25rem;
+  line-height: 2.625rem;
+  font-weight: 700;
+}
+
+.interest-lead {
+  max-width: var(--reading-width);
+  margin: 0 0 24px;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  color: var(--color-ink-muted);
+}
+
+/* ---------- Stepper ---------- */
+.interest-stepper {
+  display: flex;
+  max-width: 720px;
+  margin: 0 0 32px;
+  padding: 0;
+  list-style: none;
+}
+
+.interest-step {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 700;
+}
+
+.interest-step:last-child {
+  flex: none;
+}
+
+/* The line joining each step to the next */
+.interest-step:not(:last-child)::after {
+  content: "";
+  flex: 1;
+  min-width: 1rem;
+  height: 2px;
+  margin-right: 0.75rem;
+  background: var(--color-border-control);
+}
+
+.interest-step-dot {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  box-sizing: border-box;
+  border: 2px solid var(--color-border-control);
+  border-radius: 50%;
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
+/* The design fills the current step with navy, which vanishes into the page in high contrast,
+   so it uses the site's selected pair instead (navy in light, a light fill in dark and HC). */
+.interest-step--current .interest-step-dot {
+  background: var(--color-selected);
+  border-color: var(--color-ink);
+  color: var(--color-on-selected);
+}
+
+.interest-step--done .interest-step-dot {
+  border-color: var(--color-success);
+}
+
+/* The tick is a mask painted in the status colour, so it follows the theme */
+.interest-step-tick {
+  width: 1.25rem;
+  height: 1.25rem;
+  background: var(--color-success);
+  -webkit-mask: url("../assets/a11y-check.svg") center / contain no-repeat;
+  mask: url("../assets/a11y-check.svg") center / contain no-repeat;
+}
+
+.interest-step--todo {
+  color: var(--color-ink-muted);
+}
+
+/* Narrow screens: each label sits under its dot, so three steps still fit across */
+@media (max-width: 560px) {
+  .interest-step {
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    text-align: center;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+
+  .interest-step,
+  .interest-step:last-child {
+    flex: 1;
+  }
+
+  .interest-step:not(:last-child)::after {
+    display: none;
+  }
+}
+
+/* ---------- Layout: form | aside ---------- */
+.interest-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 22rem;
+  gap: 48px;
+  align-items: start;
+}
+
+/* One column on narrow screens, and earlier at Extra large text, where 22rem gets wide */
+@media (max-width: 860px) {
+  .interest-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+}
+
+@media (max-width: 1100px) {
+  html[data-text-size="extra-large"] .interest-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+}
+
+/* Gap rather than margins, so the panels' own margin: 0 can't cancel the spacing */
+.interest-aside {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ---------- Panels ---------- */
+.interest-panel {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 24px;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border: var(--card-border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.interest-panel-heading {
+  margin: 0 0 20px;
+  font-size: 1.75rem;
+  line-height: 2.125rem;
+  font-weight: 700;
+}
+
+.interest-panel-title {
+  margin: 0 0 12px;
+  font-size: 1.125rem;
+  line-height: 1.5rem;
+  font-weight: 700;
+}
+
+.interest-text {
+  max-width: var(--reading-width);
+  margin: 0 0 20px;
+}
+
+.interest-small {
+  margin: 0 0 12px;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.interest-small:last-child {
+  margin-bottom: 0;
+}
+
+.interest-panel a {
+  color: var(--color-link);
+  text-decoration: underline;
+}
+
+.interest-panel a:hover {
+  color: var(--color-link-hover);
+}
+
+/* Headings the page moves focus to after a step is sent (interest.js) */
+.interest-panel [tabindex="-1"]:focus {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+/* ---------- Form fields ---------- */
+.interest-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  margin: 0 0 24px;
+  padding: 0;
+  border: 0;
+}
+
+.interest-label {
+  padding: 0;
+  font-weight: 700;
+}
+
+.interest-hint {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--color-ink-muted);
+}
+
+.interest-input {
+  display: block;
+  width: 100%;
+  min-height: var(--target-min);
+  box-sizing: border-box;
+  padding: 8px 12px;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border: 2px solid var(--color-border-control);
+  border-radius: var(--radius-md);
+  font: inherit;
+}
+
+.interest-input:hover {
+  border-color: var(--color-ink);
+}
+
+.interest-select {
+  max-width: 260px;
+}
+
+.interest-field--error .interest-input {
+  border-color: var(--color-danger);
+}
+
+/* Inline error: warning triangle and bold red text */
+.interest-error {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  margin: 4px 0 0;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 700;
+  color: var(--color-danger);
+}
+
+.interest-error-icon {
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  background: var(--color-danger);
+  -webkit-mask: url("../assets/signin-field-error.svg") center / contain no-repeat;
+  mask: url("../assets/signin-field-error.svg") center / contain no-repeat;
+}
+
+/* ---------- Choices: radio and checkbox rows, and cards ---------- */
+.interest-choice-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.interest-choice-list--2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+@media (max-width: 560px) {
+  .interest-choice-list--2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* The whole row is the click target */
+.interest-choice {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  min-height: var(--target-min);
+  box-sizing: border-box;
+  padding: 8px 0;
+  cursor: pointer;
+}
+
+.interest-choice input {
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: 0;
+  accent-color: var(--color-link);
+}
+
+.interest-choice--card {
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border-control);
+  border-radius: var(--radius-md);
+}
+
+.interest-choice--card:hover {
+  border-color: var(--color-ink);
+}
+
+/* Selected: ink edge and orange tint, as well as the ticked box, so it never relies on colour */
+.interest-choice--card:has(input:checked) {
+  border-color: var(--color-ink);
+  background: var(--color-orange-tint);
+}
+
+/* The whole card gets the focus ring too. The box keeps its own ring from base.css, so focus
+   still shows in browsers without :has(). */
+.interest-choice--card:has(input:focus-visible) {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+.interest-field--error .interest-choice--card {
+  border-color: var(--color-danger);
+}
+
+/* ---------- Check your answers ---------- */
+.interest-summary {
+  display: grid;
+  margin: 0 0 24px;
+}
+
+.interest-row {
+  display: grid;
+  grid-template-columns: 11rem minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: baseline;
+  padding: 12px 0;
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.interest-row:last-child {
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.interest-summary dt {
+  font-weight: 700;
+}
+
+.interest-summary dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+/* "Change" link; the padding gives it a 44px tall target */
+.interest-row-action a {
+  display: inline-block;
+  padding: 10px 4px;
+  margin: -10px 0;
+}
+
+@media (max-width: 760px) {
+  .interest-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
+  }
+
+  .interest-row-action a {
+    margin: -10px -4px;
+  }
+}
+
+/* ---------- Alerts (error summary and "Interest registered") ---------- */
+.interest-alert {
+  position: relative;
+  margin: 0 0 24px;
+  padding: 16px 16px 16px 52px;
+  color: var(--color-ink);
+  border: 2px solid;
+  border-radius: var(--radius-md);
+}
+
+.interest-alert::before {
+  content: "";
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  width: 1.5rem;
+  height: 1.5rem;
+  -webkit-mask: var(--alert-icon) center / contain no-repeat;
+  mask: var(--alert-icon) center / contain no-repeat;
+}
+
+.interest-alert--danger {
+  --alert-icon: url("../assets/signin-alert-error.svg");
+  background: var(--color-danger-bg);
+  border-color: var(--color-danger);
+}
+
+.interest-alert--danger::before {
+  background-color: var(--color-danger);
+}
+
+.interest-alert--success {
+  --alert-icon: url("../assets/contact-success.svg");
+  background: var(--color-success-bg);
+  border-color: var(--color-success);
+}
+
+.interest-alert--success::before {
+  background-color: var(--color-success);
+}
+
+.interest-alert-title {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 700;
+}
+
+.interest-alert p {
+  margin: 0;
+}
+
+.interest-alert-list {
+  margin: 8px 0 0;
+  padding-left: 1.25rem;
+}
+
+.interest-panel .interest-alert-list a {
+  color: var(--color-ink);
+}
+
+/* ---------- What happens next ---------- */
+.interest-ticks {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.interest-ticks li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.interest-tick {
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 2px;
+  background: var(--color-success);
+  -webkit-mask: url("../assets/a11y-check.svg") center / contain no-repeat;
+  mask: url("../assets/a11y-check.svg") center / contain no-repeat;
+}
+
+.interest-chat {
+  margin-top: 16px;
+}
+
+/* ---------- Buttons ---------- */
+.interest-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.interest-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-sizing: border-box;
+  min-height: var(--target-min);
+  margin: 0;
+  padding: 8px 24px;
+  border: 2px solid transparent;
+  border-radius: var(--radius-pill);
+  font: inherit;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.interest-panel .interest-btn--primary,
+.interest-btn--primary {
+  background: var(--color-orange);
+  color: var(--color-on-orange);
+  border-color: var(--color-orange-edge);
+  text-decoration: none;
+}
+
+.interest-panel .interest-btn--primary:hover,
+.interest-btn--primary:hover {
+  background: var(--color-orange-hover);
+  color: var(--color-on-orange);
+}
+
+.interest-panel .interest-btn--secondary,
+.interest-btn--secondary {
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border-color: var(--color-ink);
+  text-decoration: none;
+}
+
+.interest-panel .interest-btn--secondary:hover,
+.interest-btn--secondary:hover {
+  background: var(--color-surface-muted);
+  color: var(--color-ink);
+}
+
+.interest-btn--block {
+  display: flex;
+  width: 100%;
+}
+
+/* The sparkle is a mask, so it takes the button's text colour in every theme */
+.interest-btn-icon {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  background-color: currentColor;
+  -webkit-mask: url("../assets/chat-ai-sparkle-small.svg") center / contain no-repeat;
+  mask: url("../assets/chat-ai-sparkle-small.svg") center / contain no-repeat;
+}
+
+/* Narrow screens: tighter padding */
+@media (max-width: 480px) {
+  .interest-page {
+    padding: 16px 16px 96px;
+  }
+
+  .interest-title {
+    font-size: 1.75rem;
+    line-height: 2.125rem;
+  }
+
+  .interest-panel {
+    padding: 20px 16px;
+  }
+}

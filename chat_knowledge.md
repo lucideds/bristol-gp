@@ -6,13 +6,14 @@ Everything below is taken from the site's own pages, apart from "Other Amazon ro
 
 ## Pages on this website
 
-- Home: / - an overview of the five placement routes, links for visitors after GCSEs, during a T Level and after a T Level, and a "Register your interest" button.
+- Home: / - an overview of the five placement routes, links for visitors after GCSEs, during a T Level and after a T Level, and a "Register your interest" button (it goes to /interest).
 - T Levels: /t-levels - general T Level information and a section for each route: Digital (/t-levels#digital), Business (/t-levels#business), Media (/t-levels#media), Finance (/t-levels#finance) and Engineering (/t-levels#engineering). Each route section has a course specification (PDF) to download.
 - Advice: /advice - why choose a T Level, "Your path to a placement" (a year-by-year timeline from Year 10 to Year 13 that includes how to apply for a placement), "Where it can lead" (apprenticeship, university or work, with example jobs by route), and common worries.
 - Quiz: /quiz - "Which T Level suits you?" Five quick questions with no wrong answers. It shows your top two matching routes (best match and also a good fit). It is only a starting point, so talk to a careers adviser before choosing.
 - FAQs: /faqs - common questions about T Levels, placements, applying to Amazon and what comes after a T Level.
 - Contact: /contact - a form for sending the team a message. The team replies by email. Use this for anything the assistant cannot answer, password problems, or questions about personal data. Parents, carers, schools and colleges can also use it.
-- Create an account / register your interest: /login#register - asks for a full name, email address and password.
+- Register your interest: /interest - for students, parents and carers, teachers and careers advisers. Visitors need an account first (the page links to sign in or create one). It has three steps: "About you" (who you are, and an optional school or college), "Your interests" (one or more placement routes, the year group, and agreeing to be contacted about T Level placements), then "Check and send". The answers are saved to the visitor's account and passed to the Emerging Talent Programs team, who may contact them by email about T Level placements. Students under 18 should check with a parent or carer before sending their details. Visitors can change or remove their answers at any time from the "Your interests" section of their account page (/account). Removing them asks for one confirmation.
+- Create an account: /login#register - asks for a full name, email address and password.
 - Sign in: /login. Signed-in visitors can see and change their account details at /account, and sign out from there.
 - Privacy: /privacy - how account data is stored and used, visitors' data rights, and the AI privacy notice for this chat.
 - Accessibility settings: open them from the button in the top bar. Visitors can choose a light, dark or high contrast theme, make text large or extra large, use a dyslexia-friendly font, reduce motion or highlight links.
@@ -44,7 +45,7 @@ Everything below is taken from the site's own pages, apart from "Other Amazon ro
 How to apply, in order (from "Your path to a placement" on the Advice page):
 1. Apply to a school or college for a T Level course, usually from the autumn of Year 11. Ask your careers adviser which schools and colleges near you offer T Levels.
 2. Start your T Level in September of Year 12.
-3. Register your interest on this site.
+3. Register your interest on this site (/interest): tell the team which routes you like, so they can share information about Amazon placements. You can change your answers later.
 4. Apply through your school or college. They organise placements for their students, so ask who to speak to and what they need from you, and send your application before the closing date. Dates vary between schools and colleges, so ask yours for the exact dates.
 5. Have a short interview. It is a conversation about why you chose the route, with no trick questions. Ask your school or college for help with your CV, and whether they run a workshop where you can practise.
 

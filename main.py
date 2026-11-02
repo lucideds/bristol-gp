@@ -30,15 +30,19 @@ from extensions import limiter
 
 log = logging.getLogger(__name__)
 
-# bot/bot.py posts each contact message to Slack. Without slack_bolt the site still works.
+# bot/bot.py posts each contact message and expression of interest to Slack.
+# Without slack_bolt the site still works.
 try:
-    from bot.bot import is_configured as is_slack_configured, send_to_slack, start_in_background as start_slack_bot
+    from bot.bot import (is_configured as is_slack_configured, send_interest_to_slack, send_to_slack,
+                         start_in_background as start_slack_bot)
 except ImportError:
-    log.warning("slack_bolt is not installed, so contact messages won't be sent to Slack. "
+    log.warning("slack_bolt is not installed, so contact messages and interest won't be sent to Slack. "
                 "Run: pip install -r requirements.txt")
     def is_slack_configured():
         return False
     def send_to_slack(payload):
+        pass
+    def send_interest_to_slack(payload):
         pass
     def start_slack_bot():
         pass
@@ -89,7 +93,26 @@ ROUTES = [
     ("engineering", "Engineering"),
 ]
 ROUTE_KEYS = {key for key, _ in ROUTES}
+ROUTE_LABELS = dict(ROUTES)
 MAX_SEARCH_LENGTH = 100
+
+# Register your interest: the answers people can give, in the order the page shows them.
+INTEREST_ROLES = [
+    ("student", "A student"),
+    ("parent_carer", "A parent or carer"),
+    ("teacher_adviser", "A teacher or careers adviser"),
+    ("other", "Something else"),
+]
+ROLE_LABELS = dict(INTEREST_ROLES)
+YEAR_GROUPS = [
+    ("year_10", "Year 10"),
+    ("year_11", "Year 11"),
+    ("year_12", "Year 12"),
+    ("year_13", "Year 13"),
+    ("not_at_school", "Not at school or college"),
+]
+YEAR_LABELS = dict(YEAR_GROUPS)
+MAX_SCHOOL_LENGTH = 100
 
 # Who may open the analytics page: a comma-separated list of account emails in ANALYTICS_EMAILS.
 # If it's empty, nobody can (the page shows "not found"), so the stats are never public by accident.
@@ -238,6 +261,25 @@ def init_db():
             kind TEXT NOT NULL,                        -- "search", "view" (a route tab opened) or "quiz" (the quiz's top match).
             value TEXT NOT NULL,                       -- The search text, or the route name, e.g. "digital".
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
+        -- Register your interest: one row per user, plus one interest_routes row per route chosen.
+        -- SQLite only enforces REFERENCES with PRAGMA foreign_keys on, so remove_interest()
+        -- deletes from both tables itself.
+        CREATE TABLE IF NOT EXISTS interests (
+            user_id INTEGER PRIMARY KEY REFERENCES users(id),
+            role TEXT NOT NULL,                        -- A key from INTEREST_ROLES, e.g. "student".
+            school TEXT NOT NULL DEFAULT '',
+            year_group TEXT NOT NULL,                  -- A key from YEAR_GROUPS, e.g. "year_12".
+            contact_consent INTEGER NOT NULL,          -- Always 1: nothing is saved without consent.
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS interest_routes (
+            user_id INTEGER NOT NULL REFERENCES users(id),
+            route TEXT NOT NULL,                       -- A key from ROUTES, e.g. "digital".
+            PRIMARY KEY (user_id, route)
         );
         """
     )
@@ -427,6 +469,7 @@ OLD_PAGE_URLS = {
     "home": "home", "accessibility": "accessibility", "faqs": "faqs", "tlevel": "t_levels",
     "advice": "advice", "privacy": "privacy", "quiz": "quiz", "contact": "contact",
     "account": "account", "analytics": "analytics", "login": "login", "signin": "login",
+    "interest": "interest",
 }
 
 
@@ -488,6 +531,316 @@ def contact():
         sent = session.pop("contact_sent", None)
 
     return render_template("contact.html", errors=errors, sent=sent)
+
+
+# ---------- Register your interest ----------
+# The /interest page (three steps, plain form posts) and /api/interest (JSON) share the checks,
+# load_interest(), save_interest() and remove_interest() below, so they can't disagree.
+
+INTEREST_STEPS = [("about", "About you"), ("interests", "Your interests"), ("check", "Check and send")]
+INTEREST_STEP_KEYS = [key for key, _ in INTEREST_STEPS]
+# The fields each step asks for, in the order the page shows them (also the error summary order).
+STEP_FIELDS = {
+    "about": ("role", "school"),
+    "interests": ("routes", "year_group", "contact_consent"),
+}
+ALL_INTEREST_FIELDS = STEP_FIELDS["about"] + STEP_FIELDS["interests"]
+
+
+def role_error(role):
+    return None if role in ROLE_LABELS else "Select who you are"
+
+
+def school_error(school):
+    if not isinstance(school, str):
+        return "School or college name must be text"
+    if len(school) > MAX_SCHOOL_LENGTH:
+        return f"School or college name must be {MAX_SCHOOL_LENGTH} characters or fewer"
+    return None
+
+
+def routes_error(routes):
+    if not routes or any(route not in ROUTE_KEYS for route in routes):
+        return "Select at least one placement route"
+    return None
+
+
+def year_group_error(year_group):
+    return None if year_group in YEAR_LABELS else "Select a year group"
+
+
+def consent_error(consent):
+    return None if consent is True else "Tick the box to agree to be contacted"
+
+
+def interest_errors(interest, fields=ALL_INTEREST_FIELDS):
+    """Checks the given fields of an interest. Returns {field: message} for each problem."""
+    checks = {
+        "role": role_error(interest["role"]),
+        "school": school_error(interest["school"]),
+        "routes": routes_error(interest["routes"]),
+        "year_group": year_group_error(interest["year_group"]),
+        "contact_consent": consent_error(interest["contact_consent"]),
+    }
+    return {field: checks[field] for field in fields if checks[field]}
+
+
+def tidy_choice(value):
+    return value.strip().lower() if isinstance(value, str) else ""
+
+
+def tidy_routes(values):
+    """Lower-cases and de-duplicates the routes and puts them in the site's order. Unknown
+    values are kept, so routes_error() rejects them rather than them being silently dropped."""
+    chosen = {tidy_choice(value) for value in values}
+    return [key for key, _ in ROUTES if key in chosen] + sorted(chosen - ROUTE_KEYS)
+
+
+def empty_interest():
+    return {"role": "", "school": "", "routes": [], "year_group": "", "contact_consent": False}
+
+
+def interest_from_form(form):
+    return {
+        "role": tidy_choice(form.get("role")),
+        "school": form.get("school", "").strip(),
+        "routes": tidy_routes(form.getlist("routes")),
+        "year_group": tidy_choice(form.get("year_group")),
+        "contact_consent": form.get("contact_consent") == "yes",
+    }
+
+
+def interest_from_json(data):
+    school = data.get("school", "")
+    routes = data.get("routes")
+    return {
+        "role": tidy_choice(data.get("role")),
+        "school": school.strip() if isinstance(school, str) else school,
+        "routes": tidy_routes(routes) if isinstance(routes, list) else [],
+        "year_group": tidy_choice(data.get("year_group")),
+        "contact_consent": data.get("contact_consent") is True,
+    }
+
+
+def load_interest(user_id):
+    """Returns the user's saved interest as a dict, or None if they haven't registered any."""
+    db = get_db()
+    row = db.execute(
+        "SELECT role, school, year_group, contact_consent, created_at, updated_at FROM interests WHERE user_id = ?",
+        (user_id,),
+    ).fetchone()
+    if row is None:
+        return None
+    chosen = {r["route"] for r in db.execute("SELECT route FROM interest_routes WHERE user_id = ?", (user_id,))}
+    return {
+        "role": row["role"],
+        "school": row["school"],
+        "routes": [key for key, _ in ROUTES if key in chosen],
+        "year_group": row["year_group"],
+        "contact_consent": bool(row["contact_consent"]),
+        "created_at": row["created_at"],
+        "updated_at": row["updated_at"],
+    }
+
+
+def interest_summary(interest):
+    """Rows for the Check step and the account page: (label, answer, the step that asks for it)."""
+    return [
+        ("I am", ROLE_LABELS.get(interest["role"], ""), "about"),
+        ("School or college", interest["school"] or "Not given", "about"),
+        ("Placement routes", ", ".join(ROUTE_LABELS[r] for r in interest["routes"] if r in ROUTE_LABELS), "interests"),
+        ("Year group", YEAR_LABELS.get(interest["year_group"], ""), "interests"),
+    ]
+
+
+def notify_slack_about_interest(user, interest, action):
+    """Posts a new, updated or removed interest to the team's Slack channel. The answers are
+    already saved, so Slack being down mustn't break the page or the API."""
+    if not is_slack_configured():
+        return
+    payload = {"action": action, "name": user["name"], "email": user["email"]}
+    if interest is not None:
+        payload.update({
+            "role": ROLE_LABELS[interest["role"]],
+            "school": interest["school"],
+            "year_group": YEAR_LABELS[interest["year_group"]],
+            "routes": [ROUTE_LABELS[route] for route in interest["routes"]],
+        })
+    try:
+        send_interest_to_slack(payload)
+    except Exception:
+        log.exception("Could not send interest to Slack")
+
+
+def save_interest(user, interest):
+    """Saves a checked interest for the user, replacing any earlier one, and tells Slack.
+    Returns True if it was new, False if it updated an earlier one."""
+    db = get_db()
+    is_new = db.execute("SELECT 1 FROM interests WHERE user_id = ?", (user["id"],)).fetchone() is None
+    db.execute(
+        """
+        INSERT INTO interests (user_id, role, school, year_group, contact_consent) VALUES (?, ?, ?, ?, 1)
+        ON CONFLICT(user_id) DO UPDATE SET role = excluded.role, school = excluded.school,
+            year_group = excluded.year_group, contact_consent = 1, updated_at = CURRENT_TIMESTAMP
+        """,
+        (user["id"], interest["role"], interest["school"], interest["year_group"]),
+    )
+    db.execute("DELETE FROM interest_routes WHERE user_id = ?", (user["id"],))
+    db.executemany(
+        "INSERT INTO interest_routes (user_id, route) VALUES (?, ?)",
+        [(user["id"], route) for route in interest["routes"]],
+    )
+    db.commit()
+    session.pop("interest_draft", None)  # The page starts from the saved answers next time.
+    notify_slack_about_interest(user, interest, "new" if is_new else "updated")
+    return is_new
+
+
+def remove_interest(user):
+    """Deletes the user's interest and tells Slack. Returns True if there was one to delete."""
+    db = get_db()
+    removed = db.execute("DELETE FROM interests WHERE user_id = ?", (user["id"],)).rowcount > 0
+    db.execute("DELETE FROM interest_routes WHERE user_id = ?", (user["id"],))
+    db.commit()
+    session.pop("interest_draft", None)
+    if removed:
+        notify_slack_about_interest(user, None, "removed")
+    return removed
+
+
+def first_incomplete_step(interest):
+    for step in ("about", "interests"):
+        if interest_errors(interest, STEP_FIELDS[step]):
+            return step
+    return "check"
+
+
+def interest_draft():
+    """The answers given so far, kept in the session between steps. Starts from the saved
+    interest, if any, except consent, which is asked for again each time the answers are sent."""
+    draft = session.get("interest_draft")
+    if draft is None:
+        draft = load_interest(g.user["id"]) or empty_interest()
+        draft = {field: draft[field] for field in ALL_INTEREST_FIELDS}
+        draft["contact_consent"] = False
+    return draft
+
+
+def interest_step_url(step):
+    return url_for("interest", step=step)
+
+
+def render_interest(step, draft=None, errors=None, **context):
+    """Shows interest.html at a step (None when signed out or after sending)."""
+    return render_template(
+        "interest.html",
+        step=step,
+        step_index=INTEREST_STEP_KEYS.index(step) if step else None,
+        step_label=dict(INTEREST_STEPS)[step] if step else None,
+        steps=INTEREST_STEPS,
+        roles=INTEREST_ROLES,
+        routes=ROUTES,
+        year_groups=YEAR_GROUPS,
+        draft=draft or empty_interest(),
+        errors=errors or {},
+        summary=interest_summary(draft) if step == "check" else [],
+        **context,
+    )
+
+
+@app.route("/interest", methods=["GET", "POST"])
+@limiter.limit("10 per minute", methods=["POST"])
+def interest():
+    """Register your interest, in three steps: About you, Your interests, Check and send.
+    Each step is a plain form post, so the page works without JavaScript. Visitors who aren't
+    signed in are asked to sign in or create an account first."""
+    if g.user is None:
+        return render_interest(None)
+
+    has_saved = load_interest(g.user["id"]) is not None
+
+    if request.method == "GET":
+        sent = session.pop("interest_sent", None)
+        if sent:
+            return render_interest(None, sent=sent)
+        draft = interest_draft()
+        step = request.args.get("step")
+        if step not in INTEREST_STEP_KEYS:
+            step = "about"
+        # No skipping ahead: e.g. ?step=check before the routes are chosen opens that step instead.
+        furthest = first_incomplete_step(draft)
+        if INTEREST_STEP_KEYS.index(step) > INTEREST_STEP_KEYS.index(furthest):
+            return redirect(interest_step_url(furthest))
+        return render_interest(step, draft, has_saved=has_saved)
+
+    step = request.form.get("step")
+    if step not in INTEREST_STEP_KEYS:
+        abort(400)
+    going_back = request.form.get("go") == "back"
+    draft = interest_draft()
+
+    if step in STEP_FIELDS:
+        # Back keeps this step's answers without checking them, so nothing ticked is lost.
+        answers = interest_from_form(request.form)
+        for field in STEP_FIELDS[step]:
+            draft[field] = answers[field]
+        session["interest_draft"] = draft
+        if going_back:
+            return redirect(interest_step_url("about"))
+        errors = interest_errors(draft, STEP_FIELDS[step])
+        if errors:
+            return render_interest(step, draft, errors, has_saved=has_saved)
+        return redirect(interest_step_url(INTEREST_STEP_KEYS[INTEREST_STEP_KEYS.index(step) + 1]))
+
+    if going_back:
+        return redirect(interest_step_url("interests"))
+    # Everything is checked again before saving, in case the session's draft is incomplete.
+    errors = interest_errors(draft)
+    if errors:
+        furthest = first_incomplete_step(draft)
+        step_errors = {field: errors[field] for field in STEP_FIELDS[furthest] if field in errors}
+        return render_interest(furthest, draft, step_errors, has_saved=has_saved)
+    is_new = save_interest(g.user, draft)
+    # Post/Redirect/GET, so refreshing the thank-you page can't send the answers again.
+    session["interest_sent"] = "new" if is_new else "updated"
+    return redirect(url_for("interest"))
+
+
+def api_login_required(view):
+    """Like login_required, but answers 401 JSON, since a script can't follow a redirect to a sign-in page."""
+    @wraps(view)
+    def wrapped(*args, **kwargs):
+        if g.user is None:
+            return {"error": "Please sign in"}, 401
+        return view(*args, **kwargs)
+    return wrapped
+
+
+@app.route("/api/interest", methods=["GET", "POST", "DELETE"])
+@limiter.limit("10 per minute", methods=["POST", "DELETE"])
+@api_login_required
+def api_interest():
+    """GET: {"interest": {...} or null}.
+    POST {"role", "school" (optional), "year_group", "routes": [...], "contact_consent": true}:
+    saves it, 201 if new or 200 if it replaced an earlier one; 400 {"errors": {field: message}}.
+    DELETE: removes it, 204.
+    POST and DELETE need the X-CSRFToken header (Flask-WTF checks it)."""
+    if request.method == "GET":
+        return {"interest": load_interest(g.user["id"])}
+
+    if request.method == "DELETE":
+        remove_interest(g.user)
+        return "", 204
+
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return {"error": "Expected a JSON object."}, 400
+    answers = interest_from_json(data)
+    errors = interest_errors(answers)
+    if errors:
+        return {"errors": errors}, 400
+    is_new = save_interest(g.user, answers)
+    return {"interest": load_interest(g.user["id"])}, 201 if is_new else 200
 
 
 # ---------- Accounts ----------
@@ -659,18 +1012,32 @@ def try_change_password(form):
 
 # The account page shows the details, each with a pencil that opens a form to change just that one.
 # The pencil links to /account?edit=<form>, so it works without JavaScript; auth.js opens it in place.
+def try_remove_interest(form):
+    """Deletes the user's registered interest. The confirmation is the form itself:
+    "Remove" only opens it, and nothing is deleted until "Yes, remove it" is pressed."""
+    remove_interest(g.user)
+    return None
+
+
 ACCOUNT_FORMS = {
     "name": (try_change_name, "Your name has been changed."),
     "email": (try_change_email, "Your email has been changed."),
     "password": (try_change_password, "Your password has been changed."),
+    "remove-interest": (try_remove_interest, "Your interest has been removed."),
 }
+
+
+def render_account(**context):
+    saved = load_interest(g.user["id"])
+    return render_template("account.html", interest=saved,
+                           interest_rows=interest_summary(saved) if saved else [], **context)
 
 
 @app.route("/account")
 @login_required
 def account():
     edit = request.args.get("edit")
-    return render_template("account.html", open_form=edit if edit in ACCOUNT_FORMS else None)
+    return render_account(open_form=edit if edit in ACCOUNT_FORMS else None)
 
 
 # Each form shows account.html again on error, with that form still open, and redirects back to
@@ -685,7 +1052,7 @@ def update_account(form_name):
     try_change, success_message = ACCOUNT_FORMS[form_name]
     error = try_change(request.form)
     if error:
-        return render_template("account.html", open_form=form_name, form_error=error)
+        return render_account(open_form=form_name, form_error=error)
     flash(success_message)
     return redirect(url_for("account"))
 
@@ -853,6 +1220,8 @@ def server_error(e):
 
 @app.errorhandler(CSRFError)
 def csrf_error(e):
+    if request.path.startswith("/api/"):
+        return {"error": "Missing or invalid X-CSRFToken header."}, 400
     return ("Your form session expired or was invalid. "
             "Please go back, refresh the page and try again."), 400
 

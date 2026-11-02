@@ -2,7 +2,7 @@
 
 Last updated 2 November 2026. Owners: Shea Palin and Leeam.
 
-This is Brief Task 1, Activity B. It sets out five of the more complex problems on the site as pseudocode. Designs 1, 2 and 5 match the code as it is now (main.py, chat_api.py, extensions.py and topNavBar.js). Design 4 is partly built: the members-only spec downloads work, and the fuller resources design is still the plan. Design 3 hasn't been built yet, so it's the plan for building it.
+This is Brief Task 1, Activity B. It sets out five of the more complex problems on the site as pseudocode. Designs 1, 2, 3 and 5 match the code as it is now (main.py, chat_api.py, extensions.py, bot/bot.py and topNavBar.js). Design 4 is partly built: the members-only spec downloads work, and the fuller resources design is still the plan.
 
 Pseudocode conventions: <- means assignment, and blocks close with END IF, END FOR and so on. RETURN ends the algorithm. RESPOND sends an HTTP status and body back to the browser. Text in quotes is the message the user sees.
 
@@ -166,38 +166,82 @@ Problem: pass a visitor's conversation to the AI model (OpenRouter) and stream t
 
 The site facts come from chat_knowledge.md, a hand-kept copy of the site's page text that is added to the system prompt when the server starts. The browser tries the stream first and falls back to /api/chat if streaming fails. Test data: an 11th request within a minute gets a 429. A message with role "system" gets a 400. A conversation ending on an assistant message gets a 400. If the connection drops mid-reply, the visitor sees "interrupted", not half an answer.
 
-## 3. Expression of interest submission (planned)
+## 3. Expression of interest submission
 
-Problem: let a signed-in user register interest in a placement route, and change it later, without creating duplicates. It should only store what's needed, and only when the user has agreed to be contacted. Inputs: JSON {route, role, school (optional), contact_consent} plus the X-CSRFToken header. Outputs: 201 if created, 200 if updated, or an error.
+Problem: let a signed-in user register interest in one or more placement routes, change it later without creating duplicates, and remove it. It should only store what's needed, only when the user has agreed to be contacted, and tell the team in Slack. The /interest page (three steps of plain form posts) and /api/interest (JSON) share the checks and the save. Inputs: role, school (optional), routes, year group and consent, plus the CSRF token. Outputs: the next step or a thank-you (page), 201 or 200 (API), or the errors for each field.
 
     CONSTANTS ROUTES <- (digital, business, media, finance, engineering)
-              ROLES  <- (student, parent_carer, teacher_adviser, other), MAX_SCHOOL <- 100
+              ROLES  <- (student, parent_carer, teacher_adviser, other)
+              YEARS  <- (year_10, year_11, year_12, year_13, not_at_school), MAX_SCHOOL <- 100
+              STEP_FIELDS <- {about: (role, school), interests: (routes, year_group, consent)}
 
-    FUNCTION SubmitInterest(request)
-        IF session has no user THEN RESPOND 401 {error: "Please sign in"}  // JSON, not a redirect
-        IF CSRF header missing or invalid THEN RESPOND 400
-        IF more than 10 attempts from this user in the last minute THEN RESPOND 429
-        data <- PARSE_JSON(request.body)
-        IF data is not an object THEN RESPOND 400 {error: "Expected a JSON object"}
-        route <- LOWERCASE(TRIM(data.route))
-        role <- LOWERCASE(TRIM(data.role))
-        school <- TRIM(data.school OR "")
-        IF route NOT IN ROUTES THEN RESPOND 400 {error: "Unknown route"}
-        IF role NOT IN ROLES THEN RESPOND 400 {error: "Unknown role"}
-        IF LENGTH(school) > MAX_SCHOOL THEN RESPOND 400 {error: "School name too long"}
-        IF data.contact_consent IS NOT TRUE THEN RESPOND 400 {error: "Consent is required"}
-
-        existing <- SELECT FROM interests WHERE user_id = user.id AND route = route
-        IF existing = NULL THEN
-            INSERT INTO interests (user.id, route, role, school, TRUE, now, now)
-            RESPOND 201 {route, role, school}
-        ELSE
-            UPDATE interests SET role, school, updated_at = now WHERE id = existing.id
-            RESPOND 200 {route, role, school}
+    FUNCTION CheckInterest(answers, fields)           // returns {field: message}
+        errors <- empty
+        IF answers.role NOT IN ROLES THEN errors.role <- "Select who you are"
+        IF LENGTH(answers.school) > MAX_SCHOOL THEN
+            errors.school <- "School or college name must be 100 characters or fewer"
         END IF
+        IF answers.routes is empty OR any route NOT IN ROUTES THEN
+            errors.routes <- "Select at least one placement route"
+        END IF
+        IF answers.year_group NOT IN YEARS THEN errors.year_group <- "Select a year group"
+        IF answers.consent IS NOT TRUE THEN errors.consent <- "Tick the box to agree to be contacted"
+        RETURN the errors whose field is in fields
     END FUNCTION
 
-The table has UNIQUE(user_id, route), so if two requests arrive at the same moment the second one updates the row instead of making a duplicate. DELETE /api/interest/<route> uses the same sign-in and CSRF checks, removes the row and responds 204. Test data: a route of "Digital " is accepted as "digital". A route of "law" gets a 400. Sending the same route twice gives 201 then 200, and there's still only one row. A request with no session gets a 401.
+    FUNCTION SaveInterest(user, answers)              // answers already checked
+        isNew <- (SELECT FROM interests WHERE user_id = user.id) = NULL
+        INSERT INTO interests (user.id, role, school, year_group, consent TRUE)
+            or, if the user already has a row, UPDATE it and set updated_at <- now
+        DELETE FROM interest_routes WHERE user_id = user.id
+        FOR EACH route IN answers.routes: INSERT INTO interest_routes (user.id, route)
+        COMMIT
+        TRY SEND to Slack ("new" or "updated", name, email, answers as labels)
+        CATCH: LOG it                                 // the answers are already saved
+        RETURN isNew
+    END FUNCTION
+
+    FUNCTION InterestPage(form)                       // POST /interest
+        IF session has no user THEN SHOW "Sign in to register your interest"
+        IF CSRF token missing or invalid THEN RESPOND 400
+        IF more than 10 posts from this IP in the last minute THEN RESPOND 429
+        draft <- session.draft OR the saved answers (with consent cleared) OR empty
+        IF form.step IN (about, interests) THEN
+            COPY that step's fields from form INTO draft (trimmed, lower-cased, routes de-duplicated)
+            SAVE draft in session
+            IF form.go = "back" THEN REDIRECT to the step before    // no checks, nothing lost
+            errors <- CheckInterest(draft, STEP_FIELDS[form.step])
+            IF errors THEN SHOW the step again with the error summary and each error by its field
+            REDIRECT to the next step
+        END IF
+        IF form.go = "back" THEN REDIRECT to the interests step
+        errors <- CheckInterest(draft, every field)    // the session draft could be incomplete
+        IF errors THEN SHOW the first step with errors
+        isNew <- SaveInterest(user, draft)
+        REMOVE draft from session
+        REDIRECT to /interest, which shows "Interest registered" or "Details updated" once
+    END FUNCTION
+
+    FUNCTION InterestApi(request)                     // POST /api/interest
+        IF session has no user THEN RESPOND 401 {error: "Please sign in"}  // JSON, not a redirect
+        IF X-CSRFToken header missing or invalid THEN RESPOND 400
+        IF more than 10 requests from this IP in the last minute THEN RESPOND 429
+        data <- PARSE_JSON(request.body)
+        IF data is not an object THEN RESPOND 400 {error: "Expected a JSON object."}
+        answers <- data (trimmed, lower-cased, routes de-duplicated; consent must be exactly true)
+        errors <- CheckInterest(answers, every field)
+        IF errors THEN RESPOND 400 {errors}
+        IF SaveInterest(user, answers) THEN RESPOND 201 {interest} ELSE RESPOND 200 {interest}
+    END FUNCTION
+
+    FUNCTION RemoveInterest(user)       // DELETE /api/interest, or "Yes, remove it" on the account page
+        removed <- DELETE FROM interests WHERE user_id = user.id
+        DELETE FROM interest_routes WHERE user_id = user.id
+        COMMIT
+        IF removed THEN TRY SEND to Slack ("removed", name, email)
+    END FUNCTION
+
+interests has user_id as its primary key and interest_routes has (user_id, route), so a user can never have two interests or the same route twice, even if two requests arrive at the same moment. A step can't be skipped: asking for ?step=check before the routes are chosen opens the first unfinished step instead. Consent is cleared when saved answers are loaded, so it's asked for again every time. On the account page, Remove only opens a confirmation, and nothing is deleted until "Yes, remove it" is pressed. Test data: a role of "Student " is accepted as "student". A route of "law" gets "Select at least one placement route". Sending twice gives 201 then 200, and there's still one interests row. Changing the routes from Digital and Media to Finance leaves one interest_routes row. A request with no session gets a 401. Slack failing still saves the answers.
 
 ## 4. Gated download access check (partly built)
 

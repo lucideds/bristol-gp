@@ -5,8 +5,8 @@
 
 {#- The "Change" link for a detail. It goes to /account?edit=<form>, so it works without JavaScript;
     auth.js opens the form in place. #}
-{% macro edit_link(form, what) -%}
-  <a class="account-edit" href="/account?edit={{ form }}" data-account-edit="{{ form }}" aria-controls="{{ form }}-form"{% if open_form == form %} hidden{% endif %}>Change<span class="visually-hidden"> {{ what }}</span></a>
+{% macro edit_link(form, what, text="Change") -%}
+  <a class="account-edit" href="/account?edit={{ form }}" data-account-edit="{{ form }}" aria-controls="{{ form }}-form"{% if open_form == form %} hidden{% endif %}>{{ text }}<span class="visually-hidden"> {{ what }}</span></a>
 {%- endmacro %}
 
 {% macro field_error(id) -%}
@@ -45,6 +45,7 @@
       <nav class="account-sidenav" aria-label="Account">
         <ul>
           <li><a href="#account-details">Your details</a></li>
+          <li><a href="#account-interests">Your interests</a></li>
           {% if can_see_analytics %}
           <li><a href="#account-analytics">Site analytics</a></li>
           {% endif %}
@@ -126,6 +127,47 @@
               <dd>{{ current_user.created_at[:10] }}</dd>
             </div>
           </dl>
+        </section>
+
+        <section id="account-interests" class="account-panel" aria-labelledby="account-interests-title">
+          <h2 id="account-interests-title" class="account-panel-title">Your interests</h2>
+          {% if interest %}
+          <p class="account-section-lead">What you told us when you registered your interest. The Emerging Talent Programs team may contact you at {{ current_user.email }} about T Level placements.</p>
+          <dl class="account-summary">
+            {#- These Change links open that step of the interest page, not a form here. #}
+            {% for label, answer, answer_step in interest_rows %}
+            <div class="account-row">
+              <dt>{{ label }}</dt>
+              <dd>{{ answer }}</dd>
+              <dd class="account-row-action"><a class="account-edit" href="/interest?step={{ answer_step }}">Change<span class="visually-hidden"> {{ label }}</span></a></dd>
+            </div>
+            {% endfor %}
+            <div class="account-row">
+              <dt>Last updated</dt>
+              <dd>{{ interest.updated_at[:10] }}</dd>
+            </div>
+
+            {#- "Remove" only opens this confirmation; nothing is deleted until "Yes, remove it". #}
+            <div class="account-row">
+              <dt>Remove your interest</dt>
+              <dd>
+                <span class="account-value"{% if open_form == "remove-interest" %} hidden{% endif %}>Delete these answers, so the team stops contacting you about placements.</span>
+                <form id="remove-interest-form" class="auth-form account-form" method="post" action="/account/remove-interest" novalidate{% if open_form != "remove-interest" %} hidden{% endif %}>
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <p id="remove-interest-question" class="account-confirm">Are you sure? This deletes your answers and the team will stop contacting you about T Level placements. You can register your interest again at any time.</p>
+                  <div class="account-form-buttons">
+                    <button type="submit" class="auth-primary" aria-describedby="remove-interest-question">Yes, remove it</button>
+                    <a class="auth-secondary" href="/account#account-interests" data-account-cancel>Cancel</a>
+                  </div>
+                </form>
+              </dd>
+              <dd class="account-row-action">{{ edit_link("remove-interest", "your interest", text="Remove") }}</dd>
+            </div>
+          </dl>
+          {% else %}
+          <p class="account-section-lead">You haven't registered interest in a placement route yet.</p>
+          <a class="account-btn account-btn--secondary" href="/interest">Register your interest</a>
+          {% endif %}
         </section>
 
         {% if can_see_analytics %}

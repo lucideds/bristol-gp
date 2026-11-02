@@ -45,7 +45,7 @@ A Flask + SQLite site about Amazon T Level placements, built by a six-person T L
 | Harnoor Singh | UI/UX, AI, security and legal, assets log, iterative testing | `1219408879557269` |
 | Munashe | PM, proposal, docs, feedback, evaluation, presentation | `1219409767803298` |
 
-Team decisions: Slack integration is required (notification on contact submissions). The community page, translation and RDS are stretch goals.
+Team decisions: Slack integration is required (notification on contact submissions, and on new, updated or removed interest). The community page, translation and RDS are stretch goals.
 
 ## Gotchas
 
@@ -54,6 +54,7 @@ Team decisions: Slack integration is required (notification on contact submissio
 - The Content Security Policy blocks inline `<script>`, `<style>` and `onclick=""`. Page behaviour goes in `Sources/js/<page>.js`, listed in the template's `page_js`.
 - Form error messages exist twice, in `main.py` (`*_error()` functions) and `auth.js`. Change both. `auth.js` serves both the login and account pages, so a new field needs an entry in its `rules` map keyed by the input id.
 - The account page has one form per detail. Each row's "Change" link goes to `/account?edit=<form>` (the `edit_link` macro) and posts to `/account/<form>`; a new editable detail needs a `try_change_*` function and an `ACCOUNT_FORMS` entry in `main.py`, plus a matching `.account-row` in `account.html`. The Downloads and Accessibility sections were removed on purpose; don't re-add them.
+- Register your interest is one route, `/interest`, whose three steps come from `?step=`. The answers so far live in `session["interest_draft"]` until the last step saves them. The page and `/api/interest` share the `*_error()` checks and `save_interest()`/`remove_interest()`, which also post to Slack, so change the logic there rather than in a route. Consent is never pre-ticked, even when updating saved answers. Removal lives on the account page as the `remove-interest` entry in `ACCOUNT_FORMS`.
 - Header search entries in `topNavBar.js` (`SEARCH_INDEX`) point at section ids such as `advice#your-path`. Renaming or removing a section id means updating them, and `chat_knowledge.md`.
 - Page CSS uses `--color-*` tokens from `tokens.css`, never raw hex. Check light, dark and high-contrast themes. (`analytics.css` still has one raw border colour.)
 - Pages arriving from other branches as standalone HTML (own `<head>`, `.html` links) must be converted to extend `base.html` and use short URLs. Old `.html` addresses go in `OLD_PAGE_URLS`, not new routes.
@@ -89,7 +90,7 @@ print("password", r.status_code, r.headers.get("Location"))  # 302 /account
 EOF
 ```
 
-- A valid contact POST writes to the DB and calls Slack. Stub `main.is_slack_configured` and `main.send_to_slack` in tests.
+- A valid contact POST writes to the DB and calls Slack. Stub `main.is_slack_configured` and `main.send_to_slack` in tests. Saving or removing interest calls `main.send_interest_to_slack`, so stub that too.
 - Live chat check (uses the OpenRouter key in `.env`): `.venv/bin/python -W ignore -c "import main; c=main.app.test_client(); print(c.post('/api/chat', json={'messages':[{'role':'user','content':'What is a T Level?'}]}).get_json())" 2>/dev/null`
 - Don't take screenshots to check layout or themes. Run the functional checks, then tell the user which pages, states and themes to look at in the browser.
 

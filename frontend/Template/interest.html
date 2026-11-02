@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+{% set page_css = ["interest"] %}
+{% set page_js = ["interest"] %}
+{% block title %}{% if errors %}Error: {% endif %}{% if step_label %}{{ step_label }} – {% endif %}Register your interest{% endblock %}
+{% block content %}
+  {#- The box the error summary links to for each field: the first option of a group. -#}
+  {% set error_targets = {
+    'role': 'interest-role-' ~ roles[0][0],
+    'school': 'interest-school',
+    'routes': 'interest-route-' ~ routes[0][0],
+    'year_group': 'interest-year',
+    'contact_consent': 'interest-consent',
+  } %}
+
+  {% macro error_message(field) -%}
+    {%- if errors.get(field) %}
+    <p class="interest-error" id="interest-{{ field }}-error"><span class="interest-error-icon" aria-hidden="true"></span><span><span class="visually-hidden">Error: </span>{{ errors[field] }}</span></p>
+    {%- endif %}
+  {%- endmacro %}
+
+  {#- aria-describedby for a field: its hint (if any) and its error (if there is one). -#}
+  {% macro described_by(field, hint=False) -%}
+    {%- set ids = [] -%}
+    {%- if hint %}{% set _ = ids.append('interest-' ~ field ~ '-hint') %}{% endif -%}
+    {%- if errors.get(field) %}{% set _ = ids.append('interest-' ~ field ~ '-error') %}{% endif -%}
+    {%- if ids %} aria-describedby="{{ ids|join(' ') }}"{% endif -%}
+  {%- endmacro %}
+
+  {% macro choice_card(type, name, value, label, checked, id) -%}
+    <label class="interest-choice interest-choice--card" for="{{ id }}"><input type="{{ type }}" id="{{ id }}" name="{{ name }}" value="{{ value }}"{% if checked %} checked{% endif %}><span>{{ label }}</span></label>
+  {%- endmacro %}
+
+  <main class="interest-page">
+    <nav class="interest-breadcrumb" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li aria-current="page">Register your interest</li>
+      </ol>
+    </nav>
+    <h1 class="interest-title">Register your interest</h1>
+    {% if not sent %}
+    <p class="interest-lead">
+      {%- if has_saved %}You've already registered your interest. Change any answers and send them again to update them.
+      {%- else %}Tell us a little about you. We'll use it to share the right information.{% endif -%}
+    </p>
+
+    {#- State is carried by the tick or number and the hidden "Step 2, current:" text, not colour alone. #}
+    <ol class="interest-stepper" aria-label="Progress">
+      {%- for key, label in steps %}
+      {%- if step_index is none or loop.index0 > step_index %}{% set state = 'todo' %}
+      {%- elif loop.index0 == step_index %}{% set state = 'current' %}
+      {%- else %}{% set state = 'done' %}{% endif %}
+      <li class="interest-step interest-step--{{ state }}"{% if state == 'current' %} aria-current="step"{% endif %}>
+        <span class="interest-step-dot" aria-hidden="true">{% if state == 'done' %}<span class="interest-step-tick"></span>{% else %}{{ loop.index }}{% endif %}</span>
+        <span class="interest-step-label"><span class="visually-hidden">Step {{ loop.index }}, {{ {'done': 'completed', 'current': 'current', 'todo': 'not started'}[state] }}: </span>{{ label }}</span>
+      </li>
+      {%- endfor %}
+    </ol>
+    {% endif %}
+
+    <div class="interest-layout">
+      {% if sent %}
+      <section class="interest-panel" aria-labelledby="interest-sent-title">
+        <div class="interest-alert interest-alert--success" role="status">
+          <div>
+            <h2 class="interest-alert-title" id="interest-sent-title" tabindex="-1" data-interest-focus>{{ 'Details updated' if sent == 'updated' else 'Interest registered' }}</h2>
+            <p>Thanks, {{ current_user.name }}. We've saved your answers and passed them to the Emerging Talent Programs team, who may contact you at {{ current_user.email }} about T Level placements.</p>
+          </div>
+        </div>
+        <p class="interest-small">You can see, change or remove your answers on <a href="/account#account-interests">your account page</a>.</p>
+      </section>
+
+      {% elif not current_user %}
+      <section class="interest-panel" aria-labelledby="interest-signin-title">
+        <h2 class="interest-panel-heading" id="interest-signin-title">Sign in to register your interest</h2>
+        <p class="interest-text">Your answers are saved to your account, so you can change or remove them at any time.</p>
+        <div class="interest-buttons">
+          <a class="interest-btn interest-btn--primary" href="{{ url_for('login', next='/interest') }}#register">Create an account</a>
+          <a class="interest-btn interest-btn--secondary" href="{{ url_for('login', next='/interest') }}">Sign in</a>
+        </div>
+      </section>
+
+      {% else %}
+      <form class="interest-panel" method="post" action="/interest" novalidate>
+        {% if errors %}
+        <div class="interest-alert interest-alert--danger" role="alert" tabindex="-1" data-interest-focus>
+          <div>
+            <h2 class="interest-alert-title">There is a problem</h2>
+            <ul class="interest-alert-list">
+              {%- for field in ['role', 'school', 'routes', 'year_group', 'contact_consent'] if errors.get(field) %}
+              <li><a href="#{{ error_targets[field] }}">{{ errors[field] }}</a></li>
+              {%- endfor %}
+            </ul>
+          </div>
+        </div>
+        {% endif %}
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="step" value="{{ step }}">
+
+        {% if step == 'about' %}
+        <h2 class="interest-panel-heading">About you</h2>
+        <fieldset class="interest-field{% if errors.role %} interest-field--error{% endif %}"{{ described_by('role') }}>
+          <legend class="interest-label">Which of these best describes you?</legend>
+          <div class="interest-choice-list">
+            {%- for key, label in roles %}
+            {{ choice_card('radio', 'role', key, label, draft.role == key, 'interest-role-' ~ key) }}
+            {%- endfor %}
+          </div>
+          {{ error_message('role') }}
+        </fieldset>
+
+        <div class="interest-field{% if errors.school %} interest-field--error{% endif %}">
+          <label class="interest-label" for="interest-school">School or college (optional)</label>
+          <p class="interest-hint" id="interest-school-hint">If you're a parent, carer or teacher, give the student's school or college.</p>
+          <input class="interest-input" id="interest-school" name="school" type="text" autocomplete="organization" maxlength="100" value="{{ draft.school }}"{{ described_by('school', hint=True) }}{% if errors.school %} aria-invalid="true"{% endif %}>
+          {{ error_message('school') }}
+        </div>
+
+        <div class="interest-buttons">
+          <button type="submit" name="go" value="continue" class="interest-btn interest-btn--primary">Continue</button>
+        </div>
+
+        {% elif step == 'interests' %}
+        <h2 class="interest-panel-heading">Your interests</h2>
+        <fieldset class="interest-field{% if errors.routes %} interest-field--error{% endif %}"{{ described_by('routes', hint=True) }}>
+          <legend class="interest-label">Which placement routes are you interested in?</legend>
+          <p class="interest-hint" id="interest-routes-hint">Choose as many as you like.</p>
+          <div class="interest-choice-list interest-choice-list--2">
+            {%- for key, label in routes %}
+            {{ choice_card('checkbox', 'routes', key, label, key in draft.routes, 'interest-route-' ~ key) }}
+            {%- endfor %}
+          </div>
+          {{ error_message('routes') }}
+        </fieldset>
+
+        <div class="interest-field{% if errors.year_group %} interest-field--error{% endif %}">
+          <label class="interest-label" for="interest-year">Year group</label>
+          <p class="interest-hint" id="interest-year_group-hint">If you're a parent, carer or teacher, choose the student's year group.</p>
+          <select class="interest-input interest-select" id="interest-year" name="year_group"{{ described_by('year_group', hint=True) }}{% if errors.year_group %} aria-invalid="true"{% endif %}>
+            <option value=""{% if not draft.year_group %} selected{% endif %}>Choose a year group</option>
+            {%- for key, label in year_groups %}
+            <option value="{{ key }}"{% if draft.year_group == key %} selected{% endif %}>{{ label }}</option>
+            {%- endfor %}
+          </select>
+          {{ error_message('year_group') }}
+        </div>
+
+        {#- Consent is never ticked for the visitor, even when they're updating saved answers. #}
+        <div class="interest-field{% if errors.contact_consent %} interest-field--error{% endif %}">
+          <label class="interest-choice" for="interest-consent"><input type="checkbox" id="interest-consent" name="contact_consent" value="yes"{% if draft.contact_consent %} checked{% endif %}{{ described_by('contact_consent') }}{% if errors.contact_consent %} aria-invalid="true"{% endif %}><span>I agree to be contacted about T Level placements. <a href="/privacy">Read the privacy notice</a>.</span></label>
+          {{ error_message('contact_consent') }}
+        </div>
+
+        {#- Continue comes first, so pressing Enter in the form continues rather than going back. #}
+        <div class="interest-buttons">
+          <button type="submit" name="go" value="continue" class="interest-btn interest-btn--primary">Continue</button>
+          <button type="submit" name="go" value="back" class="interest-btn interest-btn--secondary">Back</button>
+        </div>
+
+        {% else %}
+        <h2 class="interest-panel-heading">Check your answers</h2>
+        <dl class="interest-summary">
+          {%- for label, answer, answer_step in summary %}
+          <div class="interest-row">
+            <dt>{{ label }}</dt>
+            <dd>{{ answer }}</dd>
+            <dd class="interest-row-action"><a href="/interest?step={{ answer_step }}">Change<span class="visually-hidden"> {{ label }}</span></a></dd>
+          </div>
+          {%- endfor %}
+          <div class="interest-row">
+            <dt>Contact email</dt>
+            <dd>{{ current_user.email }}</dd>
+            <dd class="interest-row-action"><a href="/account?edit=email">Change<span class="visually-hidden"> contact email on your account page</span></a></dd>
+          </div>
+          <div class="interest-row">
+            <dt>Contact</dt>
+            <dd>You agree to be contacted about T Level placements.</dd>
+            <dd class="interest-row-action"><a href="/interest?step=interests">Change<span class="visually-hidden"> contact</span></a></dd>
+          </div>
+        </dl>
+
+        <div class="interest-buttons">
+          <button type="submit" name="go" value="send" class="interest-btn interest-btn--primary">Send</button>
+          <button type="submit" name="go" value="back" class="interest-btn interest-btn--secondary">Back</button>
+        </div>
+        {% endif %}
+      </form>
+      {% endif %}
+
+      <aside class="interest-aside" aria-label="Help">
+        <section class="interest-panel">
+          <h2 class="interest-panel-title">What happens next</h2>
+          <ul class="interest-ticks">
+            <li><span class="interest-tick" aria-hidden="true"></span><span>We save your answers to your account.</span></li>
+            <li><span class="interest-tick" aria-hidden="true"></span><span>We pass them to the Emerging Talent Programs team.</span></li>
+            <li><span class="interest-tick" aria-hidden="true"></span><span>You can change or remove them on your account page at any time.</span></li>
+          </ul>
+        </section>
+        <section class="interest-panel">
+          <h2 class="interest-panel-title">How we use your answers</h2>
+          <p class="interest-small">The team gets your name, email address and answers in their Slack channel. They only use them to share information about T Level placements.</p>
+          <p class="interest-small">If you're under 18, check with a parent or carer before you send your details.</p>
+          <p class="interest-small"><a href="/privacy">Read the privacy notice</a></p>
+        </section>
+        <section class="interest-panel">
+          <h2 class="interest-panel-title">Need a hand?</h2>
+          <p class="interest-small">Send the team a message if you have a question about registering.</p>
+          <a class="interest-btn interest-btn--secondary interest-btn--block" href="/contact">Contact us</a>
+          <!-- chatWidget.js shows this and makes the button open the chat; it needs JavaScript -->
+          <div class="interest-chat" data-needs-chat hidden>
+            <p class="interest-small">Or get a quick answer from T buddy, our AI assistant.</p>
+            <button type="button" class="interest-btn interest-btn--secondary interest-btn--block" data-open-chat>
+              <span class="interest-btn-icon" aria-hidden="true"></span> Ask a question
+            </button>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </main>
+{% endblock %}

@@ -2,11 +2,11 @@
 
 Last updated 2 November 2026
 
-This is a quick guide to the routes on the site's backend, so anyone building against it knows what to send and what they'll get back. Most of it is already built. The interest and resources routes at the end aren't yet, so treat those as the plan for now.
+This is a quick guide to the routes on the site's backend, so anyone building against it knows what to send and what they'll get back. Most of it is already built. The resources routes at the end aren't yet, so treat those as the plan for now.
 
 ## Before you start
 
-There are two types of route. The /api ones take and return JSON. The rest (contact, login, register, logout, account, analytics and downloads) are normal pages and HTML forms, so they send back a page or a redirect rather than JSON.
+There are two types of route. The /api ones take and return JSON. The rest (contact, interest, login, register, logout, account, analytics and downloads) are normal pages and HTML forms, so they send back a page or a redirect rather than JSON.
 
 Signing in or registering gives you a session cookie, and that's how the site knows who you are. There aren't any API keys for users.
 
@@ -92,9 +92,9 @@ This signs you out and takes you back to the home page. It needs the csrf_token 
 
 ### GET /account
 
-This shows your name, email and password, each with a "Change" link, the date you joined, and a link to the analytics page if your email is allowed to see it. If you're not signed in it sends you to /login first, then back here afterwards.
+This shows your name, email and password, each with a "Change" link, the date you joined, your registered interest (with a Remove link), and a link to the analytics page if your email is allowed to see it. If you're not signed in it sends you to /login first, then back here afterwards.
 
-Add ?edit=name, ?edit=email or ?edit=password to open that change form. That's what the "Change" links point to, so they work without JavaScript.
+Add ?edit=name, ?edit=email or ?edit=password to open that change form, or ?edit=remove-interest to open the "Remove your interest" confirmation. That's what the "Change" and "Remove" links point to, so they work without JavaScript.
 
 ### POST /account/name, /account/email and /account/password
 
@@ -114,13 +114,35 @@ This downloads one of the T Level course specification PDFs, which are members-o
 
 If you're signed in you get the PDF as an attachment, marked Cache-Control: private, no-store. If you're not, you're sent to /login and then back to the T Levels page. The limit is 30 a minute.
 
-## Interest (planned)
+## Interest
 
-This part isn't built yet. The idea is to let signed-in users pick which placement areas they want to hear about: digital, business, media, finance or engineering.
+Signed-in users can register interest in one or more placement routes, so the Emerging Talent Programs team can contact them. Each user has at most one interest. Sending it again replaces the earlier answers. Saving, updating or removing it also posts a message to the team's Slack channel. If Slack is down, the answers are still saved.
 
-GET /api/interest lists what you've signed up for. POST /api/interest adds or updates one. Send route, role (student, parent_carer, teacher_adviser or other), an optional school name of up to 100 characters, and contact_consent set to true. It returns 201 if it's new and 200 if you've updated an existing one, with a limit of 10 a minute. DELETE /api/interest/<route> removes one and returns 204.
+The answers are:
 
-You have to be signed in for all of these, or you'll get a 401. POST and DELETE also need the X-CSRFToken header.
+- role: student, parent_carer, teacher_adviser or other.
+- school: optional, up to 100 characters.
+- routes: one or more of digital, business, media, finance and engineering.
+- year_group: year_10, year_11, year_12, year_13 or not_at_school.
+- contact_consent: must be true. Nothing is saved without it.
+
+### GET and POST /interest
+
+This is the Register your interest page, in three steps: About you (role and school), Your interests (routes, year group and consent), then Check and send. ?step=about, ?step=interests or ?step=check picks the step. You can't skip ahead: asking for a later step before the earlier ones are filled in sends you to the first unfinished one. If you're not signed in, you get a page with links to sign in or create an account, and you come back here afterwards.
+
+Each step posts a form with step and go (continue, back or send). Continue checks only that step's answers and keeps them in the session. If something's wrong you get the page back with the errors; otherwise you're redirected to the next step. Back keeps the answers without checking them. Send checks everything again, saves it and redirects to /interest, which shows "Interest registered" or "Details updated" once. The limit is 10 POSTs a minute.
+
+The error messages are "Select who you are", "School or college name must be 100 characters or fewer", "Select at least one placement route", "Select a year group" and "Tick the box to agree to be contacted".
+
+### GET, POST and DELETE /api/interest
+
+The same thing as JSON. GET returns {"interest": null}, or your saved answers plus created_at and updated_at. POST takes {"role", "school", "year_group", "routes": [...], "contact_consent": true}. It returns 201 if it's new and 200 if it replaced your earlier answers, either way with {"interest": {...}}. If anything's wrong you get a 400 with {"errors": {field: message}}, using the messages above. DELETE removes your interest and returns 204, even if there was nothing to remove. POST and DELETE are limited to 10 a minute.
+
+You have to be signed in for all of these, or you'll get a 401 {"error": "Please sign in"}. POST and DELETE also need the X-CSRFToken header, or you'll get a 400.
+
+### Removing interest from the account page
+
+The account page has a "Your interests" section. Its Remove link goes to /account?edit=remove-interest, which opens a confirmation. "Yes, remove it" posts to /account/remove-interest, which deletes the answers and redirects to /account with "Your interest has been removed."
 
 ## Resources (planned)
 

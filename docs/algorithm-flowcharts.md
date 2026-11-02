@@ -10,7 +10,7 @@ How to read them: start at the dark box at the top and follow the arrows. Orange
 
 1. [Signing up and signing in](flowcharts/1-register-login.png)
 2. [Asking the chat assistant a question](flowcharts/2-chatbot-request.png)
-3. [Registering interest in a placement](flowcharts/3-expression-of-interest.png) (planned, not built yet)
+3. [Registering interest in a placement](flowcharts/3-expression-of-interest.png)
 4. [Downloading a course guide (members only)](flowcharts/4-gated-download.png)
 5. [Searching the site](flowcharts/5-site-search.png)
 

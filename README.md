@@ -2,7 +2,7 @@
 
 This is a website about T Levels and T Level industry placements at Amazon, built for the Amazon Emerging Talent Programs team. Its audience is students, parents and carers, and teachers or careers advisers.
 
-The site is a small Flask app. It serves HTML pages, stores user accounts and contact form messages in SQLite, runs an AI chat assistant through OpenRouter, and can post contact form messages to a Slack channel.
+The site is a small Flask app. It serves HTML pages, stores user accounts, contact form messages and registered interest in SQLite, runs an AI chat assistant through OpenRouter, and can post contact form messages and registered interest to a Slack channel.
 
 ## Quick start
 
@@ -48,12 +48,12 @@ The chat and Slack settings are read when they are used, so a missing value turn
 
 ```
 bristol-gp/
-├── main.py                 Flask app: page routes, accounts, contact form, error pages, database setup
+├── main.py                 Flask app: page routes, accounts, contact form, register interest, error pages, database setup
 ├── chat_api.py             Blueprint for /api/chat and /api/chat/stream (OpenRouter proxy)
 ├── extensions.py           The rate limiter, shared by main.py and chat_api.py
 ├── chat_knowledge.md       Facts about the site that the chat assistant answers from
 ├── bot/
-│   └── bot.py              Slack bot: posts contact messages, handles the message buttons
+│   └── bot.py              Slack bot: posts contact messages and interest, handles the message buttons
 ├── send_slack_test.py      Sends one fake contact message to Slack to check the setup
 ├── requirements.txt
 ├── .env.example            Template for .env
@@ -64,6 +64,7 @@ bristol-gp/
     ├── home.html, TLevel.html, advice.html, faqs.html, quiz.html, contact.html, privacy.html
     ├── login.html          Sign-in and sign-up forms on one page
     ├── account.html        Signed-in users only
+    ├── interest.html       Register your interest, three steps (sign-in panel when signed out)
     ├── analytics.html      Site analytics, for emails listed in ANALYTICS_EMAILS
     ├── 404.html, 500.html
     └── Sources/            Static files (Flask's static_folder, served at /Sources/...)
@@ -90,14 +91,16 @@ Every link on the site uses these short URLs. The old file-name addresses, such 
 | `/login` | GET, POST | `login.html`, sign-in form. Limited to 10 POSTs per minute. |
 | `/register` | GET, POST | `login.html`, sign-up form. Limited to 10 POSTs per minute. |
 | `/logout` | POST | Clears the session and redirects home. |
-| `/account` | GET | `account.html`. Requires sign-in. `?edit=name`, `?edit=email` or `?edit=password` opens that change form, so the "Change" links work without JavaScript. |
-| `/account/<form>` | POST | Saves one account detail: `name`, `email` or `password` (see `ACCOUNT_FORMS` in `main.py`). Redirects to `/account` with a success message, or shows the page again with the form open and the error. Requires sign-in. Limited to 10 POSTs per minute. |
+| `/account` | GET | `account.html`. Requires sign-in. `?edit=name`, `?edit=email` or `?edit=password` opens that change form, and `?edit=remove-interest` opens the "Remove your interest" confirmation, so the links work without JavaScript. |
+| `/account/<form>` | POST | Saves one account detail (`name`, `email` or `password`), or removes the user's interest (`remove-interest`). See `ACCOUNT_FORMS` in `main.py`. Redirects to `/account` with a success message, or shows the page again with the form open and the error. Requires sign-in. Limited to 10 POSTs per minute. |
+| `/interest` | GET, POST | `interest.html`, Register your interest. Visitors who aren't signed in see links to sign in or create an account. `?step=about`, `?step=interests` or `?step=check` picks the step; each step's POST checks only that step, keeps the answers in the session and redirects to the next step. The final POST saves the answers and posts them to Slack. Limited to 10 POSTs per minute. |
 | `/analytics` | GET | `analytics.html`. Requires sign-in with an email in `ANALYTICS_EMAILS`; anyone else signed in gets a 404. |
 | `/download/<name>` | GET | A spec PDF from `resources/specs/`. Requires sign-in. Limited to 30 per minute. |
 | `/accessibility` | GET | Redirects to `/#accessibility`. The settings are now a popup on every page. |
 | `/<page>.html` | GET | Redirects an old file-name address to its short URL. |
 | `/api/track` | POST | Records an analytics event, `{"kind": "search" \| "view" \| "quiz", "value": "..."}`. JSON only, 30 per minute per IP. Views and quiz results must be one of the five route names; searches are lower-cased and up to 100 characters. |
 | `/api/session` | GET | `{"signed_in": bool, "name": ...}`, used by `topNavBar.js`. |
+| `/api/interest` | GET, POST, DELETE | The signed-in user's interest as JSON. GET returns `{"interest": {...} \| null}`. POST `{"role", "school", "year_group", "routes": [...], "contact_consent": true}` saves it (201 new, 200 updated, 400 `{"errors": {...}}`). DELETE removes it (204). 401 if not signed in. POST and DELETE need the `X-CSRFToken` header and are limited to 10 per minute. |
 | `/api/chat` | POST | Chat reply as JSON. |
 | `/api/chat/stream` | POST | Chat reply as Server-Sent Events. |
 
@@ -136,6 +139,8 @@ The 404 handler builds its list of pages from the routes, so a new page is inclu
 - `messages`: `id`, `name`, `email`, `message`, `created_at`
 - `login_attempts`: failed sign-ins per email, used for the lockout (3 wrong passwords lock that email for 15 minutes). Expired locks are cleared out on later failed sign-ins.
 - `analytics_events`: `id`, `kind` (`search`, `view` or `quiz`), `value`, `created_at`. Sent by `topNavBar.js` (searches), `tlevelTabs.js` (each route tab, once per visit) and `quiz.js` (the top match). No user id or IP is stored.
+- `interests`: one row per user who registered interest: `user_id` (primary key), `role`, `school`, `year_group`, `contact_consent` (always 1), `created_at`, `updated_at`.
+- `interest_routes`: `user_id`, `route`, one row per route chosen, primary key `(user_id, route)`. `save_interest()` replaces a user's rows each time, and `remove_interest()` deletes from both tables, since SQLite doesn't enforce the `REFERENCES` without `PRAGMA foreign_keys`.
 
 There are no migrations. `CREATE TABLE IF NOT EXISTS` does not change existing tables, so if you change a schema, either alter `site.db` by hand or delete it and let the app recreate it.
 
@@ -153,6 +158,7 @@ sqlite3 site.db "SELECT id, name, email, created_at FROM messages ORDER BY id DE
 - The `next` parameter on `/login` and `/register` is only followed if `is_safe_redirect()` confirms it is a path on this site.
 - On the account page, changing the email or the password needs the current password (`current_password_error()`), in case someone else is using a computer that was left signed in. Changing the name doesn't. A password change starts a fresh session, as signing in does.
 - The form checks (`name_error()`, `email_error()`, `password_error()`, `current_password_error()`, `message_error()` in `main.py`) are shared by the contact, sign-up and account forms. `auth.js` repeats them in the browser with the same messages, so change both together.
+- The interest checks (`role_error()`, `school_error()`, `routes_error()`, `year_group_error()`, `consent_error()`) are only in `main.py`, shared by `/interest` and `/api/interest`. The page has no browser-side checks.
 - Form field limits: name 100 characters, email 254, message 2000, password 8 to 128. Requests over 16 KB are rejected, except chat requests, which allow 100 KB.
 - Rate limits use Flask-Limiter (set up in `extensions.py`). They are kept in memory, so they reset when the app restarts and are not shared between processes.
 
@@ -191,9 +197,11 @@ The rate limiter uses `request.remote_addr`. If the site is put behind a reverse
 
 When a contact form message is saved, `main.py` also posts it to `SLACK_CHANNEL_ID`. The Slack message has four buttons: Mark Handled, Priority, Reply Needed and View JSON. The first three reply in the message's thread; View JSON opens a modal.
 
+When someone registers, updates or removes their interest (on `/interest`, the account page or `/api/interest`), `save_interest()` and `remove_interest()` post a message with `send_interest_to_slack()`: the name and email, plus who they are, school or college, year group and routes, unless it was removed. These messages have the Mark Handled and View JSON buttons.
+
 - Posting needs `SLACK_BOT_TOKEN` and `SLACK_CHANNEL_ID`.
 - The buttons need `SLACK_APP_TOKEN` as well. `python main.py` starts the bot in a background thread using Socket Mode, which connects out to Slack and opens no port.
-- If Slack is down, misconfigured or `slack_bolt` is not installed, the message is still saved to the database and the form still works.
+- If Slack is down, misconfigured or `slack_bolt` is not installed, the message or interest is still saved to the database and the form still works.
 - Text from the form is escaped so it can't trigger Slack formatting such as `<!channel>`.
 
 To check the setup without using the form:

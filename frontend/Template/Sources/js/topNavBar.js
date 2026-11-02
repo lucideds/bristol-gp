@@ -102,8 +102,10 @@
 
     { title: 'Sign in', path: 'login',
       keywords: 'sign in signin login log in account' },
-    { title: 'Register your interest', path: 'login#register',
-      keywords: 'register registration sign up signup create account interest join' },
+    { title: 'Register your interest', path: 'interest',
+      keywords: 'register registration interest interested expression of interest routes placements tell us join' },
+    { title: 'Create an account', path: 'login#register',
+      keywords: 'sign up signup create account new account join' },
     // Opens the accessibility popup on the current page instead of navigating.
     { title: 'Accessibility settings', path: '#accessibility', opensAccessibility: true,
       keywords: 'accessibility a11y dark mode theme contrast high contrast text size font colour color' }
