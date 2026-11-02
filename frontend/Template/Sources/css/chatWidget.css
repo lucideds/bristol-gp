@@ -3,7 +3,7 @@
    Colours are tokens from tokens.css, so the button and panel follow the site theme.
    Font: var(--font-sans) (Amazon Ember) */
 
-/* "T buddy" pill button, always in the bottom-right corner of the screen */
+/* Round "T buddy" icon button, always in the bottom-right corner of the screen */
 .chat-toggle {
   position: fixed;
   right: 20px;
@@ -11,14 +11,15 @@
   z-index: 1000;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
   box-sizing: border-box;
+  width: 44px;
   height: 44px;
-  padding: 0 18px;
+  padding: 0;
   background: var(--color-navy);
   color: var(--color-on-navy);
   border: 1.6px solid var(--color-ink);
-  border-radius: 22px;
+  border-radius: 50%;
   font-family: var(--font-sans);
   font-weight: 700;
   font-size: 16px;
@@ -355,6 +356,5 @@
   .chat-toggle {
     right: 12px;
     bottom: 12px;
-    padding: 0 16px;
   }
 }

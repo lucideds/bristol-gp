@@ -81,6 +81,11 @@ body {
   border-top: 2px solid var(--color-on-navy);
 }
 
+/* Dark: navy-deep is darker than the page (1.05:1), so a subtle edge marks where the footer starts */
+[data-theme="dark"] .site-footer {
+  border-top: 1px solid var(--color-border-subtle);
+}
+
 /* Tablets: brand on its own row, link columns below */
 @media (max-width: 768px) {
   .footer-top {

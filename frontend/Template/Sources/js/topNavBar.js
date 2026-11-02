@@ -54,17 +54,17 @@
       keywords: 'engineering engineer mechanical electrical quality manufacturing processing control maintenance technician logistics fulfilment equipment' },
 
     { title: 'Advice', path: 'advice',
-      keywords: 'advice guide guidance thinking about tips resources parents careers advisor' },
+      keywords: 'advice guide guidance thinking about tips resources parents carers careers adviser advisor' },
     { title: 'Advice: Why choose a T Level', path: 'advice#why-choose',
-      keywords: 'why choose reasons learn by doing practical real placement three a levels doors open year 10 benefits' },
+      keywords: 'why choose reasons learn by doing practical real placement three a levels doors open benefits' },
     { title: 'Advice: How to apply for a placement', path: 'advice#how-to-apply',
       keywords: 'apply application steps how to apply interview prepare cv dates school college' },
     { title: 'Advice: Where it can lead', path: 'advice#where-it-leads',
-      keywords: 'lead careers jobs example jobs future university apprenticeship work' },
+      keywords: 'lead careers jobs example jobs by route future next step after university ucas apprenticeship work' },
     { title: 'Advice: Common worries', path: 'advice#common-worries',
       keywords: 'worries worried concerns common question team adjustments support change mind unsure nervous' },
-    { title: 'Advice: Your path', path: 'advice#your-path',
-      keywords: 'your path find timeline year 10 11 12 13 steps when gcse results start placement interview next step journey plan' },
+    { title: 'Advice: Your path to a placement', path: 'advice#your-path',
+      keywords: 'your path find timeline year 10 11 12 13 steps when gcse results start placement register interview journey plan' },
 
     { title: 'Which T Level suits you? (quiz)', path: 'quiz',
       keywords: 'quiz test which suits me match matches find my t level questions personality recommend' },
@@ -213,7 +213,7 @@
         '<div class="nav-top">' +
           '<div class="nav-container nav-top-inner">' +
             '<a class="brand" href="' + link('') + '">' +
-              '<img src="' + link('Sources/assets/amazon_logo.png') + '" alt="Home" width="102" height="34">' +
+              '<img src="' + link('Sources/assets/amazon_logo.png') + '" alt="Home" width="114" height="53">' +
             '</a>' +
             '<form class="nav-search" role="search" action="' + link('') + '">' +
               '<input type="search" name="q" placeholder="Search T Levels and placements" aria-label="Search the site"' +

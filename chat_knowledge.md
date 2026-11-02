@@ -8,7 +8,7 @@ Everything below is taken from the site's own pages, apart from "Other Amazon ro
 
 - Home: / - an overview of the five placement routes, links for visitors after GCSEs, during a T Level and after a T Level, and a "Register your interest" button.
 - T Levels: /t-levels - general T Level information and a section for each route: Digital (/t-levels#digital), Business (/t-levels#business), Media (/t-levels#media), Finance (/t-levels#finance) and Engineering (/t-levels#engineering). Each route section has a course specification (PDF) to download.
-- Advice: /advice - why choose a T Level, how to apply for a placement, "Your path" (a year-by-year timeline from Year 10 to Year 13), example jobs by route ("Where it can lead"), and common worries.
+- Advice: /advice - why choose a T Level, "Your path to a placement" (a year-by-year timeline from Year 10 to Year 13 that includes how to apply for a placement), "Where it can lead" (apprenticeship, university or work, with example jobs by route), and common worries.
 - Quiz: /quiz - "Which T Level suits you?" Five quick questions with no wrong answers. It shows your top two matching routes (best match and also a good fit). It is only a starting point, so talk to a careers adviser before choosing.
 - FAQs: /faqs - common questions about T Levels, placements, applying to Amazon and what comes after a T Level.
 - Contact: /contact - a form for sending the team a message. The team replies by email. Use this for anything the assistant cannot answer, password problems, or questions about personal data. Parents, carers, schools and colleges can also use it.
@@ -41,12 +41,12 @@ Everything below is taken from the site's own pages, apart from "Other Amazon ro
 
 ## Placements at Amazon
 
-How to apply, in order (from the Advice page):
-1. Pick a T Level course at a school or college near you. Ask your careers adviser which courses they offer.
-2. Register your interest on this site.
-3. Talk to your school or college. They organise placements for their students, so ask who to speak to and what they need from you.
-4. Apply when applications open. Dates vary between schools and colleges, so ask yours for the exact dates and apply before the closing date.
-5. Prepare for the interview. It is a short conversation about why you chose the route, with no trick questions. Your school or college may run a workshop to practise, and can help you build your CV.
+How to apply, in order (from "Your path to a placement" on the Advice page):
+1. Apply to a school or college for a T Level course, usually from the autumn of Year 11. Ask your careers adviser which schools and colleges near you offer T Levels.
+2. Start your T Level in September of Year 12.
+3. Register your interest on this site.
+4. Apply through your school or college. They organise placements for their students, so ask who to speak to and what they need from you, and send your application before the closing date. Dates vary between schools and colleges, so ask yours for the exact dates.
+5. Have a short interview. It is a conversation about why you chose the route, with no trick questions. Ask your school or college for help with your CV, and whether they run a workshop where you can practise.
 
 - What to put in an application: which route you are studying and why it interests you, any projects, hobbies or school work that show your skills, and what you hope to learn. Include your CV. Keep it clear and check spelling before sending.
 - Benefits: hands-on experience at a large global company, support from people working in your field, and real work to talk about in future applications and interviews.
@@ -54,7 +54,7 @@ How to apply, in order (from the Advice page):
 
 ## Your path, year by year (from the Advice page)
 
-- Year 10: explore your options. Find out what T Levels are and how they compare with A Levels and apprenticeships. The quiz suggests which route might suit you. Nothing is locked in at this stage.
+- Year 10: explore your options. Find out what T Levels are and how they compare with A Levels and apprenticeships. The quiz suggests which route might suit you.
 - Year 10 or 11: talk to your careers adviser about which schools and colleges offer T Levels and what they ask for. Take your quiz result with you.
 - Year 11, usually from the autumn: apply to a school or college for the T Level course you want. Check entry requirements early.
 - Summer of Year 11: get your GCSE results. Your school or college confirms your place. If results are not what you hoped, talk to them about your options.
@@ -125,7 +125,7 @@ The quiz (/quiz) matches answers to routes like this:
 - Finance: careful and reliable, likes to get things exactly right.
 - Engineering: practical and hands-on, likes to learn by doing.
 
-## After a T Level
+## After a T Level (from "Where it can lead" on the Advice page and the FAQs)
 
 - Options: skilled work, a higher or degree apprenticeship, or university.
 - Apprenticeship: earn a wage while you train on the job. Amazon offers apprenticeships too (https://amazonapprenticeships.co.uk/our-programmes).

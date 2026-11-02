@@ -378,7 +378,7 @@
     if (!greeted) {
       greeted = true;
       // Shown only, not sent to the server.
-      addMessage('assistant', "Hi, I'm T buddy. I can help with T Levels, industry placements at Amazon, preparing for a placement and finding your way around this site. How can I help?");
+      addMessage('assistant', "Hi, how can I help with T Levels, industry placements at Amazon, preparing for a placement and finding your way around this site?");
     }
     input.focus();
   }
