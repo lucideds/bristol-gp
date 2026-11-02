@@ -20,22 +20,20 @@ Everything below is taken from the site's own pages, apart from "Other Amazon ro
 
 ## About T Levels
 
-- T Levels are two-year courses taken after GCSEs. They are broadly equivalent in size to three A Levels.
-- They launched in September 2020. They were developed with employers and education providers so the content meets the needs of industry and prepares students for skilled work, an apprenticeship, or further or higher technical study.
-- Students learn at a school or college through practical and knowledge-based lessons, and get on-the-job experience through an industry placement of at least 315 hours (about 45 days).
-- A Levels focus mainly on classroom study and exams across several subjects. A T Level focuses on one technical area and combines classroom learning with an industry placement.
-- Who can apply: students aged 16 to 19 when they start the course. Most providers look for at least five GCSEs at grade 4 or above, including English and maths. Exact requirements are set by each school or college and vary by subject.
+- T Levels are two-year technical qualifications for students who have completed their GCSEs. They are equivalent to 3 A levels and combine classroom learning with an industry placement of at least 315 hours, approximately 45 working days. T Levels can help students progress into employment, apprenticeships or further education.
+- A Levels focus mainly on classroom study and exams across several subjects. A T Level focuses on one technical area and combines classroom learning with practical industry experience.
+- Who can apply: T Levels are generally aimed at students aged 16 to 19 who have completed their GCSEs. Entry requirements vary by school, college and subject, so students should check with their chosen provider to find out which grades they need.
 - Finding a course: the government's T Level course finder is at https://www.tlevels.gov.uk/students/find. A careers adviser can say which schools and colleges nearby offer T Levels.
-- Subjects: T Levels cover 11 categories of study. Amazon offers placements in five of them: Digital, Business, Media, Finance and Engineering.
+- Subjects: there are more than 20 T Level subjects available across different industries. This website highlights five routes for Amazon industry placements: Digital, Business, Media, Finance and Engineering.
 - Grades: when you pass, you get a T Level certificate with an overall grade of Pass, Merit, Distinction or Distinction*. The certificate also shows your industry placement and the grades for each part of the course. You must complete your placement to pass.
-- Why choose a T Level (from the Advice page): you learn by doing, with practical lessons built around a career; you get a real placement and build contacts; it counts the same as three A Levels; and it keeps your options open for university, an apprenticeship or work.
+- Why choose a T Level (from the Advice page): you learn by doing, with practical lessons built around careers rather than just exams; you get a real placement and build contacts; a T Level is equivalent to 3 A levels; and it keeps your options open for university, an apprenticeship or employment.
 
 ## Industry placements
 
 - An industry placement is time spent working with an employer as part of a T Level. Students do real tasks, learn how a workplace runs and put what they learn in class into practice.
-- It lasts at least 315 hours, which is about 45 working days. It might be one block, or a day or two each week, and it can be split across more than one employer.
+- It lasts at least 315 hours, which is about 45 working days. It might be one block, or a day or two each week. A placement may take place with one or more employers, depending on the arrangements agreed with the education provider.
 - The school or college agrees a schedule with the employer and helps the student track their hours.
-- Finding a placement: usually the school or college finds one for the student. Students can also find one themselves by contacting companies to ask if they take T Level students.
+- Finding a placement: the school or college will normally help arrange it. Students can also contact employers themselves, but the placement must be suitable for their T Level and agreed with their education provider.
 - No previous work experience is needed. The placement is where students gain it.
 - Skills built: technical skills for the route, plus teamwork, communication, problem solving, time management, working to deadlines and taking feedback.
 - Students work alongside people in their team and can ask about their roles and career paths. These contacts can help later when looking for jobs or apprenticeships.
@@ -47,9 +45,9 @@ How to apply, in order (from "Your path to a placement" on the Advice page):
 2. Start your T Level in September of Year 12.
 3. Register your interest on this site (/interest): tell the team which routes you like, so they can share information about Amazon placements. You can change your answers later.
 4. Apply through your school or college. They organise placements for their students, so ask who to speak to and what they need from you, and send your application before the closing date. Dates vary between schools and colleges, so ask yours for the exact dates.
-5. Have a short interview. It is a conversation about why you chose the route, with no trick questions. Ask your school or college for help with your CV, and whether they run a workshop where you can practise.
+5. Have a short interview. Expect questions about your interests, motivation and reasons for choosing the placement. Ask your school or college for help with preparing your CV, and whether they run a workshop where you can practise.
 
-- What to put in an application: which route you are studying and why it interests you, any projects, hobbies or school work that show your skills, and what you hope to learn. Include your CV. Keep it clear and check spelling before sending.
+- What to put in an application: which route you are studying and why it interests you, any projects, hobbies or school work that show your skills, and what you hope to learn. Include your CV if the application asks for one. Keep it clear and check spelling before sending.
 - Benefits: hands-on experience at a large global company, support from people working in your field, and real work to talk about in future applications and interviews.
 - Placement details can change. Students should check their course specification and the official Amazon T Level placements page for the latest information.
 
@@ -67,11 +65,11 @@ How to apply, in order (from "Your path to a placement" on the Advice page):
 ## The five routes
 
 ### Digital
-- T Level: Digital Production, Design and Development, or Digital Support Services.
+- T Level: Digital Software Development, or Digital Support and Security.
 - What it is: software development, IT infrastructure and data, with hands-on experience building and maintaining the systems a company like Amazon relies on.
 - Who it is for: students who enjoy problem solving, logical thinking and working with technology. No coding experience is needed before starting.
-- Example work: helping test software, supporting colleagues with IT problems, looking after systems or working with data.
-- Which one to choose: Digital Production, Design and Development suits students who want to build software. Digital Support Services suits students more interested in IT support, networks or keeping systems running. Their school or college can help them decide.
+- Skills: depending on the course and placement, students could develop skills in software development, IT support, networking, cybersecurity or other areas of digital technology.
+- Which one to choose: Digital Software Development suits students who want to build software. Digital Support and Security suits students more interested in IT support, networks, cybersecurity or keeping systems running. Their school or college can help them decide.
 - Future job paths (T Levels page): software developer, IT support technician, cloud infrastructure engineer, data analyst, or a degree apprenticeship in computer science or software engineering.
 - Example jobs (Advice page): software developer, data analyst, cyber security analyst, cloud engineer.
 - Course specifications: one for each Digital T Level, on the T Levels page.
@@ -88,21 +86,21 @@ How to apply, in order (from "Your path to a placement" on the Advice page):
 
 ### Media
 - T Level: Media, Broadcast and Production.
-- What it is: content creation, marketing and communications, producing the kind of material a company uses to reach customers and promote its brand.
+- What it is: creative content is planned, produced, edited and shared across digital, film and broadcast platforms, while students gain practical experience in the media industry.
 - Who it is for: creative students who enjoy writing, design, video or social media and want a career that blends creativity with commercial purpose.
 - Example work: helping write content, creating images or video, planning social media posts or supporting a marketing campaign.
 - Portfolio: not required, but examples of things you have made (writing, designs, videos, social media posts) help. School projects and hobbies count.
-- Equipment: any equipment or software needed for placement work is provided.
-- Future job paths (T Levels page): marketing assistant, content creator, social media coordinator, junior graphic designer, or a marketing or media production degree or apprenticeship.
+- Equipment: the placement provider will explain which equipment and software will be available and whether students need to prepare anything in advance.
+- Possible future careers (T Levels page): video editor, camera operator, broadcast technician or media researcher.
 - Example jobs (Advice page): content producer, video editor, social media manager, marketing executive.
 
 ### Finance
 - T Level: Accounting.
-- What it is: accounting, budgeting and financial operations, showing how a company tracks and manages money.
+- What it is: businesses manage financial information, prepare budgets, analyse performance and make financial decisions.
 - Who it is for: students who are detail-oriented, comfortable with numbers and interested in how businesses make financial decisions.
 - Maths: high-level maths is not needed. Students need to be comfortable with numbers and checking details carefully. The course teaches the accounting skills.
 - Example work: helping prepare reports, checking invoices and payments, updating spreadsheets or supporting a team with budgets.
-- Professional qualifications: many students go on to study for qualifications such as AAT or ACCA, often through an apprenticeship where they earn while they learn.
+- Professional qualifications: completing a relevant T Level can provide a foundation for further accounting qualifications, but additional study and assessments may be required.
 - Future job paths (T Levels page): accounts assistant, finance apprentice, payroll administrator, trainee analyst, or an accounting qualification or finance degree apprenticeship.
 - Example jobs (Advice page): accountant, financial analyst, payroll specialist, auditor.
 
@@ -113,9 +111,10 @@ How to apply, in order (from "Your path to a placement" on the Advice page):
 - Example work: helping look after equipment, finding and fixing faults, or working on ways to make systems run better.
 - Where: it depends on the placement. Engineering work often takes place on site, where the equipment is, with some time planning and recording work at a desk.
 - Safety: on site, students may need safety clothing such as safety boots or a high-visibility vest. They are told what they need and get safety training before they start.
+- Future job paths (T Levels page): engineering can lead towards careers in mechanical engineering, electrical engineering, manufacturing, maintenance and other technical industries. Example pathways include engineering technician, mechanical or electrical engineering technician, maintenance technician and engineering apprenticeships.
 - Example jobs (Advice page): mechanical engineer, electrical engineer, maintenance technician, quality engineer.
 
-Example jobs depend on what you study and where you work.
+Example jobs are careers students may be able to work towards through further training, education or experience. They depend on what students study and where they work.
 
 ## The quiz results
 
@@ -128,16 +127,16 @@ The quiz (/quiz) matches answers to routes like this:
 
 ## After a T Level (from "Where it can lead" on the Advice page and the FAQs)
 
-- Options: skilled work, a higher or degree apprenticeship, or university.
+- Options: a T Level can help students progress to university, an apprenticeship or employment. Students should always check the entry requirements for their chosen university course.
 - Apprenticeship: earn a wage while you train on the job. Amazon offers apprenticeships too (https://amazonapprenticeships.co.uk/our-programmes).
-- University: T Levels earn UCAS points, the same as three A Levels, and many universities accept them. A Distinction* is worth the same as three A* grades at A Level. Students should check the entry requirements for the courses they are interested in.
+- University: T Levels carry UCAS points based on the overall grade, and many universities accept them for relevant courses. A T Level Distinction* is worth 168 UCAS points, the same tariff points as three A* grades at A level. Students should check the entry requirements for the university and course they are interested in.
 - Work: go straight into a job, using the skills and contacts from the placement.
 
 ## Common worries (from the Advice page)
 
 - Never worked in a team like this: that is normal. A placement is for learning. Ask questions and say when you are unsure.
 - Needing adjustments: tell your school or college and your placement contact what you need before you start. They can plan support, such as changes to your hours, equipment or how tasks are explained.
-- Changing your mind about the route: talk to your careers adviser as early as you can. Even after finishing a T Level, you can still go into careers that are not related to your course.
+- Changing your mind about the route: talk to your careers adviser as early as you can. After completing a T Level, students can still explore careers outside their subject area.
 
 ## Downloads, accounts and personal data
 
