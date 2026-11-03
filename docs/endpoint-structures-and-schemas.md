@@ -1,6 +1,6 @@
 # Pippin: Endpoint structures and schemas
 
-Last updated 2 November 2026
+Last updated 3 November 2026
 
 This is a quick guide to the routes on the site's backend, so anyone building against it knows what to send and what they'll get back. Most of it is already built. The resources routes at the end aren't yet, so treat those as the plan for now.
 
@@ -38,7 +38,7 @@ This is the same as /api/chat, except the reply comes back bit by bit as it's wr
 
     data: {"delta": "some text"}
 
-Just keep adding each delta onto the reply. The stream ends with {"done": true}, or {"error": "..."} if something went wrong partway through. Anything that goes wrong before it starts comes back as the same JSON errors as /api/chat.
+Just keep adding each delta onto the reply. If the reply turns into code, the server sends {"replace": "..."} instead: throw away the text so far and show this (a short refusal), then {"done": true} follows. The stream ends with {"done": true}, or {"error": "..."} if something went wrong partway through. Anything that goes wrong before it starts comes back as the same JSON errors as /api/chat.
 
 ## Session and analytics
 

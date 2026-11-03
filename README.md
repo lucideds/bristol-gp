@@ -55,6 +55,7 @@ bristol-gp/
 ├── bot/
 │   └── bot.py              Slack bot: posts contact messages and interest, handles the message buttons
 ├── send_slack_test.py      Sends one fake contact message to Slack to check the setup
+├── check_chat_guardrails.py  Sends test conversations to the real chat model and checks it refuses or answers
 ├── requirements.txt
 ├── .env.example            Template for .env
 ├── site.db                 SQLite database (created on first run, not committed)
@@ -175,13 +176,23 @@ Request body for both endpoints:
 Validation rules: 1 to 20 messages, each with role `user` or `assistant` (visitors cannot send `system` messages), up to 4000 characters each, and the last message must be from the user.
 
 - `/api/chat` returns `{"reply": "..."}` or `{"error": "..."}` with a status code.
-- `/api/chat/stream` returns `text/event-stream`. Each event is `data: {"delta": "..."}`, then `data: {"done": true}` at the end, or `data: {"error": "..."}` if something fails part-way. Errors found before streaming starts come back as normal JSON errors.
+- `/api/chat/stream` returns `text/event-stream`. Each event is `data: {"delta": "..."}`, then `data: {"done": true}` at the end, or `data: {"error": "..."}` if something fails part-way. `data: {"replace": "..."}` means "discard the text so far and show this instead" (see Guardrails). Errors found before streaming starts come back as normal JSON errors.
 
 Settings are constants at the top of the file: `CHAT_SYSTEM_PROMPT`, `CHAT_RATE_LIMIT` (10 requests per minute per IP, shared by both endpoints; going over returns a JSON 429 with `Retry-After`), `CHAT_TIMEOUT`, `CHAT_MAX_TOKENS` and `CHAT_REASONING`. The messages visitors see are constants too. The model's reasoning is excluded from responses.
 
 The assistant also answers from `chat_knowledge.md`, a hand-kept copy of the site's page text. It doesn't update itself, so edit it when page wording, password rules or the lockout settings change, then restart the server.
 
-To change what the assistant says or refuses to say, edit `CHAT_SYSTEM_PROMPT`. Many visitors are under 18, so keep the safeguarding rules in it.
+To change what the assistant says or refuses to say, edit `CHAT_SYSTEM_PROMPT` and the short `CHAT_REMINDER` that follows the reference text. Many visitors are under 18, so keep the safeguarding rules in it.
+
+### Guardrails
+
+The prompt limits replies to plain English sentences in the assistant's own voice: no code, JSON, tables, poems, songs, stories, characters or other languages, even on T Level topics. Prompts can be talked round, so the server also runs `looks_like_code()` on every reply. If a reply looks like code, `/api/chat` returns `CODE_REFUSAL` instead, and `/api/chat/stream` stops and sends it as a `replace` event. Assistant messages in the history the browser sends get the same check, because a visitor can make them up.
+
+After changing the prompt, `chat_knowledge.md` or `looks_like_code()`, run the guardrail check. It sends each case to the real model three times (set `RUNS` to change that) and prints PASS or FAIL for each, covering cases that must be refused and cases that must still be answered:
+
+```bash
+.venv/bin/python -W ignore check_chat_guardrails.py 2>/dev/null | grep -E "^=== |RESULT"
+```
 
 Test the API from the command line while the app is running:
 
@@ -277,7 +288,7 @@ There is no automated test suite. Before committing, check by hand:
 - Light, dark and high-contrast themes, and the Large and Extra large text sizes, from the accessibility popup.
 - Keyboard use: Tab through the page and make sure focus is visible and nothing is unreachable.
 - Forms: sign up, sign in, change your name, email and password on the account page, sign out, and send a contact message. Check that errors show for empty or invalid fields.
-- The chat widget, if you have an OpenRouter key.
+- The chat widget, if you have an OpenRouter key. If you changed the chat prompt or `chat_knowledge.md`, run `check_chat_guardrails.py`.
 
 ## Going live
 

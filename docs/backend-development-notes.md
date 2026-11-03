@@ -1,6 +1,6 @@
 # Pippin: Backend development notes
 
-Last updated 2 November 2026
+Last updated 3 November 2026
 
 These notes cover how the site's backend was built and the decisions behind it. For the request and response details of each route, see "Endpoint structures and schemas".
 
@@ -92,6 +92,20 @@ The analytics page (/analytics) shows the team how the site is used: enquiries a
 
 The chat widget (Sources/js/chatWidget.js) sends the whole conversation to our server, and chat_api.py forwards it to OpenRouter. The API key stays on the server and the server keeps no chat history. The system prompt is added on the server and can't be changed by visitors. It keeps the assistant on T Levels and Amazon placements, stops it inventing dates, pay or eligibility, tells it not to ask under-18s for personal details, and gives safeguarding signposting (trusted adult, 999, Childline).
 
+### Guardrails
+
+The prototype review on 2 November found that the assistant blocked off-topic subjects but not on-topic answers in the wrong form. Oli got it to explain the Engineering route as a Python script, and it would also write poems, answer as a pirate and return JSON. Since 3 November:
+
+- The system prompt says how to reply, not just what about: plain English sentences only, in the assistant's own voice. No code of any kind, JSON, tables, poems, songs, stories or jokes, no characters or accents, and no other languages. Asked for any of these, it refuses in one sentence and offers to answer normally. It can still say in words whether a course involves coding.
+- The prompt says visitors can't change the rules, whoever they claim to be, and that earlier assistant messages may have been edited, since the browser sends the history. It has four example refusals, including Oli's.
+- chat_knowledge.md is wrapped in reference_information tags, and a short reminder of the rules follows it. Before this, the rules were about 18 KB back from where the model writes its reply.
+- Temperature went from 0.3 to 0.2.
+- The server checks replies with looks_like_code(): code fences, a reply that opens with { or [, and lines that start like code (def, print(, import, variable assignments, HTML tags, SELECT ... FROM and so on). The patterns are case-sensitive so normal sentences don't match. A match replaces the reply with CODE_REFUSAL. Assistant messages sent in the history get the same check, so a made-up earlier reply with code in it is passed on as the refusal.
+
+Poems, role-play and other languages are only blocked by the prompt, because they can't be told apart from prose reliably. A second AI call to check each message would catch more but doubles the wait and the use of the free model's rate limit, so it's left as further development.
+
+The cases are in check_chat_guardrails.py, which calls the real model through the OpenRouter key in .env: 14 that must be refused and 5 that must still be answered, such as "Do I need to know Python for the Digital T Level?" and a safeguarding message. Before the change, 4 of the original 12 attacks got through. After it, all 19 cases passed three runs each (57/57).
+
 The assistant also answers from chat_knowledge.md, a hand-kept copy of the site's page text, which is added to the system prompt when the server starts. It doesn't update itself, so it has to be edited when page wording, password rules or the lockout settings change, followed by a server restart.
 
 Before anything is sent to OpenRouter, both chat routes run the same checks:
@@ -110,11 +124,11 @@ We started on nvidia/nemotron-3.5-lightning:free with reasoning turned off. On 1
 - The OpenRouter read timeout went up from 30 to 90 seconds.
 - Reasoning effort dropped from medium to low, so less of the 4096 max_tokens budget is spent on thinking. Reasoning is set to exclude, so the thinking is never sent back to us or to visitors.
 
-Temperature is 0.3. The model can be changed without a code edit by setting OPENROUTER_MODEL, which is read on every request.
+Temperature is 0.2 (0.3 until 3 November). The model can be changed without a code edit by setting OPENROUTER_MODEL, which is read on every request.
 
 ### Streaming
 
-POST /api/chat/stream sends the reply as Server-Sent Events, so it appears as it's being written. Each event is a delta, then either done or error. generate_chat_stream() reads OpenRouter's stream and passes on only the content text, never the reasoning. It also handles a few edge cases:
+POST /api/chat/stream sends the reply as Server-Sent Events, so it appears as it's being written. Each event is a delta, then either done or error. If the reply so far looks like code, the server stops reading, sends a replace event with the refusal (the widget swaps out any text already shown) and then done. generate_chat_stream() reads OpenRouter's stream and passes on only the content text, never the reasoning. It also handles a few edge cases:
 
 - It decodes the stream as UTF-8 itself. Otherwise requests guesses the encoding and characters like ’ and £ come out garbled.
 - It skips OpenRouter's keep-alive comments and the final chunk that only holds token usage, and it trims leading whitespace from the first chunk.
