@@ -12,6 +12,9 @@
         <p class="auth-error-summary-title">There is a problem</p>
         <ul class="auth-error-summary-list">{% if auth_error %}<li>{{ auth_error }}</li>{% endif %}</ul>
       </div>
+      {% for message in get_flashed_messages() %}
+      <p class="auth-success" role="status">{{ message }}</p>
+      {% endfor %}
       <h1 id="auth-title" class="auth-title">Sign in</h1>
 
       <div id="panel-signin">

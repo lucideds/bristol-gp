@@ -146,7 +146,7 @@ The quiz (/quiz) matches answers to routes like this:
 - Sign-in lockout: after 3 wrong passwords in a row, sign-in for that account is locked for 15 minutes. After that, the visitor can try again.
 - Changing account details: signed-in visitors can change their name, email address and password on the account page (/account), using the pencil button next to each one. Changing the email or the password asks for the current password. A new password follows the same rules as when creating an account.
 - Forgotten password: there is no password reset page yet. The "Forgotten your password? Ask us to reset it" link on the sign-in page goes to the Contact page.
-- Deleting an account: there is no delete button yet. Ask through the Contact page; the account page links to it.
+- Deleting an account: signed-in visitors can delete their account on the account page (/account), using "Delete" under Your details. It asks for the current password, then removes the account and any registered interest straight away. It can't be undone.
 - Passwords are stored hashed, never as plain text. Account emails are not used for marketing or shared with third parties.
 - Under UK GDPR and the Data Protection Act 2018, visitors can ask what data is held about them, ask for it to be corrected, or ask for it to be deleted, using the Contact page. The Privacy page has the details.
 - This chat (AI privacy notice): the assistant uses AI and can sometimes get things wrong, so visitors should double check anything important. The site uses zero data retention, so chat messages are not stored after the reply is sent.

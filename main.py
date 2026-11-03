@@ -1051,11 +1051,29 @@ def try_remove_interest(form):
     return None
 
 
+def try_delete_account(form):
+    """Deletes the signed-in user's account and everything saved against it, then signs them out.
+    Asks for the current password, like the email and password forms, so someone using a
+    computer left signed in can't delete another person's account."""
+    error = current_password_error(g.user["id"], form.get("current_password", ""))
+    if error:
+        return error
+    # Through remove_interest, so the team hears on Slack to stop contacting this person.
+    remove_interest(g.user)
+    db = get_db()
+    db.execute("DELETE FROM login_attempts WHERE email = ?", (g.user["email"],))
+    db.execute("DELETE FROM users WHERE id = ?", (g.user["id"],))
+    db.commit()
+    session.clear()
+    return None
+
+
 ACCOUNT_FORMS = {
     "name": (try_change_name, "Your name has been changed."),
     "email": (try_change_email, "Your email has been changed."),
     "password": (try_change_password, "Your password has been changed."),
     "remove-interest": (try_remove_interest, "Your interest has been removed."),
+    "delete": (try_delete_account, "Your account has been deleted."),
 }
 
 
@@ -1086,7 +1104,8 @@ def update_account(form_name):
     if error:
         return render_account(open_form=form_name, form_error=error)
     flash(success_message)
-    return redirect(url_for("account"))
+    # A deleted account has no account page left, so its message is shown on the sign-in page.
+    return redirect(url_for("login" if form_name == "delete" else "account"))
 
 
 def can_see_analytics(user):

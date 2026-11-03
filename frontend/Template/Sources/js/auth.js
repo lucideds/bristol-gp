@@ -140,6 +140,7 @@
     'account-name': checkName,
     'account-email': checkEmail,
     'email-current-password': checkCurrentPassword,
+    'delete-current-password': checkCurrentPassword,
     'password-current': checkCurrentPassword,
     'password-new': checkNewPassword,
     'password-confirm': checkConfirm('password-new')
