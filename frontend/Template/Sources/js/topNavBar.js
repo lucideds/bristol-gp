@@ -441,6 +441,26 @@
     navCollapsible.addEventListener('click', function (e) {
       if (e.target.closest('a')) closeNavMenu();
     });
+
+    // On mobile the search drops to its own row under the buttons. CSS `order` alone would
+    // leave it second in the tab order, so move it in the DOM to keep the keyboard order
+    // the same as what is seen: logo, Accessibility, Sign in, menu, search.
+    var brand = document.querySelector('.brand');
+    var mobileQuery = window.matchMedia('(max-width: 768px)');
+
+    function placeSearch() {
+      var hadFocus = searchForm.contains(document.activeElement);
+      var anchor = mobileQuery.matches ? navToggle : brand;
+      if (anchor.nextElementSibling !== searchForm) anchor.after(searchForm);
+      if (hadFocus) searchInput.focus();
+    }
+
+    placeSearch();
+    if (mobileQuery.addEventListener) {
+      mobileQuery.addEventListener('change', placeSearch);
+    } else {
+      mobileQuery.addListener(placeSearch);
+    }
   }
 
   buildNav();
