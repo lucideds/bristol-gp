@@ -210,7 +210,8 @@ html.a11y-readable-font .route-cards-grid {
   grid-template-columns: repeat(auto-fill, minmax(min(14rem, 100%), 1fr));
 }
 
-/* 2px transparent border + 20px padding = Figma's 22px text inset, with no shift between themes */
+/* 2px border + 20px padding = Figma's 22px text inset. Every card gets the same edge
+   (prototype feedback): the light Finance and Media fills blended into the page without one. */
 .route-card {
   display: flex;
   flex-direction: column;
@@ -218,7 +219,7 @@ html.a11y-readable-font .route-cards-grid {
   min-height: 14rem;
   box-sizing: border-box;
   padding: 20px;
-  border: 2px solid transparent;
+  border: 2px solid var(--color-border-control);
   border-radius: 8px;
 }
 
@@ -255,16 +256,12 @@ html.a11y-readable-font .route-cards-grid {
 
 .route-card--digital     { background: var(--color-navy); color: var(--color-on-navy); }
 .route-card--business    { background: var(--color-link); color: var(--color-on-link); }
-.route-card--media       { background: var(--color-orange); color: var(--color-on-orange); }
+/* Not orange: the "Interested? Tell us." band below the cards is orange and should stand out alone */
+.route-card--media       { background: var(--color-success-bg); color: var(--color-ink); }
 .route-card--finance     { background: var(--color-orange-tint); color: var(--color-ink); }
-.route-card--engineering { background: var(--color-surface); color: var(--color-ink); border-color: var(--color-border-control); }
+.route-card--engineering { background: var(--color-surface); color: var(--color-ink); }
 
-/* Dark: the navy Digital card is close to the page, so give it an edge */
-[data-theme="dark"] .route-card--digital {
-  border-color: var(--color-border-control);
-}
-
-/* High contrast: several fills are black like the page, so every card gets an edge */
+/* High contrast: every card gets a white edge */
 [data-theme="high-contrast"] .route-card {
   border-color: var(--color-ink);
 }

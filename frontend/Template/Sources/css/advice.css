@@ -408,9 +408,9 @@
   left: calc(var(--path-gutter) / -2);
   border-radius: 50% 0 50% 50%;
 }
-/* Current step: dark centre and edge */
+/* Current step: dark edge only. The centre stays the same as the other pins, since a mix of
+   light and dark centres read as inconsistent (prototype feedback); "You are here" marks the step. */
 .path-step[aria-current="step"] .path-step-when::before {
-  background: radial-gradient(circle, var(--color-ink) 0 4px, var(--color-orange) 4.5px);
   border-color: var(--color-ink);
 }
 .path-step-body .path-here {

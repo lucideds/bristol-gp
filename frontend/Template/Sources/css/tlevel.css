@@ -136,6 +136,20 @@
   border-top: 0;
 }
 
+/* The selected panel sits on a card, not straight on the grey page (prototype feedback: long
+   text on the page colour tired the eyes). Same edge and shadow as the site's other cards. */
+.tlevel-layout--tabs .tlevel-panel {
+  padding: 32px;
+  background: var(--color-surface);
+  border: var(--card-border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.tlevel-layout--tabs .tlevel-panel:focus-visible {
+  outline-offset: 4px;
+}
+
 .tlevel-layout--tabs .route-detail-title {
   font-size: 2rem;
   line-height: 2.5rem;
@@ -165,6 +179,10 @@
   }
 }
 @media (max-width: 480px) {
+  .tlevel-layout--tabs .tlevel-panel {
+    padding: 20px 16px;
+  }
+
   .tlevel-layout--tabs .route-detail-title {
     font-size: 1.75rem;
     line-height: 2.25rem;
