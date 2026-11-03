@@ -119,6 +119,23 @@
   margin: 0 0 16px;
 }
 
+.route-testimonial {
+  margin: 0;
+  max-width: 45rem;
+  padding: 4px 0 4px 16px;
+  border-left: 4px solid var(--color-orange-edge);
+}
+
+.route-testimonial blockquote {
+  margin: 0;
+}
+
+.route-testimonial figcaption {
+  margin-top: 8px;
+  color: var(--color-ink-muted);
+  font-weight: 700;
+}
+
 .route-detail-pending {
   font-style: italic;
 }

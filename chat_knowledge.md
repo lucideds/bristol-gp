@@ -72,6 +72,7 @@ How to apply, in order (from "Your path to a placement" on the Advice page):
 - Which one to choose: Digital Software Development suits students who want to build software. Digital Support and Security suits students more interested in IT support, networks, cybersecurity or keeping systems running. Their school or college can help them decide.
 - Future job paths (T Levels page): software developer, IT support technician, cloud infrastructure engineer, data analyst, or a degree apprenticeship in computer science or software engineering.
 - Example jobs (Advice page): software developer, data analyst, cyber security analyst, cloud engineer.
+- Testimonial (T Levels page): Harnoor Singh, on the T Level in Digital Support and Security (cybersecurity), says the Amazon placement taught a broad range of new digital skills. Amazon was supportive and welcoming and gave real responsibilities, like being an actual employee, which boosted confidence about working in a live environment. Applying skills learned in theory to a real workplace improved professional development, time coordination and communication.
 - Course specifications: one for each Digital T Level, on the T Levels page.
 
 ### Business
