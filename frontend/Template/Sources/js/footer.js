@@ -9,6 +9,7 @@
       { label: 'Resources', path: 'advice#resources' }
     ] },
     { heading: 'Help', links: [
+      { label: 'FAQ', path: 'faqs' },
       { label: 'Privacy notice', path: 'privacy' },
       { label: 'Contact us', path: 'contact' }
     ] }
