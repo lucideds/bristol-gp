@@ -437,6 +437,13 @@ def faqs():
     return render_template("faqs.html")
 
 
+@app.route("/faq")
+def faq_alias():
+    # People often type the singular. The page itself stays at /faqs.
+    query = request.query_string.decode()
+    return redirect(url_for("faqs") + ("?" + query if query else ""), code=301)
+
+
 @app.route("/t-levels")
 def t_levels():
     return render_template("TLevel.html")
@@ -489,7 +496,7 @@ def api_track():
 # The pages used to be linked by their file names, e.g. /faqs.html. Those addresses still work
 # for old links and bookmarks, by redirecting to the short URL.
 OLD_PAGE_URLS = {
-    "home": "home", "accessibility": "accessibility", "faqs": "faqs", "tlevel": "t_levels",
+    "home": "home", "accessibility": "accessibility", "faqs": "faqs", "faq": "faqs", "tlevel": "t_levels",
     "advice": "advice", "privacy": "privacy", "quiz": "quiz", "contact": "contact",
     "account": "account", "analytics": "analytics", "login": "login", "signin": "login",
     "interest": "interest",
