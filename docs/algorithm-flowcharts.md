@@ -1,6 +1,6 @@
 # Pippin: Algorithm flowcharts
 
-Last updated 2 November 2026.
+Last updated 3 November 2026.
 
 This is Brief Task 1, Activity B. It shows five of the more complex things the site does as simple flowcharts for a non-technical audience. The detailed versions, with every rule and limit, are the pseudocode in [algorithm-designs.md](algorithm-designs.md).
 

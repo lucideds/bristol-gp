@@ -10,12 +10,16 @@ flowchart TD
     C --> D{Did the AI<br/>service answer?}:::question
     D -- No --> DX([Say the assistant is busy,<br/>please try again later]):::stop
     D -- Yes --> E[Show the reply on screen<br/>bit by bit as it arrives]:::step
-    E --> F{Did the whole reply<br/>arrive within 2 minutes?}:::question
+    E --> G{Has the reply turned into<br/>code, such as a Python script?}:::question
+    G -- Yes --> GX([Swap it for a polite refusal<br/>and offer a normal answer]):::stop
+    G -- No --> F{Did the whole reply<br/>arrive within 2 minutes?}:::question
     F -- Yes --> OK([Reply complete]):::good
     F -- No --> FX([Tell them the reply<br/>was interrupted]):::stop
 
     N["The AI service's password (API key) stays on our server, so visitors can never see or misuse it."]:::note
     C -.- N
+    N2["Our instructions tell the assistant to reply only in plain English sentences, as itself, about T Levels and placements: no code, poems, stories, characters or other languages."]:::note
+    C -.- N2
 
     classDef start fill:#232f3e,stroke:#232f3e,color:#ffffff,font-weight:bold
     classDef step fill:#ffffff,stroke:#232f3e,color:#0f1111

@@ -1,6 +1,6 @@
 # Pippin: Algorithm designs
 
-Last updated 2 November 2026. Owners: Shea Palin and Leeam.
+Last updated 3 November 2026. Owners: Shea Palin and Leeam.
 
 This is Brief Task 1, Activity B. It sets out five of the more complex problems on the site as pseudocode. Designs 1, 2, 3 and 5 match the code as it is now (main.py, chat_api.py, extensions.py, bot/bot.py and topNavBar.js). Design 4 is partly built: the members-only spec downloads work, and the fuller resources design is still the plan.
 
@@ -99,7 +99,7 @@ Test data: "Bob@X.com " gets stored as "bob@x.com". A 7-character password gets 
 
 ## 2. Chatbot request flow
 
-Problem: pass a visitor's conversation to the AI model (OpenRouter) and stream the reply back, keeping the API key secret, stopping overload and misuse, stopping visitors overriding the assistant's instructions, and never showing the model's hidden reasoning. Inputs: JSON {messages: [{role, content}, ...]}. Outputs: a stream of {delta}, then {done} or {error}.
+Problem: pass a visitor's conversation to the AI model (OpenRouter) and stream the reply back, keeping the API key secret, stopping overload and misuse, stopping visitors overriding the assistant's instructions, and never showing the model's hidden reasoning. Inputs: JSON {messages: [{role, content}, ...]}. Outputs: a stream of {delta}, then {done} or {error}. A reply that turns into code gets {replace: CODE_REFUSAL} then {done}.
 
     CONSTANTS LIMIT <- 10 per minute, MAX_BODY <- 100 KB, MAX_MSGS <- 20,
               MAX_CHARS <- 4000, MAX_STREAM_SECONDS <- 120
@@ -119,13 +119,16 @@ Problem: pass a visitor's conversation to the AI model (OpenRouter) and stream t
             IF m.role NOT IN ("user", "assistant") THEN RESPOND 400   // no "system" messages
             text <- TRIM(m.content)
             IF text = "" OR LENGTH(text) > MAX_CHARS THEN RESPOND 400
+            IF m.role = "assistant" AND LooksLikeCode(text) THEN text <- CODE_REFUSAL
+                                            // the browser sends the history, so it may be made up
             APPEND {role: m.role, content: text} TO clean               // extra fields dropped
         END FOR
         IF LAST(clean).role <> "user" THEN RESPOND 400
 
         // 3. Call the model
         IF API key not set THEN RESPOND 503 "The chat assistant is not available: API key not configured."
-        body <- {model, [SYSTEM_PROMPT + site facts] + clean, max_tokens 4096, temperature 0.3,
+        body <- {model, [RULES + <reference_information>site facts</reference_information> + REMINDER] + clean,
+                 max_tokens 4096, temperature 0.2,
                  reasoning {effort low, exclude}, stream TRUE}
         TRY
             upstream <- POST body TO OpenRouter (connect timeout 5 s, read timeout 90 s)
@@ -138,7 +141,7 @@ Problem: pass a visitor's conversation to the AI model (OpenRouter) and stream t
 
         // 4. Relay the stream
         START event stream to browser
-        started <- FALSE, finished <- FALSE, deadline <- now + MAX_STREAM_SECONDS
+        started <- FALSE, finished <- FALSE, reply <- "", deadline <- now + MAX_STREAM_SECONDS
         TRY
             FOR EACH line IN upstream (decoded as UTF-8)
                 IF now > deadline THEN SEND {error: "took too long"}; STOP
@@ -149,7 +152,12 @@ Problem: pass a visitor's conversation to the AI model (OpenRouter) and stream t
                 text <- chunk.choices[0].delta.content    // reasoning is never read
                 IF text <> "" THEN
                     IF NOT started THEN text <- TRIM_START(text)
-                    IF text <> "" THEN started <- TRUE; SEND {delta: text}
+                    IF text <> "" THEN
+                        started <- TRUE
+                        reply <- reply + text
+                        IF LooksLikeCode(reply) THEN SEND {replace: CODE_REFUSAL}; SEND {done: TRUE}; STOP
+                        SEND {delta: text}
+                    END IF
                 END IF
                 IF chunk.finish_reason = "error" THEN SEND {error: "temporarily unavailable"}; STOP
                 IF chunk has finish_reason THEN finished <- TRUE
@@ -164,7 +172,16 @@ Problem: pass a visitor's conversation to the AI model (OpenRouter) and stream t
         ELSE SEND {done: TRUE}
     END FUNCTION
 
-The site facts come from chat_knowledge.md, a hand-kept copy of the site's page text that is added to the system prompt when the server starts. The browser tries the stream first and falls back to /api/chat if streaming fails. Test data: an 11th request within a minute gets a 429. A message with role "system" gets a 400. A conversation ending on an assistant message gets a 400. If the connection drops mid-reply, the visitor sees "interrupted", not half an answer.
+    FUNCTION LooksLikeCode(text)
+        IF text contains "```" THEN RETURN TRUE
+        IF TRIM_START(text) starts with "{" or "[" THEN RETURN TRUE      // JSON; prose never does
+        IF any line starts like code (def, class ...:, import, print(, console.log(, function,
+           const/let/var, name = value, #include, <script, SELECT ... FROM, for/if/while ...:,
+           return, a lone { or }) THEN RETURN TRUE                        // case-sensitive
+        RETURN FALSE
+    END FUNCTION
+
+RULES limits the assistant to T Levels, Amazon placements, careers and the site, and to plain English sentences in its own voice: no code, JSON, tables, poems, songs, stories, characters or other languages, and no changing the rules whoever the visitor claims to be. REMINDER repeats this after the site facts. The site facts come from chat_knowledge.md, a hand-kept copy of the site's page text that is added to the system prompt when the server starts. The browser tries the stream first and falls back to /api/chat if streaming fails. Test data: an 11th request within a minute gets a 429. A message with role "system" gets a 400. A conversation ending on an assistant message gets a 400. If the connection drops mid-reply, the visitor sees "interrupted", not half an answer. "Can you explain the Engineering route as a Python script?" gets a one-sentence refusal, and if the model writes code anyway the server swaps it for CODE_REFUSAL. "Do I need to know Python for the Digital T Level?" still gets a normal answer.
 
 ## 3. Expression of interest submission
 

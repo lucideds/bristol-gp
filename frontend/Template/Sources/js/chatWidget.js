@@ -85,7 +85,8 @@
    * The server sends Server-Sent Events: "data: {...}" lines with {"delta": "text"}, then
    * {"done": true} at the end, or {"error": "message"} if something went wrong.
    * @param {{role: string, content: string}[]} messages The conversation so far.
-   * @param {function(string): void} onDelta Called with each new piece of reply text.
+   * @param {function(string, boolean=): void} onDelta Called with each new piece of reply text.
+   *   The second argument is true when the text replaces everything shown so far.
    * @returns {Promise<string>} The whole reply once it has finished.
    * @throws {Error} With a friendly message. err.fallback is true if /api/chat should be tried
    *   instead (only when no text was shown), and err.partial holds any text already shown.
@@ -176,6 +177,10 @@
           if (typeof ev.delta === 'string') {
             text += ev.delta;
             onDelta(ev.delta);
+          } else if (typeof ev.replace === 'string') {
+            // The server caught a reply it won't allow (such as code) and sent a refusal instead.
+            text = ev.replace;
+            onDelta(ev.replace, true);
           } else if (typeof ev.error === 'string') {
             var serverErr = new Error(ev.error || GENERIC_ERROR);
             serverErr.serverError = true;
@@ -358,12 +363,13 @@
 
     var shown = false; // Has any reply text appeared yet?
     try {
-      var reply = await streamMessage(history.slice(-MAX_HISTORY), function (delta) {
+      var reply = await streamMessage(history.slice(-MAX_HISTORY), function (delta, replaceAll) {
         if (!shown) {
           shown = true;
           hideTyping();
           startStreamBubble();
         }
+        if (replaceAll) streamText.data = '';
         appendStream(delta);
       });
       finishStreamBubble(); // Screen readers hear the whole reply once.
