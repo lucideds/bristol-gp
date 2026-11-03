@@ -11,6 +11,7 @@ import re
 import secrets
 import sqlite3
 import time
+from datetime import timedelta
 from functools import wraps
 from urllib.parse import urlparse
 
@@ -164,6 +165,13 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["SESSION_COOKIE_SECURE"] = HTTPS
 
+# "Keep me signed in" ticked: the session cookie lasts REMEMBER_DAYS. Not ticked: it is a
+# browser-session cookie, but browsers that restore tabs on reopening also restore those,
+# so load_user signs the person out after IDLE_MINUTES without a request as well.
+REMEMBER_DAYS = 30
+IDLE_MINUTES = 30
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=REMEMBER_DAYS)
+
 # The forms are tiny. chat_api.py raises this limit for chat requests.
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024
 
@@ -294,6 +302,12 @@ def load_user():
     """Puts the signed-in user (or None) in g.user. A session pointing at a user that no longer
     exists (e.g. after a database reset) is cleared, so the person can sign in again."""
     g.user = None
+    if "user_id" in session and not session.get("remember"):
+        now = time.time()
+        if now - session.get("last_seen", 0) > IDLE_MINUTES * 60:
+            session.clear()
+        else:
+            session["last_seen"] = now
     if "user_id" in session:
         g.user = get_db().execute(
             "SELECT id, name, email, created_at FROM users WHERE id = ?",
@@ -307,6 +321,15 @@ def load_user():
 def inject_user():
     # g.get, because load_user doesn't run before some error pages.
     return {"current_user": g.get("user")}
+
+
+def start_session(user_id, remember):
+    """Signs `user_id` in with a fresh session, so nothing from before sign-in carries over."""
+    session.clear()
+    session["user_id"] = user_id
+    session["remember"] = remember
+    session["last_seen"] = time.time()
+    session.permanent = remember
 
 
 def login_required(view):
@@ -414,6 +437,13 @@ def faqs():
     return render_template("faqs.html")
 
 
+@app.route("/faq")
+def faq_alias():
+    # People often type the singular. The page itself stays at /faqs.
+    query = request.query_string.decode()
+    return redirect(url_for("faqs") + ("?" + query if query else ""), code=301)
+
+
 @app.route("/t-levels")
 def t_levels():
     return render_template("TLevel.html")
@@ -466,7 +496,7 @@ def api_track():
 # The pages used to be linked by their file names, e.g. /faqs.html. Those addresses still work
 # for old links and bookmarks, by redirecting to the short URL.
 OLD_PAGE_URLS = {
-    "home": "home", "accessibility": "accessibility", "faqs": "faqs", "tlevel": "t_levels",
+    "home": "home", "accessibility": "accessibility", "faqs": "faqs", "faq": "faqs", "tlevel": "t_levels",
     "advice": "advice", "privacy": "privacy", "quiz": "quiz", "contact": "contact",
     "account": "account", "analytics": "analytics", "login": "login", "signin": "login",
     "interest": "interest",
@@ -863,12 +893,15 @@ def try_register(form):
             # pbkdf2, because some Pythons (e.g. the one built into macOS) lack scrypt, the default.
             (name, email, generate_password_hash(password, method="pbkdf2:sha256")),
         )
-        db.commit()
     except sqlite3.IntegrityError:  # The email is already taken.
         return "An account with that email already exists. Please sign in instead."
+    # Failed sign-ins are counted for any email typed in, so someone who tried to sign in before
+    # making an account would otherwise find their new account locked.
+    db.execute("DELETE FROM login_attempts WHERE email = ?", (email,))
+    db.commit()
 
-    session.clear()
-    session["user_id"] = cur.lastrowid
+    # The sign-up form has no "Keep me signed in" box, so it acts as if it was left unticked.
+    start_session(cur.lastrowid, remember=False)
     return None
 
 
@@ -929,8 +962,7 @@ def try_login(form):
 
     db.execute("DELETE FROM login_attempts WHERE email = ?", (email,))
     db.commit()
-    session.clear()
-    session["user_id"] = user["id"]
+    start_session(user["id"], remember=form.get("remember") == "1")
     return None
 
 
@@ -984,6 +1016,8 @@ def try_change_email(form):
     db = get_db()
     try:
         db.execute("UPDATE users SET email = ? WHERE id = ?", (email, g.user["id"]))
+        # Clear any lock on the new email, or the user couldn't sign in with it (see try_register).
+        db.execute("DELETE FROM login_attempts WHERE email = ?", (email,))
         db.commit()
     except sqlite3.IntegrityError:  # Another account already has this email.
         return "An account with that email already exists."
@@ -1003,10 +1037,8 @@ def try_change_password(form):
         (generate_password_hash(form["new_password"], method="pbkdf2:sha256"), g.user["id"]),
     )
     db.commit()
-    # A fresh session after a password change, as after signing in.
-    user_id = g.user["id"]
-    session.clear()
-    session["user_id"] = user_id
+    # A fresh session after a password change, as after signing in, keeping "Keep me signed in".
+    start_session(g.user["id"], remember=bool(session.get("remember")))
     return None
 
 
@@ -1019,11 +1051,29 @@ def try_remove_interest(form):
     return None
 
 
+def try_delete_account(form):
+    """Deletes the signed-in user's account and everything saved against it, then signs them out.
+    Asks for the current password, like the email and password forms, so someone using a
+    computer left signed in can't delete another person's account."""
+    error = current_password_error(g.user["id"], form.get("current_password", ""))
+    if error:
+        return error
+    # Through remove_interest, so the team hears on Slack to stop contacting this person.
+    remove_interest(g.user)
+    db = get_db()
+    db.execute("DELETE FROM login_attempts WHERE email = ?", (g.user["email"],))
+    db.execute("DELETE FROM users WHERE id = ?", (g.user["id"],))
+    db.commit()
+    session.clear()
+    return None
+
+
 ACCOUNT_FORMS = {
     "name": (try_change_name, "Your name has been changed."),
     "email": (try_change_email, "Your email has been changed."),
     "password": (try_change_password, "Your password has been changed."),
     "remove-interest": (try_remove_interest, "Your interest has been removed."),
+    "delete": (try_delete_account, "Your account has been deleted."),
 }
 
 
@@ -1054,7 +1104,8 @@ def update_account(form_name):
     if error:
         return render_account(open_form=form_name, form_error=error)
     flash(success_message)
-    return redirect(url_for("account"))
+    # A deleted account has no account page left, so its message is shown on the sign-in page.
+    return redirect(url_for("login" if form_name == "delete" else "account"))
 
 
 def can_see_analytics(user):

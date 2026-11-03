@@ -126,6 +126,24 @@
               <dt>Member since</dt>
               <dd>{{ current_user.created_at[:10] }}</dd>
             </div>
+
+            {#- "Delete" only opens this confirmation; nothing is deleted until the password is entered. #}
+            <div class="account-row">
+              <dt>Delete your account</dt>
+              <dd>
+                <span class="account-value"{% if open_form == "delete" %} hidden{% endif %}>Permanently delete your account and everything saved with it.</span>
+                <form id="delete-form" class="auth-form account-form" method="post" action="/account/delete" novalidate{% if open_form != "delete" %} hidden{% endif %}>
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <p id="delete-question" class="account-confirm">Are you sure? This permanently deletes your account, your details and any interest you registered. It can't be undone.</p>
+                  {{ password_field("delete-current-password", "current_password", "Current password", "current-password") }}
+                  <div class="account-form-buttons">
+                    <button type="submit" class="auth-primary" aria-describedby="delete-question">Yes, delete my account</button>
+                    <a class="auth-secondary" href="/account#account-details" data-account-cancel>Cancel</a>
+                  </div>
+                </form>
+              </dd>
+              <dd class="account-row-action">{{ edit_link("delete", "your account", text="Delete") }}</dd>
+            </div>
           </dl>
         </section>
 

@@ -12,6 +12,9 @@
         <p class="auth-error-summary-title">There is a problem</p>
         <ul class="auth-error-summary-list">{% if auth_error %}<li>{{ auth_error }}</li>{% endif %}</ul>
       </div>
+      {% for message in get_flashed_messages() %}
+      <p class="auth-success" role="status">{{ message }}</p>
+      {% endfor %}
       <h1 id="auth-title" class="auth-title">Sign in</h1>
 
       <div id="panel-signin">
@@ -32,11 +35,11 @@
             <p id="signin-password-error" class="field-error" hidden><span class="field-error-icon" aria-hidden="true"></span><span class="field-error-text"></span></p>
           </div>
           <div class="auth-check">
-            <input type="checkbox" id="signin-remember">
+            <input type="checkbox" id="signin-remember" name="remember" value="1">
             <label for="signin-remember">Keep me signed in</label>
           </div>
           <button type="submit" class="auth-primary">Sign in</button>
-          <a class="auth-link" href="/contact">Forgot your password?</a>
+          <a class="auth-link" href="/contact">Forgotten your password? Ask us to reset it</a>
         </form>
         <hr class="auth-divider">
         <p class="auth-alt-text">New to this site?</p>
