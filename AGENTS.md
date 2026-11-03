@@ -4,6 +4,8 @@ A Flask + SQLite site about Amazon T Level placements, built by a six-person T L
 
 ## Project tracking
 
+Code: https://github.com/lucideds/bristol-gp (`origin`).
+
 ### Asana
 - Board: https://app.asana.com/1/8442528107068/project/1219390264017816/list/1219389953023184
 - Project GID `1219390264017816`, workspace GID `8442528107068`.
