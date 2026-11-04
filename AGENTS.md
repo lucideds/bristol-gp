@@ -68,7 +68,7 @@ Team decisions: Slack integration is required (notification on contact submissio
 
 ## Verifying changes
 
-There is no test suite. Use the Flask test client:
+Run `.venv/bin/python -W ignore smoke_test.py` after any backend change; it should end `RESULT: N passed, 0 failed`. When you add or change a form, a rule, a limit or a route, add or update its cases there too. For a quick one-off check, use the Flask test client directly:
 
 ```bash
 .venv/bin/python -W ignore - <<'EOF' 2>/dev/null

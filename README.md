@@ -56,6 +56,7 @@ bristol-gp/
 │   └── bot.py              Slack bot: posts contact messages and interest, handles the message buttons
 ├── send_slack_test.py      Sends one fake contact message to Slack to check the setup
 ├── check_chat_guardrails.py  Sends test conversations to the real chat model and checks it refuses or answers
+├── smoke_test.py           Runs the backend through the Flask test client and prints PASS or FAIL per case
 ├── requirements.txt
 ├── .env.example            Template for .env
 ├── site.db                 SQLite database (created on first run, not committed)
@@ -283,7 +284,13 @@ The Advice page has four sections: `#why-choose`, `#your-path` (a timeline from 
 
 ## Testing
 
-There is no automated test suite. Before committing, check by hand:
+`smoke_test.py` runs the backend through Flask's test client with normal, boundary and erroneous data: pages, the contact form, sign-up, sign-in and the lockout, register your interest (page and API), account changes, deleting an account, downloads and the chat API's validation. It uses a temporary database and stand-ins for Slack and OpenRouter, so it sends nothing and needs no keys. It prints PASS or FAIL for each case and exits with status 1 if any fail:
+
+```bash
+.venv/bin/python -W ignore smoke_test.py
+```
+
+Run it before committing a backend change, and add cases when you add a form, a rule or a route. It doesn't check layout, so also check by hand:
 
 - Each page you changed at desktop width and at a phone width of about 390px.
 - Light, dark and high-contrast themes, and the Large and Extra large text sizes, from the accessibility popup.
