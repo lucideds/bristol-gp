@@ -101,6 +101,8 @@
       keywords: 'cookies cookie consent banner analytics pecr local storage settings' },
     { title: 'Privacy: AI privacy notice', path: 'privacy#AI-data',
       keywords: 'ai chatbot chat bot assistant artificial intelligence openrouter nvidia messages stored' },
+    { title: 'Privacy: Credits', path: 'privacy#credits',
+      keywords: 'credits attribution icons flaticon licence license' },
 
     { title: 'Sign in', path: 'login',
       keywords: 'sign in signin login log in account' },

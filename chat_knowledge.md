@@ -7,7 +7,7 @@ Everything below is taken from the site's own pages, apart from "Other Amazon ro
 ## Pages on this website
 
 - Home: / - an overview of the five placement routes, a "Where are you now?" section with links for visitors finishing their GCSEs, studying a T Level or who have finished their T Level, and a "Register your interest" button (it goes to /interest).
-- T Levels: /t-levels - opens with the five Amazon placement routes, then general T Level information ("What T Levels are" and frequently asked questions), and a section for each route: Digital (/t-levels#digital), Business (/t-levels#business), Media (/t-levels#media), Finance (/t-levels#finance) and Engineering (/t-levels#engineering). Each route section has a course specification (PDF) to download.
+- T Levels: /t-levels - opens with the five Amazon placement routes, then general T Level information ("What T Levels are" and frequently asked questions), and a section for each route: Digital (/t-levels#digital), Business (/t-levels#business), Media (/t-levels#media), Finance (/t-levels#finance) and Engineering (/t-levels#engineering). Each route section has a course specification (PDF) to download, followed by a "Register your interest" button (it goes to /interest).
 - Advice: /advice - why choose a T Level, "Your path to a placement" (a year-by-year timeline from Year 10 to Year 13 that includes how to apply for a placement), "Where it can lead" (apprenticeship, university or work, with example jobs by route), and common questions.
 - Quiz: /quiz - "Which T Level suits you?" Five quick questions with no wrong answers. It shows your top two matching routes (best match and also a good fit). It is only a starting point, so talk to a careers adviser before choosing.
 - FAQs: /faqs - common questions about T Levels, placements, applying to Amazon and what comes after a T Level.
@@ -15,7 +15,7 @@ Everything below is taken from the site's own pages, apart from "Other Amazon ro
 - Register your interest: /interest - for students, parents and carers, teachers and careers advisers. Visitors need an account first (the page links to sign in or create one). It has three steps: "About you" (who you are, and an optional school or college), "Your interests" (one or more placement routes, the year group, and agreeing to be contacted about T Level placements), then "Check and send". The answers are saved to the visitor's account and passed to the Emerging Talent Programs team, who may contact them by email about T Level placements. Students under 18 should check with a parent or carer before sending their details. Visitors can change or remove their answers at any time from the "Your interests" section of their account page (/account). Removing them asks for one confirmation.
 - Create an account: /login#register - asks for a full name, email address and password.
 - Sign in: /login. Signed-in visitors can see and change their account details at /account, and sign out from there.
-- Privacy: /privacy - what personal data the site keeps, who receives it, how long it is kept, cookies, visitors' data rights, and the AI privacy notice for this chat.
+- Privacy: /privacy - what personal data the site keeps, who receives it, how long it is kept, cookies, visitors' data rights, the AI privacy notice for this chat, and credits for the site's icons.
 - Accessibility settings: open them from the button in the top bar. Visitors can choose a light, dark or high contrast theme, make text large or extra large, use a dyslexia-friendly font, reduce motion or highlight links.
 
 ## About T Levels
@@ -155,6 +155,7 @@ The quiz (/quiz) matches answers to routes like this:
 - Under UK GDPR and the Data Protection Act 2018, visitors can ask what data is held about them, ask for it to be corrected or deleted, or object to how it is used, using the Contact page. They can complain to the Information Commissioner's Office (ICO). The Privacy page (/privacy) has the details.
 - Cookies: the site sets one strictly necessary cookie, "session", which keeps visitors signed in and protects the forms. Accessibility settings are saved in the browser's local storage, not a cookie. There are no advertising, tracking or analytics cookies, so there is no cookie banner.
 - This chat (AI privacy notice): the assistant uses AI and can sometimes get things wrong, so visitors should double check anything important. Messages are passed to OpenRouter and a free AI model run by NVIDIA. The site doesn't save chat messages, but the free model may keep them and use them to improve AI models, so visitors shouldn't share personal details in the chat.
+- Credits: the site's icons are from Flaticon (https://www.flaticon.com/). The credit is in the Credits section of the Privacy page (/privacy#credits).
 
 ## Other Amazon routes
 

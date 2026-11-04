@@ -6,11 +6,10 @@
   var COLUMNS = [
     { heading: 'Explore', links: [
       { label: 'T Levels', path: 't-levels' },
-      { label: 'Resources', path: 'advice#resources' }
+      { label: 'Privacy notice', path: 'privacy' }
     ] },
     { heading: 'Help', links: [
       { label: 'FAQ', path: 'faqs' },
-      { label: 'Privacy notice', path: 'privacy' },
       { label: 'Contact us', path: 'contact' }
     ] }
   ];

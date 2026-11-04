@@ -7,3 +7,12 @@
 .privacy-page li + li {
   margin-top: 0.5rem;
 }
+
+.privacy-page a {
+  color: var(--color-link);
+  text-decoration: underline;
+}
+
+.privacy-page a:hover {
+  color: var(--color-link-hover);
+}
