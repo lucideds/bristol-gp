@@ -270,7 +270,7 @@ The navigation, footer and chat widget are injected by JavaScript, so you don't 
 
 `components.css` holds the pieces several content pages share: page column, breadcrumb, title, callout, accordion, buttons, route cards and the "Still unsure?" card. `auth.css` holds the form, field, error and success styles shared by the login and account pages; the account page's own layout is in `account.css`.
 
-The Advice page has four sections: `#why-choose`, `#your-path` (a timeline from Year 10 to Year 13 that includes how to apply for a placement), `#where-it-leads` and `#common-questions`. The "Years 12 and 13" stage of the timeline keeps `id="how-to-apply"` so older links still land there. The header search in `topNavBar.js` links to these ids (`SEARCH_INDEX` entries such as `advice#why-choose`), so update it when you rename or remove a section.
+The Advice page has four sections: `#why-choose`, `#your-path` (a timeline from Year 10 to Year 13 that includes how to apply for a placement), `#where-it-leads` and `#common-questions`. The "Years 12 and 13" stage of the timeline keeps `id="how-to-apply"` so older links still land there. The header search in `topNavBar.js` links to these ids (`SEARCH_INDEX` entries such as `advice#why-choose`), so update it when you rename or remove a section. The home page's "Where are you now?" cards link into the timeline (`advice#step-apply`, `advice#how-to-apply`, `advice#step-finish`), and `advice.js` sets the year picker to match the step a link lands on.
 
 ### Styling conventions
 

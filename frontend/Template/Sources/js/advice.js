@@ -94,9 +94,32 @@
       });
     });
 
+    // The home page's "Where are you now?" cards link to a step or stage (advice#step-finish,
+    // advice#how-to-apply). Pick the year for that step, so "You are here" matches where the
+    // visitor landed rather than the default year. Steps without data-year take the year of
+    // the nearest one before them.
+    function yearForHash() {
+      var target = location.hash.length > 1 && document.getElementById(location.hash.slice(1));
+      if (!target) return null;
+      var step = target.classList.contains('path-step') ? target : target.querySelector('.path-step');
+      for (var i = steps.indexOf(step); i >= 0; i--) {
+        var year = steps[i].getAttribute('data-year');
+        if (year) return { year: year, target: target };
+      }
+      return null;
+    }
+
+    var arrived = yearForHash();
+    if (arrived) {
+      radios.forEach(function (r) { r.checked = r.value === arrived.year; });
+    }
+
     var checked = radios.filter(function (r) { return r.checked; })[0] || radios[0];
     finder.hidden = false;
     mark(checked.value);
+    // Showing the picker and the "You are here" label moves the timeline down, which can
+    // leave the linked step off its place on screen.
+    if (arrived) arrived.target.scrollIntoView();
   }
 
   init();
