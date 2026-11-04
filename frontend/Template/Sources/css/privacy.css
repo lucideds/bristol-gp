@@ -3,3 +3,12 @@
   margin: 0 auto;
   padding: 2rem 1.5rem;
 }
+
+.privacy-page a {
+  color: var(--color-link);
+  text-decoration: underline;
+}
+
+.privacy-page a:hover {
+  color: var(--color-link-hover);
+}

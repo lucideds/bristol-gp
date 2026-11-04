@@ -15,7 +15,7 @@ Everything below is taken from the site's own pages, apart from "Other Amazon ro
 - Register your interest: /interest - for students, parents and carers, teachers and careers advisers. Visitors need an account first (the page links to sign in or create one). It has three steps: "About you" (who you are, and an optional school or college), "Your interests" (one or more placement routes, the year group, and agreeing to be contacted about T Level placements), then "Check and send". The answers are saved to the visitor's account and passed to the Emerging Talent Programs team, who may contact them by email about T Level placements. Students under 18 should check with a parent or carer before sending their details. Visitors can change or remove their answers at any time from the "Your interests" section of their account page (/account). Removing them asks for one confirmation.
 - Create an account: /login#register - asks for a full name, email address and password.
 - Sign in: /login. Signed-in visitors can see and change their account details at /account, and sign out from there.
-- Privacy: /privacy - how account data is stored and used, visitors' data rights, and the AI privacy notice for this chat.
+- Privacy: /privacy - how account data is stored and used, visitors' data rights, the AI privacy notice for this chat, and credits for the site's icons.
 - Accessibility settings: open them from the button in the top bar. Visitors can choose a light, dark or high contrast theme, make text large or extra large, use a dyslexia-friendly font, reduce motion or highlight links.
 
 ## About T Levels
@@ -151,6 +151,7 @@ The quiz (/quiz) matches answers to routes like this:
 - Passwords are stored hashed, never as plain text. Account emails are not used for marketing or shared with third parties.
 - Under UK GDPR and the Data Protection Act 2018, visitors can ask what data is held about them, ask for it to be corrected, or ask for it to be deleted, using the Contact page. The Privacy page has the details.
 - This chat (AI privacy notice): the assistant uses AI and can sometimes get things wrong, so visitors should double check anything important. The site uses zero data retention, so chat messages are not stored after the reply is sent.
+- Credits: the site's icons are from Flaticon (https://www.flaticon.com/). The credit is in the Credits section of the Privacy page (/privacy#credits).
 
 ## Other Amazon routes
 
