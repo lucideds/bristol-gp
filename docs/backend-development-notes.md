@@ -160,7 +160,7 @@ Most of this went in during the code reviews on 14 October (commits fcead4b and 
 - Request size: anything over 16 KB is rejected with a 413, except chat, which allows up to 100 KB.
 - Secrets: there used to be a hardcoded fallback SECRET_KEY. The app now makes a random one and saves it to .env, and debug mode only turns on if you opt in.
 - Cookies: SameSite=Lax always, and Secure when HTTPS=1.
-- Security headers on every response: a Content Security Policy that only allows the site's own scripts, styles and requests (plus Google Fonts for the readable-font option), with inline scripts, styles and onclick="" blocked. Also X-Frame-Options: DENY, X-Content-Type-Options: nosniff, a strict Referrer-Policy, and HSTS when HTTPS=1. This is why all page behaviour lives in Sources/js and all styles in Sources/css.
+- Security headers on every response: a Content Security Policy that only allows the site's own scripts, styles, fonts and requests (Amazon Ember and the readable-font option's Atkinson Hyperlegible are both self-hosted), with inline scripts, styles and onclick="" blocked. Also X-Frame-Options: DENY, X-Content-Type-Options: nosniff, a strict Referrer-Policy, and HSTS when HTTPS=1. This is why all page behaviour lives in Sources/js and all styles in Sources/css.
 - Input: every field has a length limit, emails are checked and lower-cased, and SQL always uses placeholders.
 - Errors: 404, 500, 400 (CSRF), 413 and 429 each have a handler, so visitors never see a stack trace. The 404 page suggests the closest real page, and a URL with only the capitals wrong (like /FAQS) gets a 301 to the real page. That redirect only happens for GET and HEAD, so submitted form data isn't lost.
 
