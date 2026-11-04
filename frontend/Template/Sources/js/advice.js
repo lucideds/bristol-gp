@@ -83,6 +83,15 @@
       radio.addEventListener('change', function () {
         if (radio.checked) mark(radio.value);
       });
+      // Clicking a year jumps to its step. Only for mouse and touch (detail > 0):
+      // arrow keys also fire click on radios, and scrolling away on each key press
+      // would leave keyboard users focused on a picker they can no longer see.
+      // They can use the link in the status line instead.
+      radio.addEventListener('click', function (event) {
+        if (!event.detail) return;
+        var index = stepFor(radio.value);
+        if (index !== -1) steps[index].scrollIntoView({ block: 'center' });
+      });
     });
 
     var checked = radios.filter(function (r) { return r.checked; })[0] || radios[0];
