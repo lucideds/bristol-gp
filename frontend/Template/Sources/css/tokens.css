@@ -152,6 +152,44 @@
   --preview-contrast-edge: #ffffff;
 }
 
+/* Amazon Ember is owned by Amazon (no licence fee or attribution needed). Self-hosted so visitors
+   without it installed don't fall back to Arial. Only the weights the CSS uses: 800 renders as 700. */
+@font-face {
+  font-family: "Amazon Ember";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/amazon-ember-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Amazon Ember";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/amazon-ember-400-italic.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Amazon Ember";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../fonts/amazon-ember-600.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Amazon Ember";
+  font-style: normal;
+  font-weight: 700 800;
+  font-display: swap;
+  src: url("../fonts/amazon-ember-700.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Amazon Ember";
+  font-style: italic;
+  font-weight: 700 800;
+  font-display: swap;
+  src: url("../fonts/amazon-ember-700-italic.woff2") format("woff2");
+}
+
 :root {
   /* ---------- Font ---------- */
   --font-sans: "Amazon Ember", Arial, sans-serif;

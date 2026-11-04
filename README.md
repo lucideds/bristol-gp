@@ -70,7 +70,7 @@ bristol-gp/
     ├── 404.html, 500.html
     └── Sources/            Static files (Flask's static_folder, served at /Sources/...)
         ├── css/
-        ├── fonts/          Self-hosted Atkinson Hyperlegible, with its licence
+        ├── fonts/          Self-hosted Amazon Ember, and Atkinson Hyperlegible with its licence
         ├── js/
         └── assets/         Images and icons
 ```
@@ -278,7 +278,7 @@ The Advice page has four sections: `#why-choose`, `#your-path` (a timeline from 
 - Take colours from `tokens.css`. Check that new styles work in the light, dark and high-contrast themes.
 - Focus rings come from `base.css`. Only add a `:focus-visible` rule when a component needs a different ring, for example on a coloured fill.
 - Size text in `rem` so the Large and Extra large text settings scale it.
-- The font is Amazon Ember, through `var(--font-sans)`. `accessibility.css` loads Atkinson Hyperlegible for the readable-font option, self-hosted from `Sources/fonts/` so no visitor data goes to Google. The Content Security Policy in `main.py` only allows fonts and styles from the site itself.
+- The font is Amazon Ember, through `var(--font-sans)`, self-hosted from `Sources/fonts/` with `@font-face` rules in `tokens.css` (regular, semibold, bold and their italics). Amazon owns it, so no licence fee or attribution is needed. `accessibility.css` loads Atkinson Hyperlegible for the readable-font option, self-hosted from `Sources/fonts/` so no visitor data goes to Google. The Content Security Policy in `main.py` only allows fonts and styles from the site itself.
 - Designs come from Figma. CSS comments name the Figma frame or node a file follows.
 
 ## Testing
