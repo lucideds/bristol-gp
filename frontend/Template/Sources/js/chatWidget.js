@@ -450,7 +450,7 @@
           '</button>' +
         '</form>' +
         '<p id="chat-disclaimer" class="chat-disclaimer">' +
-          'AI responses may be inaccurate. Check important information and don\u2019t share personal details. ' +
+          'AI responses may be inaccurate. Messages go to an outside AI service, so don\u2019t share personal details. ' +
           '<a href="' + LEARN_MORE_URL + '">Learn more</a>' +
         '</p>' +
       '</div>';

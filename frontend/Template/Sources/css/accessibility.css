@@ -1,4 +1,19 @@
-@import url("https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap");
+/* Self-hosted (SIL Open Font License, see ../fonts/OFL.txt) rather than loaded from Google Fonts,
+   which would send every visitor's IP address to Google. Latin subset only. */
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/atkinson-hyperlegible-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/atkinson-hyperlegible-700.woff2") format("woff2");
+}
 /* Accessibility popup, styled to the Figma "Accessibility" frame (node 49:95).
    The first part applies the saved settings to the whole site; the rest styles the popup. */
 

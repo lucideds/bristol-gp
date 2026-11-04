@@ -15,7 +15,7 @@ Everything below is taken from the site's own pages, apart from "Other Amazon ro
 - Register your interest: /interest - for students, parents and carers, teachers and careers advisers. Visitors need an account first (the page links to sign in or create one). It has three steps: "About you" (who you are, and an optional school or college), "Your interests" (one or more placement routes, the year group, and agreeing to be contacted about T Level placements), then "Check and send". The answers are saved to the visitor's account and passed to the Emerging Talent Programs team, who may contact them by email about T Level placements. Students under 18 should check with a parent or carer before sending their details. Visitors can change or remove their answers at any time from the "Your interests" section of their account page (/account). Removing them asks for one confirmation.
 - Create an account: /login#register - asks for a full name, email address and password.
 - Sign in: /login. Signed-in visitors can see and change their account details at /account, and sign out from there.
-- Privacy: /privacy - how account data is stored and used, visitors' data rights, and the AI privacy notice for this chat.
+- Privacy: /privacy - what personal data the site keeps, who receives it, how long it is kept, cookies, visitors' data rights, and the AI privacy notice for this chat.
 - Accessibility settings: open them from the button in the top bar. Visitors can choose a light, dark or high contrast theme, make text large or extra large, use a dyslexia-friendly font, reduce motion or highlight links.
 
 ## About T Levels
@@ -148,9 +148,13 @@ The quiz (/quiz) matches answers to routes like this:
 - Changing account details: signed-in visitors can change their name, email address and password on the account page (/account), using the pencil button next to each one. Changing the email or the password asks for the current password. A new password follows the same rules as when creating an account.
 - Forgotten password: there is no password reset page yet. The "Forgotten your password? Ask us to reset it" link on the sign-in page goes to the Contact page.
 - Deleting an account: signed-in visitors can delete their account on the account page (/account), using "Delete" under Your details. It asks for the current password, then removes the account and any registered interest straight away. It can't be undone.
-- Passwords are stored hashed, never as plain text. Account emails are not used for marketing or shared with third parties.
-- Under UK GDPR and the Data Protection Act 2018, visitors can ask what data is held about them, ask for it to be corrected, or ask for it to be deleted, using the Contact page. The Privacy page has the details.
-- This chat (AI privacy notice): the assistant uses AI and can sometimes get things wrong, so visitors should double check anything important. The site uses zero data retention, so chat messages are not stored after the reply is sent.
+- Passwords are stored hashed, never as plain text.
+- Personal data the site keeps: account name, email address, hashed password and creation date; contact form messages (name, email, message); register-your-interest answers (who you are, school or college, year group, routes, agreement to be contacted); and a record of wrong passwords per email address for the sign-in lockout. Site statistics (route tabs opened, quiz top match, search box text) are saved without any name, email, account or IP address.
+- Who receives it: contact messages and interest answers, with the name and email, are posted to the Emerging Talent Programs team's Slack channel. Chat messages go to OpenRouter and NVIDIA, who run the AI model. The site is hosted on Amazon Web Services (AWS). Details are not used for marketing or sold.
+- How long it is kept: the account until the visitor deletes it; interest until they remove it or delete the account; contact messages until the visitor asks for them to be deleted through the Contact page (deleting the account doesn't remove them); messages already posted to Slack stay there until the team deletes them.
+- Under UK GDPR and the Data Protection Act 2018, visitors can ask what data is held about them, ask for it to be corrected or deleted, or object to how it is used, using the Contact page. They can complain to the Information Commissioner's Office (ICO). The Privacy page (/privacy) has the details.
+- Cookies: the site sets one strictly necessary cookie, "session", which keeps visitors signed in and protects the forms. Accessibility settings are saved in the browser's local storage, not a cookie. There are no advertising, tracking or analytics cookies, so there is no cookie banner.
+- This chat (AI privacy notice): the assistant uses AI and can sometimes get things wrong, so visitors should double check anything important. Messages are passed to OpenRouter and a free AI model run by NVIDIA. The site doesn't save chat messages, but the free model may keep them and use them to improve AI models, so visitors shouldn't share personal details in the chat.
 
 ## Other Amazon routes
 

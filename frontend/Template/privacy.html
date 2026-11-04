@@ -3,28 +3,63 @@
 {% set page_js = [] %}
 {% block title %}Privacy{% endblock %}
 {% block content %}
+  {#- Every statement here must match what the code does. When you change what is stored, sent to
+      Slack or OpenRouter, or how long it is kept, update this page and chat_knowledge.md. #}
   <main class="privacy-page">
     <h1>Privacy</h1>
+    <p>This website gives information about T Levels and T Level placements at Amazon. It was built for the Amazon Emerging Talent Programs team, who receive the messages and interest you send through it. This page explains what personal data the site keeps, why, who else receives it, how long it is kept and how to remove it.</p>
+    <p>Last updated 4 November 2026.</p>
 
     <h2 id="data-we-collect">What data we collect</h2>
-    <p>When you create an account on this site, we collect your email address and a password for signing in. These are the only two pieces of personal data our login and registration system requires.</p>
+    <ul>
+      <li><strong>Your account:</strong> your full name, your email address, your password (stored scrambled, see below) and the date you created the account.</li>
+      <li><strong>Contact form messages:</strong> the name, email address and message you send.</li>
+      <li><strong>Register your interest:</strong> who you are (a student, a parent or carer, a teacher or careers adviser, or something else), your school or college, your year group, the T Level routes you're interested in, and that you agreed to be contacted.</li>
+      <li><strong>Wrong passwords:</strong> when someone types a wrong password, we record the email address used and how many times it has happened. After 3 wrong passwords, sign-in for that account is locked for 15 minutes. The record is removed when that account signs in successfully.</li>
+      <li><strong>Chat messages:</strong> what you type into the chat assistant is sent to an AI service to get a reply. We don't save it. See the <a href="#AI-data">AI privacy notice</a>.</li>
+      <li><strong>Site statistics:</strong> which T Level route tabs are opened, the top match in the quiz, and what is typed into the search box. These are saved without your name, email address, account or IP address.</li>
+    </ul>
 
-    <h2 id="data-use">What your data is used for</h2>
-    <p>Your email address is used to identify your account and to sign you in. Your password is used only to verify it is you logging in. We do not use your email for marketing, and we do not share it with third parties.</p>
+    <h2 id="data-use">What your data is used for and who receives it</h2>
+    <ul>
+      <li>Your account details are used to sign you in, show your details on your account page and let you download course specifications. We need them to provide the account you asked for.</li>
+      <li>Contact form messages are saved in our database and posted to the Emerging Talent Programs team's Slack channel, so the team can reply to you.</li>
+      <li>Your interest answers, with your name and email address, are saved in our database and posted to the team's Slack channel, so the team can contact you about T Level placements. We only do this because you agreed to it. When you update or remove your interest, including by deleting your account, the team gets a Slack message saying so, so they know to stop contacting you.</li>
+      <li>We don't use your details for marketing, and we don't sell them.</li>
+    </ul>
+    <p>These other organisations receive some of your data:</p>
+    <ul>
+      <li><strong>Slack</strong> stores the contact messages and interest posted to the team's channel. <a href="https://slack.com/intl/en-gb/trust/privacy/privacy-policy">Slack's privacy policy</a>.</li>
+      <li><strong>OpenRouter</strong> and the company that runs the AI model receive your chat messages. See the <a href="#AI-data">AI privacy notice</a>.</li>
+      <li><strong>Amazon Web Services (AWS)</strong> hosts the website and its database.</li>
+    </ul>
+    <p>Nobody else receives your data. The site's fonts, images and scripts all come from this website, and there are no adverts or tracking tools.</p>
 
     <h2 id="password-protection">How your password is protected</h2>
-    <p>Your password is never stored as plain text. It is hashed before being saved, meaning even our own teams cannot see your actual password.</p>
+    <p>Your password is never stored as plain text. It is hashed (scrambled in a way that can't be reversed) before it is saved, so nobody, including our own team, can see your actual password.</p>
 
-    <h2 id="data-retention">Data retention policy</h2>
-    <p>We keep your account email and password for as long as your account remains active. You can delete your account at any time from your account page. Your name, email, password and any interest you registered are then removed from our database straight away. We do not keep account data longer than is needed to provide the service.</p>
+    <h2 id="data-retention">How long we keep your data</h2>
+    <ul>
+      <li><strong>Your account</strong> is kept until you delete it. Use "Delete" under Your details on your <a href="/account">account page</a>. Your name, email address, password, registered interest and any wrong-password record are removed from our database straight away.</li>
+      <li><strong>Your registered interest</strong> is kept until you remove it with "Remove your interest" on your account page, or delete your account.</li>
+      <li><strong>Contact form messages</strong> are kept so the team has a record of what was asked. They aren't linked to an account, so deleting your account doesn't remove them. Ask us through the <a href="/contact">contact form</a> if you want them deleted.</li>
+      <li><strong>Messages already posted to Slack</strong> stay in the team's channel until the team deletes them. This includes contact messages and interest answers, even after you remove them from the website.</li>
+      <li><strong>Site statistics</strong> are kept, but they contain no personal details.</li>
+    </ul>
 
     <h2 id="your-rights">Your rights</h2>
-    <p>Under UK GDPR and the Data Protection Act 2018, you have the right to ask what personal data we hold about you, to request it be corrected, and to request it be deleted. You can contact us through the contact form on the site to make any of these requests.</p>
+    <p>Under UK GDPR and the Data Protection Act 2018, you have the right to ask what personal data we hold about you, to have it corrected, to have it deleted, and to object to how it is used. If you registered your interest, you can withdraw your agreement to be contacted at any time by removing your interest.</p>
+    <p>You can do some of this yourself on your <a href="/account">account page</a>: change your name, email address or password, remove your interest, or delete your account. For anything else, use the <a href="/contact">contact form</a>. If you are under 18, you may want to ask a parent, carer or teacher to help.</p>
+    <p>If you are unhappy with how your data has been handled, you can complain to the <a href="https://ico.org.uk/make-a-complaint/">Information Commissioner's Office (ICO)</a>.</p>
 
-    <h2 id="cookies">Cookies</h2>
-    <p>If the site uses any non-essential cookies (for example analytics), you will be shown a cookie consent banner and asked to accept before they are set, in line with PECR.</p>
+    <h2 id="cookies">Cookies and saved settings</h2>
+    <p>This site sets one cookie, called "session". It keeps you signed in and stops other websites sending forms in your name. It is strictly necessary for the site to work, so we don't ask for consent. It lasts until you close your browser, or for 30 days if you tick "Keep me signed in". If you don't tick it, you are also signed out after 30 minutes without using the site.</p>
+    <p>Your accessibility settings (text size, theme and reading aids) are saved in your browser's local storage, not in a cookie, and are never sent to us. You can reset them from the accessibility menu.</p>
+    <p>Site statistics don't use cookies. There are no advertising, tracking or analytics cookies, so there is no cookie banner.</p>
 
-    <h2 id="AI-data">AI Privacy notice</h2>
-    <p>Our chatbot uses AI and can sometimes get things wrong, so double check anything important yourself. We use zero data retention, so your messages are not stored after you get a reply.</p>
+    <h2 id="AI-data">AI privacy notice</h2>
+    <p>The chat assistant uses AI and can sometimes get things wrong, so double check anything important yourself.</p>
+    <p>When you send a message, our server passes the conversation to <a href="https://openrouter.ai/privacy">OpenRouter</a>, an AI service, which sends it to the AI model we use: a free model run by <a href="https://www.nvidia.com/en-gb/about-nvidia/privacy-policy/">NVIDIA</a>. We don't save chat messages in our database, and the conversation is cleared when you reload or leave the page.</p>
+    <p>OpenRouter and NVIDIA have their own privacy policies. The free model may keep messages and use them to improve AI models, so don't share personal details such as your name, address, phone number or school in the chat.</p>
   </main>
 {% endblock %}

@@ -181,14 +181,15 @@ limiter.init_app(app)
 
 # ---------- Security headers ----------
 
-# Only our own site may supply scripts, styles and data, plus Google Fonts for the accessibility
-# font. Inline <script>, <style> and onclick="" are blocked, which is why all page behaviour
+# Only our own site may supply scripts, styles, fonts and data. The privacy page promises no
+# third parties see a page visit, so keep fonts self-hosted rather than adding Google Fonts here.
+# Inline <script>, <style> and onclick="" are blocked, which is why all page behaviour
 # lives in Sources/js and all styles in Sources/css.
 CONTENT_SECURITY_POLICY = "; ".join([
     "default-src 'self'",
     "script-src 'self'",
-    "style-src 'self' https://fonts.googleapis.com",
-    "font-src 'self' https://fonts.gstatic.com",
+    "style-src 'self'",
+    "font-src 'self'",
     "img-src 'self' data:",
     "connect-src 'self'",
     "object-src 'none'",
