@@ -80,7 +80,10 @@ If the Slack settings are there, the message is also posted to the Slack channel
 
 ## Analytics
 
-The analytics page (/analytics) shows the team how the site is used: enquiries and new accounts from the existing tables, plus searches, route views and quiz results from analytics_events. Each figure is shown in total and for the last 7 days, with the 10 most common searches.
+The analytics page (/analytics) is a dashboard of how the site is used: registered interest, enquiries and new accounts from the existing tables, plus searches, route views and quiz results from analytics_events. Each figure is shown in total and for the last 7 days. Below that, registered interest is broken down by route, who they are, year group and the 10 most common schools or colleges, and visitor events are shown per day for the last 14 days (UTC), with route views, quiz results and the 10 most common searches.
+
+- Interest is only shown as totals. Names and emails stay in Slack. School names are counted together when they differ only in capitals or spaces.
+- People can choose more than one route, so the route percentages are of people and can add up to more than 100.
 
 - The browser sends events to POST /api/track. The search box sends what was typed, the T Levels page sends each route tab opened (once per visit), and the quiz sends its top match.
 - Route views and quiz results are only accepted for the five real route names, and searches are lower-cased, have extra spaces removed and are capped at 100 characters, so the counts can't fill up with junk. The route allows 30 a minute.

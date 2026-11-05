@@ -419,6 +419,43 @@ def interest_api():
     check("normal", "GET after DELETE returns null", c.get("/api/interest").get_json() == {"interest": None})
 
 
+@section("Analytics dashboard")
+def analytics_dashboard():
+    r = client().get("/analytics")
+    check("erroneous", "Signed out, /analytics redirects to sign in", "/login" in location(r), location(r))
+    other = client()
+    register(other, "not-analyst@example.com")
+    check("erroneous", "Signed in without an ANALYTICS_EMAILS email, /analytics is 404",
+          other.get("/analytics").status_code == 404)
+
+    c = client()
+    register(c, "analyst@example.com", "Analyst User")
+    body = page(c.get("/analytics"))
+    check("normal", "The analyst sees the dashboard", "Site analytics" in body and "Registered interest" in body)
+
+    before = count("SELECT COUNT(*) FROM interests")
+    for email, role, school, year, routes in [
+        ("dash1@example.com", "teacher_adviser", "Dashboard Academy ", "year_13", ["engineering", "finance"]),
+        ("dash2@example.com", "teacher_adviser", "dashboard academy", "year_13", ["engineering"]),
+    ]:
+        person = client()
+        register(person, email, "Dashboard Person")
+        person.post("/api/interest", json={"role": role, "school": school, "year_group": year,
+                                           "routes": routes, "contact_consent": True})
+    body = page(c.get("/analytics"))
+    people = before + 2
+    check("normal", "The interest total includes new registrations",
+          f"{people} people have registered interest" in body, people)
+    check("normal", "School names that differ only in case and spaces are counted together",
+          re.search(r"Dashboard Academy\s*</span>\s*<strong>2</strong>", body) is not None)
+    check("normal", "Route counts come from interest_routes",
+          re.search(r"Engineering</span>.*?<span class=\"analytics-bar-value\">2 ", body, re.S) is not None)
+    check("normal", "No names or emails of people who registered are shown",
+          "dash1@example.com" not in body and "Dashboard Person" not in body)
+    check("normal", "Bar lengths are data attributes (the CSP blocks style attributes)",
+          'data-length="100"' in body and 'style="' not in body)
+
+
 @section("Account changes")
 def account_changes():
     check("erroneous", "Signed out, /account redirects to sign in", "/login" in location(client().get("/account")))
@@ -622,7 +659,7 @@ def chat_validation():
 if __name__ == "__main__":
     with mock.patch.object(chat_api.requests, "post", fake_post):
         for run in [pages, contact, sign_up, sign_in_and_lockout, register_interest, interest_api,
-                    account_changes, delete_account, downloads, chat_validation]:
+                    analytics_dashboard, account_changes, delete_account, downloads, chat_validation]:
             run()
     failed = results.count(False)
     print(f"\nRESULT: {len(results) - failed} passed, {failed} failed")

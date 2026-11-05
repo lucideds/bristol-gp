@@ -57,7 +57,7 @@ Only signed-in users can register interest, so the name and email come from thei
 | `interest_routes.user_id` | Integer, refers to `users.id` | The signed-in user | Links each route to the account |
 | `interest_routes.route` | Text | At least one, each one of `digital`, `business`, `media`, `finance`, `engineering` | Which T Level placement routes they want to hear about |
 
-- **Who can see it**: the user, on their account page and on the Check step. The team, in the Slack channel, with the user's name and email. Anyone with access to the server.
+- **Who can see it**: the user, on their account page and on the Check step. The team, in the Slack channel, with the user's name and email. People listed in `ANALYTICS_EMAILS` see totals on `/analytics`: how many people chose each route, role and year group, and the 10 most common schools or colleges, with no names or emails. Anyone with access to the server.
 - **How long it's kept**: until the user removes it or deletes their account.
 - **How it's deleted**: "Remove your interest" on the account page, then "Yes, remove it" (`remove_interest()` deletes from both tables). Deleting the account does the same. Either way the team gets a Slack message saying the interest was removed, so they know to stop contacting the person. Earlier Slack messages stay in the channel until the team deletes them.
 - While the user is filling in the three steps, the answers so far are kept in their `session` cookie (`interest_draft`), not the database. They are cleared when the answers are saved or removed.

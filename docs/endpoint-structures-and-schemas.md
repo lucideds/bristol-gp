@@ -58,7 +58,7 @@ It returns 204 with no body, or a 400 with {"error": "..."} if kind or value isn
 
 ### GET /analytics
 
-This is the team's analytics page: enquiries, accounts, searches, route views and quiz results, in total and for the last 7 days. You have to be signed in with an email listed in the ANALYTICS_EMAILS setting. Anyone else who's signed in gets a 404, as if the page didn't exist, and anyone signed out is sent to /login first.
+This is the team's analytics dashboard: registered interest, enquiries, accounts, searches, route views and quiz results, in total and for the last 7 days. It also breaks registered interest down by route, who they are, year group and school or college (totals only, no names or emails), and shows visitor events per day for the last 14 days. You have to be signed in with an email listed in the ANALYTICS_EMAILS setting. Anyone else who's signed in gets a 404, as if the page didn't exist, and anyone signed out is sent to /login first.
 
 ## Contact
 

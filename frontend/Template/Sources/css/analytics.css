@@ -1,40 +1,275 @@
-/* Analytics page. Reuses home.css (hero, bands, cards, CTA) and tlevel.css (route cards);
-   this file only adds the numbers and the count lists. */
-
-/* ---------- Totals in the hero panel ---------- */
-.analytics-totals {
-  margin: 0;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.5rem 24px;
-}
-
-.analytics-totals dt {
+/* Analytics dashboard: a navy header, a row of total tiles, then panels of bar charts and lists.
+   Colours are tokens from tokens.css, so every theme applies. Text and chart heights are in rem
+   so the Large / Extra large text settings scale them. Bar lengths are set by analytics.js. */
+.analytics-page {
+  width: 100%;
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  background: var(--color-page);
   font-size: 1rem;
   line-height: 1.5rem;
+}
+
+/* Same 1200px column as the nav bar */
+.analytics-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  box-sizing: border-box;
+}
+
+/* ---------- Header ---------- */
+.analytics-header {
+  background: var(--color-navy);
+  color: var(--color-on-navy);
+  padding: 40px 0 32px;
+}
+
+.analytics-title {
+  margin: 0;
+  font-size: 2.25rem;
+  line-height: 2.75rem;
+  font-weight: 700;
+}
+
+.analytics-lead {
+  margin: 12px 0 0;
+  max-width: 44rem;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
   color: var(--color-on-navy-muted);
 }
 
-/* Orange on #161d26 is about 8:1 */
-.analytics-totals dd {
-  margin: 4px 0 0;
-  font-size: 2.75rem;
+.analytics-updated {
+  margin: 8px 0 0;
+  color: var(--color-on-navy-muted);
+}
+
+.analytics-jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin-top: 20px;
+}
+
+.analytics-jump a {
+  color: var(--color-on-navy);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.analytics-jump a:hover {
+  text-decoration-thickness: 2px;
+}
+
+.analytics-body {
+  padding-top: 32px;
+  padding-bottom: 64px;
+}
+
+/* ---------- Total tiles ---------- */
+.analytics-tiles {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: 16px;
+}
+
+/* The orange top edge is decoration only; the label says what each number is. */
+.analytics-tile {
+  padding: 16px 20px 18px;
+  background: var(--color-surface);
+  border: var(--card-border-width, 1px) solid var(--color-border-subtle);
+  border-top: 4px solid var(--color-orange);
+  border-radius: 8px;
+}
+
+.analytics-tile p {
+  margin: 0;
+}
+
+.analytics-tile-label {
+  font-weight: 700;
+}
+
+.analytics-tile-total {
+  margin-top: 4px;
+  font-size: 2.5rem;
   line-height: 3rem;
   font-weight: 700;
-  color: var(--color-orange);
 }
 
-/* ---------- Count lists in the grey band ---------- */
-.analytics-grid {
+.analytics-tile-week {
+  color: var(--color-ink-muted);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.analytics-tile-week strong {
+  color: var(--color-ink);
+}
+
+/* ---------- Sections and panels ---------- */
+.analytics-section {
+  margin-top: 48px;
+}
+
+.analytics-section-title {
+  margin: 0;
+  font-size: 1.75rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+}
+
+.analytics-section-lead {
+  margin: 8px 0 20px;
+  max-width: 48rem;
+}
+
+.analytics-panels {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 24px;
+  gap: 16px;
 }
 
+.analytics-panel {
+  min-width: 0;
+  margin: 0;
+  padding: 20px 24px 24px;
+  box-sizing: border-box;
+  background: var(--color-surface);
+  border: var(--card-border-width, 1px) solid var(--color-border-subtle);
+  border-radius: 8px;
+}
+
+.analytics-panel--wide {
+  grid-column: 1 / -1;
+}
+
+.analytics-panel-title {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 700;
+}
+
+.analytics-panel-note {
+  margin: 4px 0 0;
+  color: var(--color-ink-muted);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.analytics-empty {
+  margin: 12px 0 0;
+}
+
+/* ---------- Horizontal bar charts ---------- */
+.analytics-bars {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.analytics-bar {
+  display: grid;
+  grid-template-columns: minmax(6rem, 14rem) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.analytics-bar-label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.analytics-bar-track {
+  display: block;
+  height: 0.875rem;
+  background: var(--color-surface-muted);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* --bar-length comes from analytics.js; until it runs the bar is empty, never the wrong length. */
+.analytics-bar-fill {
+  display: block;
+  width: var(--bar-length, 0);
+  height: 100%;
+  background: var(--color-orange);
+  border-radius: 4px;
+}
+
+.analytics-bar-value {
+  min-width: 4.5rem;
+  text-align: right;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.analytics-bar-percent {
+  font-weight: 400;
+  color: var(--color-ink-muted);
+}
+
+/* ---------- Daily column chart ---------- */
+.analytics-columns {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(14, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.analytics-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.analytics-column-value {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.analytics-column-track {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  max-width: 3rem;
+  height: 9rem;
+  background: var(--color-surface-muted);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.analytics-column-track .analytics-bar-fill {
+  width: 100%;
+  height: var(--bar-length, 0);
+}
+
+.analytics-column-label {
+  font-size: 0.8125rem;
+  line-height: 1.125rem;
+  text-align: center;
+  color: var(--color-ink-muted);
+}
+
+/* ---------- Count lists (schools, searches) ---------- */
 .analytics-rows {
   list-style: none;
   margin: 12px 0 0;
   padding: 0;
+  columns: 2;
+  column-gap: 48px;
 }
 
 .analytics-rows li {
@@ -42,14 +277,11 @@
   justify-content: space-between;
   gap: 16px;
   padding: 10px 0;
-  border-bottom: 1px solid var(--color-divider);
+  border-bottom: 1px solid var(--color-border-subtle);
+  break-inside: avoid;
 }
 
-.analytics-rows li:last-child {
-  border-bottom: none;
-}
-
-/* Long searches wrap instead of pushing the count off the card */
+/* Long searches and school names wrap instead of pushing the count off the panel */
 .analytics-rows span {
   min-width: 0;
   overflow-wrap: anywhere;
@@ -57,30 +289,80 @@
 
 .analytics-rows strong {
   flex: none;
-}
-
-[data-theme="dark"] .analytics-rows li,
-[data-theme="high-contrast"] .analytics-rows li {
-  border-bottom-color: #8a96a3;
-}
-
-/* ---------- Route card numbers ---------- */
-.analytics-metric {
-  display: block;
-  font-size: 2.75rem;
-  line-height: 3rem;
-  font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 
 /* ---------- Responsive ---------- */
-@media (max-width: 768px) {
-  .analytics-grid {
+@media (max-width: 900px) {
+  .analytics-panels {
     grid-template-columns: 1fr;
+  }
+
+  .analytics-rows {
+    columns: 1;
   }
 }
 
-@media (max-width: 480px) {
-  .analytics-totals {
+/* Fourteen columns don't fit on a phone, so the daily chart becomes rows like the other charts. */
+@media (max-width: 640px) {
+  .analytics-header {
+    padding: 32px 0 24px;
+  }
+
+  .analytics-title {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
+
+  .analytics-panel {
+    padding: 16px;
+  }
+
+  .analytics-bar {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 4px 12px;
+  }
+
+  .analytics-bar-track {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .analytics-columns {
     grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .analytics-column {
+    display: grid;
+    grid-template-columns: 6.5rem minmax(0, 1fr) 2.5rem;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .analytics-column-label {
+    grid-column: 1;
+    grid-row: 1;
+    text-align: left;
+  }
+
+  .analytics-column-track {
+    grid-column: 2;
+    grid-row: 1;
+    max-width: none;
+    height: 0.875rem;
+    align-items: stretch;
+  }
+
+  .analytics-column-value {
+    grid-column: 3;
+    grid-row: 1;
+    text-align: right;
+  }
+
+  /* On a row the length is the bar's width instead of its height. */
+  .analytics-column-track .analytics-bar-fill {
+    height: 100%;
+    width: var(--bar-length, 0);
   }
 }

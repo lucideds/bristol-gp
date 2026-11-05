@@ -11,7 +11,7 @@ import re
 import secrets
 import sqlite3
 import time
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 from functools import wraps
 from urllib.parse import urlparse
 
@@ -1120,20 +1120,71 @@ def inject_analytics_access():
     return {"can_see_analytics": can_see_analytics(g.get("user"))}
 
 
+def bars(counts, options, out_of=None):
+    """Rows for one bar chart on the analytics page, in the order of options [(key, label), ...].
+    Each row has the count, its share of out_of as a whole percent (out_of defaults to the sum),
+    and "length", its size relative to the biggest bar (0 to 100), which analytics.js applies."""
+    total = sum(counts.get(key, 0) for key, _ in options) if out_of is None else out_of
+    biggest = max([counts.get(key, 0) for key, _ in options] + [1])
+    return [{
+        "key": key,
+        "name": name,
+        "count": counts.get(key, 0),
+        "percent": round(100 * counts.get(key, 0) / total) if total else 0,
+        "length": round(100 * counts.get(key, 0) / biggest),
+    } for key, name in options]
+
+
 def count_by_route(db, kind):
-    """Counts the events of one kind for each route, including routes with none.
-    Returns e.g. [{"key": "digital", "name": "Digital", "count": 4}, ...] in the site's route order."""
+    """Counts the events of one kind for each route, as bar chart rows in the site's route order."""
     rows = db.execute(
         "SELECT value, COUNT(*) AS n FROM analytics_events WHERE kind = ? GROUP BY value", (kind,)
     ).fetchall()
-    counts = {row["value"]: row["n"] for row in rows}
-    return [{"key": key, "name": name, "count": counts.get(key, 0)} for key, name in ROUTES]
+    return bars({row["value"]: row["n"] for row in rows}, ROUTES)
+
+
+def interest_breakdown(db):
+    """Registered interest as totals only: no names, emails or single answers reach the page."""
+    def grouped(sql):
+        return {row[0]: row[1] for row in db.execute(sql)}
+
+    people = db.execute("SELECT COUNT(*) FROM interests").fetchone()[0]
+    # Schools are typed freely, so "Bristol College" and "bristol college " count together.
+    # The most common spelling is shown.
+    schools = db.execute(
+        "SELECT MIN(TRIM(school)) AS name, COUNT(*) AS n FROM interests WHERE TRIM(school) != '' "
+        "GROUP BY LOWER(TRIM(school)) ORDER BY n DESC, name LIMIT 10"
+    ).fetchall()
+    return {
+        "people": people,
+        # People can pick several routes, so these percents are of people and can add up to over 100.
+        "routes": bars(grouped("SELECT route, COUNT(*) FROM interest_routes GROUP BY route"), ROUTES, people),
+        "roles": bars(grouped("SELECT role, COUNT(*) FROM interests GROUP BY role"), INTEREST_ROLES, people),
+        "years": bars(grouped("SELECT year_group, COUNT(*) FROM interests GROUP BY year_group"), YEAR_GROUPS, people),
+        "schools": schools,
+    }
+
+
+ACTIVITY_DAYS = 14
+
+
+def daily_activity(db):
+    """Visitor events (searches, route views and quizzes) per day for the last ACTIVITY_DAYS days, oldest first.
+    Days are UTC, as the database stores them."""
+    counts = {row[0]: row[1] for row in db.execute(
+        "SELECT DATE(created_at), COUNT(*) FROM analytics_events "
+        "WHERE created_at >= DATE('now', ?) GROUP BY DATE(created_at)", (f"-{ACTIVITY_DAYS - 1} days",)
+    )}
+    today = datetime.now(timezone.utc).date()
+    days = [today - timedelta(days=n) for n in range(ACTIVITY_DAYS - 1, -1, -1)]
+    return bars(counts, [(day.isoformat(), day.strftime("%a %d %b")) for day in days])
 
 
 @app.route("/analytics")
 @login_required
 def analytics():
-    """Site analytics for the team: enquiries, accounts, searches, programme views and quiz results."""
+    """Site analytics dashboard for the team: enquiries, accounts, registered interest, searches,
+    programme views and quiz results."""
     if not can_see_analytics(g.user):
         abort(404)  # Act as if the page doesn't exist.
     db = get_db()
@@ -1141,25 +1192,25 @@ def analytics():
     def count(sql, *args):
         return db.execute(sql, args).fetchone()[0]
 
-    def count_events(kind, since=None):
-        if since is None:
-            return count("SELECT COUNT(*) FROM analytics_events WHERE kind = ?", kind)
-        return count("SELECT COUNT(*) FROM analytics_events WHERE kind = ? AND created_at >= datetime('now', ?)",
-                     kind, since)
-
     week = "-7 days"  # SQLite's way of saying "7 days ago".
-    totals = {
-        "enquiries": count("SELECT COUNT(*) FROM messages"),
-        "accounts": count("SELECT COUNT(*) FROM users"),
-        "searches": count_events("search"),
-        "quizzes": count_events("quiz"),
-    }
-    this_week = [
-        ("Enquiries", count("SELECT COUNT(*) FROM messages WHERE created_at >= datetime('now', ?)", week)),
-        ("New accounts", count("SELECT COUNT(*) FROM users WHERE created_at >= datetime('now', ?)", week)),
-        ("Searches", count_events("search", week)),
-        ("Programme views", count_events("view", week)),
-        ("Quizzes completed", count_events("quiz", week)),
+
+    def tile(label, table, where=""):
+        """One dashboard tile: the total, and how many were added in the last 7 days."""
+        joiner = " AND " if where else " WHERE "
+        return {
+            "label": label,
+            "total": count(f"SELECT COUNT(*) FROM {table} {where}"),
+            "week": count(f"SELECT COUNT(*) FROM {table} {where}{joiner}created_at >= datetime('now', ?)", week),
+        }
+
+    # Table and kind names here are fixed strings, never visitor input.
+    tiles = [
+        tile("Registered interest", "interests"),
+        tile("Enquiries", "messages"),
+        tile("Accounts", "users"),
+        tile("Searches", "analytics_events", "WHERE kind = 'search'"),
+        tile("Programme views", "analytics_events", "WHERE kind = 'view'"),
+        tile("Quizzes completed", "analytics_events", "WHERE kind = 'quiz'"),
     ]
     searches = db.execute(
         "SELECT value, COUNT(*) AS n FROM analytics_events WHERE kind = 'search' "
@@ -1168,11 +1219,14 @@ def analytics():
 
     return render_template(
         "analytics.html",
-        totals=totals,
-        this_week=this_week,
+        tiles=tiles,
+        interest=interest_breakdown(db),
+        activity=daily_activity(db),
+        activity_days=ACTIVITY_DAYS,
         searches=searches,
         views=count_by_route(db, "view"),
         quiz_results=count_by_route(db, "quiz"),
+        updated=datetime.now(timezone.utc).strftime("%d %b %Y, %H:%M UTC"),
     )
 
 
