@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% set page_css = ["components", "analytics"] %}
+{% set page_css = ["analytics"] %}
 {% set page_js = ["analytics"] %}
 {% block title %}Site analytics{% endblock %}
 
@@ -50,24 +50,6 @@
 {% block content %}
   <main class="analytics-page">
     <div class="analytics-container">
-      <nav class="tlevel-breadcrumb" aria-label="Breadcrumb">
-        <ol>
-          <li><a href="/">Home</a></li>
-          <li><a href="/account">Your account</a></li>
-          <li aria-current="page">Site analytics</li>
-        </ol>
-      </nav>
-
-      <div class="analytics-layout">
-        <nav class="analytics-nav" aria-label="On this page">
-          <ul>
-            <li><a href="#analytics-overview-title" aria-current="true">Overview</a></li>
-            <li><a href="#analytics-interest-title">Registered interest</a></li>
-            <li><a href="#analytics-visitors-title">Visitor activity</a></li>
-          </ul>
-        </nav>
-
-        <div class="analytics-content">
           <h1 class="analytics-title">Site analytics</h1>
           <p class="analytics-lead">Registered interest, enquiries and what visitors do on the site. Only totals are shown here; names and emails go to the team's Slack channel.</p>
           <p class="analytics-updated">Figures as of {{ updated }}. Refresh the page to update them.</p>
@@ -165,8 +147,6 @@
               </article>
             </div>
           </section>
-        </div>
-      </div>
     </div>
   </main>
 {% endblock %}

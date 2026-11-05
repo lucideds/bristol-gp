@@ -269,7 +269,7 @@ The navigation, footer and chat widget are injected by JavaScript, so you don't 
 | Contact | `contact.css` | `contact.js` (moves focus to the result after sending) |
 | Login | `auth.css` | `auth.js` (switches between sign-in and sign-up, client-side checks) |
 | Account | `auth.css`, `account.css` | `auth.js` (opens and closes the change forms in place, client-side checks) |
-| Analytics | `analytics.css` | `analytics.js` (sizes the chart bars from `data-length`, since the CSP blocks `style` attributes, and highlights the section nav). The donut charts are server-drawn SVG and need no script |
+| Analytics | `analytics.css` | `analytics.js` (sizes the chart bars from `data-length`, since the CSP blocks `style` attributes. The donut charts are server-drawn SVG and need no script) |
 | Privacy | `privacy.css` | |
 | 404, 500 | `errorPage.css` | `errorPage.js` (404 only: the "Go back" button) |
 

@@ -1,6 +1,5 @@
-/* Analytics dashboard, following the team's design system export (HubPage and AccountPage):
-   breadcrumb above the h1, a 16rem section nav whose current item is a filled navy block, and
-   white panels with the large radius and card shadow. Route names use the orange route tag.
+/* Analytics dashboard, following the team's design system export: white panels with the
+   large radius and card shadow. Route names use the orange route tag.
    Colours are tokens from tokens.css, so every theme applies. Text and chart sizes are in rem
    so the Large / Extra large text settings scale them. Bar lengths are set by analytics.js. */
 .analytics-page {
@@ -17,50 +16,6 @@
   margin: 0 auto;
   padding: var(--space-5) var(--space-5) var(--space-8);
   box-sizing: border-box;
-}
-
-.analytics-layout {
-  display: grid;
-  grid-template-columns: 16rem minmax(0, 1fr);
-  gap: var(--space-7);
-  align-items: start;
-}
-
-/* ---------- Section nav (design system ds-sidenav) ---------- */
-.analytics-nav {
-  position: sticky;
-  top: var(--space-4);
-}
-
-.analytics-nav ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: var(--space-1);
-}
-
-.analytics-nav a {
-  display: flex;
-  align-items: center;
-  min-height: var(--target-min);
-  padding: 10px 12px;
-  box-sizing: border-box;
-  border: 1.5px solid transparent;
-  border-radius: var(--radius-md);
-  color: var(--color-ink);
-  font-weight: 700;
-  text-decoration: none;
-}
-
-.analytics-nav a:hover {
-  background: var(--color-surface-muted);
-}
-
-.analytics-nav a[aria-current="true"] {
-  background: var(--color-selected);
-  color: var(--color-on-selected);
-  border-color: var(--color-ink);
 }
 
 /* ---------- Title ---------- */
@@ -88,7 +43,6 @@
 /* ---------- Sections and panels (design system ds-panel) ---------- */
 .analytics-section {
   margin-top: var(--space-7);
-  scroll-margin-top: var(--space-4);
 }
 
 .analytics-section-title {
@@ -156,10 +110,8 @@
   gap: var(--space-4);
 }
 
-/* The orange top edge is decoration only; the label says what each number is. */
 .analytics-tile {
   padding: var(--space-4) var(--space-5) var(--space-5);
-  border-top: 4px solid var(--color-orange);
 }
 
 .analytics-tile p {
@@ -436,28 +388,13 @@
 }
 
 /* ---------- Responsive ---------- */
-@media (max-width: 1100px) {
+@media (max-width: 900px) {
   .analytics-panels {
     grid-template-columns: 1fr;
   }
 }
 
-/* The design system collapses to one column under 760px; the section nav becomes a row of links. */
 @media (max-width: 760px) {
-  .analytics-layout {
-    grid-template-columns: 1fr;
-    gap: var(--space-5);
-  }
-
-  .analytics-nav {
-    position: static;
-  }
-
-  .analytics-nav ul {
-    display: flex;
-    flex-wrap: wrap;
-  }
-
   .analytics-tiles {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
