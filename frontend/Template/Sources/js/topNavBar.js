@@ -222,7 +222,7 @@
               '<img src="' + link('Sources/assets/amazon_logo.png') + '" alt="Home" width="114" height="53">' +
             '</a>' +
             '<form class="nav-search" role="search" action="' + link('') + '">' +
-              '<input type="search" name="q" placeholder="Search T Levels and placements" aria-label="Search the site"' +
+              '<input type="search" name="q" placeholder="Search T Levels and Placements" aria-label="Search the site"' +
                 ' role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="nav-search-list"' +
                 ' autocomplete="off" aria-describedby="nav-search-status">' +
               '<ul class="nav-search-list" id="nav-search-list" role="listbox" aria-label="Search suggestions" hidden></ul>' +
