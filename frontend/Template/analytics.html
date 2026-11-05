@@ -1,130 +1,172 @@
 {% extends "base.html" %}
-{% set page_css = ["analytics"] %}
+{% set page_css = ["components", "analytics"] %}
 {% set page_js = ["analytics"] %}
 {% block title %}Site analytics{% endblock %}
 
+{#- Route names as orange route tags, as the design system's Tag component does. #}
+{% macro route_tag(name) %}<span class="analytics-tag">{{ name }}</span>{% endmacro %}
+
 {#- One horizontal bar chart. The bars are sized from data-length by analytics.js and hidden from
     screen readers; the label and number beside each bar carry the same information as text. #}
-{% macro bar_list(rows, label, show_percent=true) %}
+{% macro bar_list(rows, label, tags=false) %}
 <ul class="analytics-bars" aria-label="{{ label }}">
   {% for row in rows %}
   <li class="analytics-bar">
-    <span class="analytics-bar-label">{{ row.name }}</span>
+    <span class="analytics-bar-label">{% if tags %}{{ route_tag(row.name) }}{% else %}{{ row.name }}{% endif %}</span>
     <span class="analytics-bar-track" aria-hidden="true"><span class="analytics-bar-fill" data-length="{{ row.length }}"></span></span>
-    <span class="analytics-bar-value">{{ row.count }}{% if show_percent %} <span class="analytics-bar-percent">({{ row.percent }}%)</span>{% endif %}</span>
+    <span class="analytics-bar-value">{{ row.count }} <span class="analytics-bar-percent">({{ row.percent }}%)</span></span>
   </li>
   {% endfor %}
 </ul>
 {% endmacro %}
 
+{#- A donut chart drawn as SVG arcs (stroke-dasharray is an SVG attribute, so the CSP allows it).
+    The picture is hidden from screen readers; the legend beside it lists every count as text. #}
+{% macro donut_chart(rows, total, label) %}
+<div class="analytics-donut">
+  <div class="analytics-donut-figure" aria-hidden="true">
+    <svg viewBox="0 0 42 42" focusable="false">
+      <circle class="analytics-donut-track" cx="21" cy="21" r="15.9155" />
+      {#- No "if" on the loop: loop.index must match the legend's, so each slice keeps its colour. #}
+      {% for row in rows %}{% if row.arc %}
+      <circle class="analytics-donut-arc analytics-slice--{{ loop.index }}" cx="21" cy="21" r="15.9155"
+              stroke-dasharray="{{ row.arc.dash }}" stroke-dashoffset="{{ row.arc.offset }}" />
+      {% endif %}{% endfor %}
+    </svg>
+    <p class="analytics-donut-total"><strong>{{ total }}</strong> {{ "person" if total == 1 else "people" }}</p>
+  </div>
+  <ul class="analytics-legend" aria-label="{{ label }}">
+    {% for row in rows %}
+    <li>
+      <span class="analytics-swatch analytics-slice--{{ loop.index }}" aria-hidden="true"></span>
+      <span class="analytics-legend-label">{{ row.name }}</span>
+      <span class="analytics-legend-value">{{ row.count }} <span class="analytics-bar-percent">({{ row.percent }}%)</span></span>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endmacro %}
+
 {% block content %}
   <main class="analytics-page">
-    <header class="analytics-header">
-      <div class="analytics-container">
-        <h1 class="analytics-title">Site analytics</h1>
-        <p class="analytics-lead">Registered interest, enquiries and what visitors do on the site. Only totals are shown here; names and emails go to the team's Slack channel.</p>
-        <p class="analytics-updated">Figures as of {{ updated }}. Refresh the page to update them.</p>
-        <nav class="analytics-jump" aria-label="Dashboard sections">
-          <a href="#analytics-interest-title">Registered interest</a>
-          <a href="#analytics-visitors-title">Visitor activity</a>
+    <div class="analytics-container">
+      <nav class="tlevel-breadcrumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="/">Home</a></li>
+          <li><a href="/account">Your account</a></li>
+          <li aria-current="page">Site analytics</li>
+        </ol>
+      </nav>
+
+      <div class="analytics-layout">
+        <nav class="analytics-nav" aria-label="On this page">
+          <ul>
+            <li><a href="#analytics-overview-title" aria-current="true">Overview</a></li>
+            <li><a href="#analytics-interest-title">Registered interest</a></li>
+            <li><a href="#analytics-visitors-title">Visitor activity</a></li>
+          </ul>
         </nav>
-      </div>
-    </header>
 
-    <div class="analytics-container analytics-body">
-      <section aria-labelledby="analytics-overview-title">
-        <h2 id="analytics-overview-title" class="visually-hidden">Overview</h2>
-        <ul class="analytics-tiles">
-          {% for tile in tiles %}
-          <li class="analytics-tile">
-            <p class="analytics-tile-label">{{ tile.label }}</p>
-            <p class="analytics-tile-total">{{ tile.total }}</p>
-            <p class="analytics-tile-week"><strong>{{ tile.week }}</strong> in the last 7 days</p>
-          </li>
-          {% endfor %}
-        </ul>
-      </section>
+        <div class="analytics-content">
+          <h1 class="analytics-title">Site analytics</h1>
+          <p class="analytics-lead">Registered interest, enquiries and what visitors do on the site. Only totals are shown here; names and emails go to the team's Slack channel.</p>
+          <p class="analytics-updated">Figures as of {{ updated }}. Refresh the page to update them.</p>
 
-      <section class="analytics-section" aria-labelledby="analytics-interest-title">
-        <h2 id="analytics-interest-title" class="analytics-section-title">Registered interest</h2>
-        <p class="analytics-section-lead">
-          {{ interest.people }} {{ "person has" if interest.people == 1 else "people have" }} registered interest and agreed to be contacted.
-          Percentages are of those people.
-        </p>
-        {% if interest.people %}
-        <div class="analytics-panels">
-          <article class="analytics-panel analytics-panel--wide">
-            <h3 class="analytics-panel-title">Placement routes</h3>
-            <p class="analytics-panel-note">People can choose more than one route, so the percentages can add up to more than 100.</p>
-            {{ bar_list(interest.routes, "Placement routes chosen") }}
-          </article>
-          <article class="analytics-panel">
-            <h3 class="analytics-panel-title">Who they are</h3>
-            {{ bar_list(interest.roles, "Who registered") }}
-          </article>
-          <article class="analytics-panel">
-            <h3 class="analytics-panel-title">Year group</h3>
-            {{ bar_list(interest.years, "Year group") }}
-          </article>
-          <article class="analytics-panel analytics-panel--wide">
-            <h3 class="analytics-panel-title">Schools and colleges</h3>
-            {% if interest.schools %}
-            <ol class="analytics-rows">
-              {% for row in interest.schools %}
-              <li><span>{{ row.name }}</span><strong>{{ row.n }}</strong></li>
-              {% endfor %}
-            </ol>
-            {% else %}
-            <p class="analytics-empty">Nobody has named a school or college yet.</p>
-            {% endif %}
-          </article>
-        </div>
-        {% else %}
-        <p class="analytics-empty analytics-panel">Nobody has registered interest yet. The charts appear once someone does.</p>
-        {% endif %}
-      </section>
-
-      <section class="analytics-section" aria-labelledby="analytics-visitors-title">
-        <h2 id="analytics-visitors-title" class="analytics-section-title">Visitor activity</h2>
-        <p class="analytics-section-lead">Searches, route tabs opened on the T Levels page and quiz results. These are anonymous: no account, name or IP address is stored with them.</p>
-        <div class="analytics-panels">
-          <article class="analytics-panel analytics-panel--wide">
-            <h3 class="analytics-panel-title">Last {{ activity_days }} days</h3>
-            <p class="analytics-panel-note">Searches, programme views and quizzes per day (UTC).</p>
-            <ol class="analytics-columns" aria-label="Visitor events per day">
-              {% for day in activity %}
-              <li class="analytics-column">
-                <span class="analytics-column-value">{{ day.count }}</span>
-                <span class="analytics-column-track" aria-hidden="true"><span class="analytics-bar-fill" data-length="{{ day.length }}"></span></span>
-                <span class="analytics-column-label">{{ day.name }}</span>
+          <section class="analytics-section" aria-labelledby="analytics-overview-title">
+            <h2 id="analytics-overview-title" class="analytics-section-title">Overview</h2>
+            <ul class="analytics-tiles">
+              {% for tile in tiles %}
+              <li class="analytics-tile">
+                <p class="analytics-tile-label">{{ tile.label }}</p>
+                <p class="analytics-tile-total">{{ tile.total }}</p>
+                <p class="analytics-tile-week"><strong>{{ tile.week }}</strong> in the last 7 days</p>
               </li>
               {% endfor %}
-            </ol>
-          </article>
-          <article class="analytics-panel">
-            <h3 class="analytics-panel-title">Programme views</h3>
-            <p class="analytics-panel-note">How many times each route tab was opened.</p>
-            {{ bar_list(views, "Programme views by route") }}
-          </article>
-          <article class="analytics-panel">
-            <h3 class="analytics-panel-title">Quiz top matches</h3>
-            <p class="analytics-panel-note">How often each route came out on top in the quiz.</p>
-            {{ bar_list(quiz_results, "Quiz top matches by route") }}
-          </article>
-          <article class="analytics-panel analytics-panel--wide">
-            <h3 class="analytics-panel-title">Top searches</h3>
-            {% if searches %}
-            <ol class="analytics-rows">
-              {% for row in searches %}
-              <li><span>{{ row.value }}</span><strong>{{ row.n }}</strong></li>
-              {% endfor %}
-            </ol>
+            </ul>
+          </section>
+
+          <section class="analytics-section" aria-labelledby="analytics-interest-title">
+            <h2 id="analytics-interest-title" class="analytics-section-title">Registered interest</h2>
+            <p class="analytics-section-lead">
+              {{ interest.people }} {{ "person has" if interest.people == 1 else "people have" }} registered interest and agreed to be contacted.
+              Percentages are of those people.
+            </p>
+            {% if interest.people %}
+            <div class="analytics-panels">
+              <article class="analytics-panel">
+                <h3 class="analytics-panel-title">Who they are</h3>
+                {{ donut_chart(interest.roles, interest.people, "Who registered") }}
+              </article>
+              <article class="analytics-panel">
+                <h3 class="analytics-panel-title">Year group</h3>
+                {{ donut_chart(interest.years, interest.people, "Year group") }}
+              </article>
+              <article class="analytics-panel analytics-panel--wide">
+                <h3 class="analytics-panel-title">Placement routes</h3>
+                <p class="analytics-panel-note">People can choose more than one route, so the percentages can add up to more than 100.</p>
+                {{ bar_list(interest.routes, "Placement routes chosen", tags=true) }}
+              </article>
+              <article class="analytics-panel analytics-panel--wide">
+                <h3 class="analytics-panel-title">Schools and colleges</h3>
+                {% if interest.schools %}
+                <ol class="analytics-rows">
+                  {% for row in interest.schools %}
+                  <li><span>{{ row.name }}</span><strong>{{ row.n }}</strong></li>
+                  {% endfor %}
+                </ol>
+                {% else %}
+                <p class="analytics-empty">Nobody has named a school or college yet.</p>
+                {% endif %}
+              </article>
+            </div>
             {% else %}
-            <p class="analytics-empty">No searches yet.</p>
+            <p class="analytics-empty analytics-panel">Nobody has registered interest yet. The charts appear once someone does.</p>
             {% endif %}
-          </article>
+          </section>
+
+          <section class="analytics-section" aria-labelledby="analytics-visitors-title">
+            <h2 id="analytics-visitors-title" class="analytics-section-title">Visitor activity</h2>
+            <p class="analytics-section-lead">Searches, route tabs opened on the T Levels page and quiz results. These are anonymous: no account, name or IP address is stored with them.</p>
+            <div class="analytics-panels">
+              <article class="analytics-panel analytics-panel--wide">
+                <h3 class="analytics-panel-title">Last {{ activity_days }} days</h3>
+                <p class="analytics-panel-note">Searches, programme views and quizzes per day (UTC).</p>
+                <ol class="analytics-columns" aria-label="Visitor events per day">
+                  {% for day in activity %}
+                  <li class="analytics-column">
+                    <span class="analytics-column-value">{{ day.count }}</span>
+                    <span class="analytics-column-track" aria-hidden="true"><span class="analytics-bar-fill" data-length="{{ day.length }}"></span></span>
+                    <span class="analytics-column-label">{{ day.name }}</span>
+                  </li>
+                  {% endfor %}
+                </ol>
+              </article>
+              <article class="analytics-panel">
+                <h3 class="analytics-panel-title">Programme views</h3>
+                <p class="analytics-panel-note">How many times each route tab was opened.</p>
+                {{ bar_list(views, "Programme views by route", tags=true) }}
+              </article>
+              <article class="analytics-panel">
+                <h3 class="analytics-panel-title">Quiz top matches</h3>
+                <p class="analytics-panel-note">How often each route came out on top in the quiz.</p>
+                {{ bar_list(quiz_results, "Quiz top matches by route", tags=true) }}
+              </article>
+              <article class="analytics-panel analytics-panel--wide">
+                <h3 class="analytics-panel-title">Top searches</h3>
+                {% if searches %}
+                <ol class="analytics-rows">
+                  {% for row in searches %}
+                  <li><span>{{ row.value }}</span><strong>{{ row.n }}</strong></li>
+                  {% endfor %}
+                </ol>
+                {% else %}
+                <p class="analytics-empty">No searches yet.</p>
+                {% endif %}
+              </article>
+            </div>
+          </section>
         </div>
-      </section>
+      </div>
     </div>
   </main>
 {% endblock %}

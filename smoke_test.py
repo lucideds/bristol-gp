@@ -452,6 +452,11 @@ def analytics_dashboard():
           re.search(r"Engineering</span>.*?<span class=\"analytics-bar-value\">2 ", body, re.S) is not None)
     check("normal", "No names or emails of people who registered are shown",
           "dash1@example.com" not in body and "Dashboard Person" not in body)
+    years = re.search(r'aria-label="Year group">(.*?)</ul>', body, re.S)
+    year_13 = re.search(r'analytics-slice--(\d)" aria-hidden="true"></span>\s*<span class="analytics-legend-label">Year 13',
+                        years.group(1) if years else "")
+    check("normal", "Year group is a donut whose Year 13 slice has the same colour as its legend entry",
+          year_13 is not None and f'class="analytics-donut-arc analytics-slice--{year_13.group(1)}"' in body, year_13)
     check("normal", "Bar lengths are data attributes (the CSP blocks style attributes)",
           'data-length="100"' in body and 'style="' not in body)
 

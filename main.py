@@ -1135,6 +1135,26 @@ def bars(counts, options, out_of=None):
     } for key, name in options]
 
 
+def donut(rows):
+    """Adds the arcs of a donut chart to bar chart rows, as SVG stroke-dasharray and stroke-dashoffset
+    values on a circle whose circumference is 100. Arcs start at 12 o'clock and go clockwise. Rows with
+    a count of 0 get no arc, and a small gap separates the arcs when there are several."""
+    total = sum(row["count"] for row in rows)
+    drawn = [row for row in rows if row["count"]]
+    gap = 0.8 if len(drawn) > 1 else 0
+    start = 0.0
+    for row in rows:
+        row["arc"] = None
+        if not row["count"]:
+            continue
+        size = 100 * row["count"] / total
+        length = max(size - gap, 0.1)
+        # The circle's dash pattern starts at 3 o'clock, so 25 moves it to 12 o'clock.
+        row["arc"] = {"dash": f"{length:.3f} {100 - length:.3f}", "offset": f"{25 - start:.3f}"}
+        start += size
+    return rows
+
+
 def count_by_route(db, kind):
     """Counts the events of one kind for each route, as bar chart rows in the site's route order."""
     rows = db.execute(
@@ -1159,8 +1179,9 @@ def interest_breakdown(db):
         "people": people,
         # People can pick several routes, so these percents are of people and can add up to over 100.
         "routes": bars(grouped("SELECT route, COUNT(*) FROM interest_routes GROUP BY route"), ROUTES, people),
-        "roles": bars(grouped("SELECT role, COUNT(*) FROM interests GROUP BY role"), INTEREST_ROLES, people),
-        "years": bars(grouped("SELECT year_group, COUNT(*) FROM interests GROUP BY year_group"), YEAR_GROUPS, people),
+        "roles": donut(bars(grouped("SELECT role, COUNT(*) FROM interests GROUP BY role"), INTEREST_ROLES, people)),
+        "years": donut(bars(grouped("SELECT year_group, COUNT(*) FROM interests GROUP BY year_group"),
+                            YEAR_GROUPS, people)),
         "schools": schools,
     }
 

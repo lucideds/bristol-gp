@@ -1,5 +1,7 @@
-/* Analytics dashboard: a navy header, a row of total tiles, then panels of bar charts and lists.
-   Colours are tokens from tokens.css, so every theme applies. Text and chart heights are in rem
+/* Analytics dashboard, following the team's design system export (HubPage and AccountPage):
+   breadcrumb above the h1, a 16rem section nav whose current item is a filled navy block, and
+   white panels with the large radius and card shadow. Route names use the orange route tag.
+   Colours are tokens from tokens.css, so every theme applies. Text and chart sizes are in rem
    so the Large / Extra large text settings scale them. Bar lengths are set by analytics.js. */
 .analytics-page {
   width: 100%;
@@ -10,62 +12,138 @@
   line-height: 1.5rem;
 }
 
-/* Same 1200px column as the nav bar */
 .analytics-container {
-  max-width: 1200px;
+  max-width: var(--container-max);
   margin: 0 auto;
-  padding: 0 24px;
+  padding: var(--space-5) var(--space-5) var(--space-8);
   box-sizing: border-box;
 }
 
-/* ---------- Header ---------- */
-.analytics-header {
-  background: var(--color-navy);
-  color: var(--color-on-navy);
-  padding: 40px 0 32px;
+.analytics-layout {
+  display: grid;
+  grid-template-columns: 16rem minmax(0, 1fr);
+  gap: var(--space-7);
+  align-items: start;
 }
 
+/* ---------- Section nav (design system ds-sidenav) ---------- */
+.analytics-nav {
+  position: sticky;
+  top: var(--space-4);
+}
+
+.analytics-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+
+.analytics-nav a {
+  display: flex;
+  align-items: center;
+  min-height: var(--target-min);
+  padding: 10px 12px;
+  box-sizing: border-box;
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--color-ink);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.analytics-nav a:hover {
+  background: var(--color-surface-muted);
+}
+
+.analytics-nav a[aria-current="true"] {
+  background: var(--color-selected);
+  color: var(--color-on-selected);
+  border-color: var(--color-ink);
+}
+
+/* ---------- Title ---------- */
 .analytics-title {
   margin: 0;
   font-size: 2.25rem;
-  line-height: 2.75rem;
+  line-height: 2.625rem;
   font-weight: 700;
 }
 
 .analytics-lead {
-  margin: 12px 0 0;
-  max-width: 44rem;
+  margin: var(--space-3) 0 0;
+  max-width: var(--reading-width);
   font-size: 1.125rem;
   line-height: 1.75rem;
-  color: var(--color-on-navy-muted);
 }
 
 .analytics-updated {
-  margin: 8px 0 0;
-  color: var(--color-on-navy-muted);
+  margin: var(--space-2) 0 0;
+  color: var(--color-ink-muted);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
 }
 
-.analytics-jump {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 24px;
-  margin-top: 20px;
+/* ---------- Sections and panels (design system ds-panel) ---------- */
+.analytics-section {
+  margin-top: var(--space-7);
+  scroll-margin-top: var(--space-4);
 }
 
-.analytics-jump a {
-  color: var(--color-on-navy);
+.analytics-section-title {
+  margin: 0 0 var(--space-4);
+  font-size: 1.75rem;
+  line-height: 2.25rem;
   font-weight: 700;
-  text-decoration: underline;
-  text-underline-offset: 3px;
 }
 
-.analytics-jump a:hover {
-  text-decoration-thickness: 2px;
+.analytics-section-lead {
+  margin: calc(-1 * var(--space-2)) 0 var(--space-5);
+  max-width: var(--reading-width);
 }
 
-.analytics-body {
-  padding-top: 32px;
-  padding-bottom: 64px;
+.analytics-panels {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.analytics-panel,
+.analytics-tile {
+  min-width: 0;
+  margin: 0;
+  box-sizing: border-box;
+  background: var(--color-surface);
+  border: var(--card-border-width, 1px) solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.analytics-panel {
+  padding: var(--space-5);
+}
+
+.analytics-panel--wide {
+  grid-column: 1 / -1;
+}
+
+.analytics-panel-title {
+  margin: 0;
+  font-size: 1.375rem;
+  line-height: 1.75rem;
+  font-weight: 700;
+}
+
+.analytics-panel-note {
+  margin: var(--space-1) 0 0;
+  color: var(--color-ink-muted);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.analytics-empty {
+  margin: var(--space-3) 0 0;
 }
 
 /* ---------- Total tiles ---------- */
@@ -74,17 +152,14 @@
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
 }
 
 /* The orange top edge is decoration only; the label says what each number is. */
 .analytics-tile {
-  padding: 16px 20px 18px;
-  background: var(--color-surface);
-  border: var(--card-border-width, 1px) solid var(--color-border-subtle);
+  padding: var(--space-4) var(--space-5) var(--space-5);
   border-top: 4px solid var(--color-orange);
-  border-radius: 8px;
 }
 
 .analytics-tile p {
@@ -96,10 +171,11 @@
 }
 
 .analytics-tile-total {
-  margin-top: 4px;
+  margin-top: var(--space-1);
   font-size: 2.5rem;
   line-height: 3rem;
   font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 
 .analytics-tile-week {
@@ -112,75 +188,35 @@
   color: var(--color-ink);
 }
 
-/* ---------- Sections and panels ---------- */
-.analytics-section {
-  margin-top: 48px;
-}
-
-.analytics-section-title {
-  margin: 0;
-  font-size: 1.75rem;
-  line-height: 2.25rem;
-  font-weight: 700;
-}
-
-.analytics-section-lead {
-  margin: 8px 0 20px;
-  max-width: 48rem;
-}
-
-.analytics-panels {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.analytics-panel {
-  min-width: 0;
-  margin: 0;
-  padding: 20px 24px 24px;
-  box-sizing: border-box;
-  background: var(--color-surface);
-  border: var(--card-border-width, 1px) solid var(--color-border-subtle);
-  border-radius: 8px;
-}
-
-.analytics-panel--wide {
-  grid-column: 1 / -1;
-}
-
-.analytics-panel-title {
-  margin: 0;
-  font-size: 1.25rem;
-  line-height: 1.75rem;
-  font-weight: 700;
-}
-
-.analytics-panel-note {
-  margin: 4px 0 0;
-  color: var(--color-ink-muted);
-  font-size: 0.875rem;
+/* ---------- Route tag (design system ds-tag--route) ---------- */
+.analytics-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.625rem;
+  border: 1.5px solid var(--color-orange-text);
+  border-radius: var(--radius-pill);
+  background: var(--color-orange-tint);
+  color: var(--color-ink);
+  font-size: 0.8125rem;
   line-height: 1.25rem;
-}
-
-.analytics-empty {
-  margin: 12px 0 0;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 /* ---------- Horizontal bar charts ---------- */
 .analytics-bars {
   list-style: none;
-  margin: 16px 0 0;
+  margin: var(--space-4) 0 0;
   padding: 0;
   display: grid;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .analytics-bar {
   display: grid;
-  grid-template-columns: minmax(6rem, 14rem) minmax(0, 1fr) auto;
+  grid-template-columns: minmax(6rem, 10rem) minmax(0, 1fr) auto;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .analytics-bar-label {
@@ -192,7 +228,7 @@
   display: block;
   height: 0.875rem;
   background: var(--color-surface-muted);
-  border-radius: 4px;
+  border-radius: var(--radius-pill);
   overflow: hidden;
 }
 
@@ -202,7 +238,7 @@
   width: var(--bar-length, 0);
   height: 100%;
   background: var(--color-orange);
-  border-radius: 4px;
+  border-radius: var(--radius-pill);
 }
 
 .analytics-bar-value {
@@ -217,14 +253,120 @@
   color: var(--color-ink-muted);
 }
 
+/* ---------- Donut charts ---------- */
+/* Five slice colours. Each theme gets ones that stand apart on its own surface; the legend
+   always lists the counts as text, so colour is never the only way to read the chart. */
+.analytics-page {
+  --slice-1: var(--color-orange);
+  --slice-2: var(--color-link);
+  --slice-3: var(--color-success);
+  --slice-4: var(--color-navy);
+  --slice-5: var(--color-danger);
+}
+
+[data-theme="dark"] .analytics-page,
+[data-theme="high-contrast"] .analytics-page {
+  --slice-4: var(--color-ink);
+}
+
+.analytics-slice--1 { --slice: var(--slice-1); }
+.analytics-slice--2 { --slice: var(--slice-2); }
+.analytics-slice--3 { --slice: var(--slice-3); }
+.analytics-slice--4 { --slice: var(--slice-4); }
+.analytics-slice--5 { --slice: var(--slice-5); }
+
+.analytics-donut {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-5) var(--space-6);
+  margin-top: var(--space-4);
+}
+
+.analytics-donut-figure {
+  position: relative;
+  flex: none;
+  width: 11rem;
+  height: 11rem;
+}
+
+.analytics-donut-figure svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.analytics-donut-track,
+.analytics-donut-arc {
+  fill: none;
+  stroke-width: 6.5;
+}
+
+.analytics-donut-track {
+  stroke: var(--color-surface-muted);
+}
+
+.analytics-donut-arc {
+  stroke: var(--slice);
+}
+
+.analytics-donut-total {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--color-ink-muted);
+}
+
+.analytics-donut-total strong {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.analytics-legend {
+  flex: 1 1 14rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.analytics-legend li {
+  display: grid;
+  grid-template-columns: 1rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.analytics-swatch {
+  width: 1rem;
+  height: 1rem;
+  border-radius: var(--radius-sm);
+  background: var(--slice);
+}
+
+.analytics-legend-value {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
 /* ---------- Daily column chart ---------- */
 .analytics-columns {
   list-style: none;
-  margin: 16px 0 0;
+  margin: var(--space-4) 0 0;
   padding: 0;
   display: grid;
   grid-template-columns: repeat(14, minmax(0, 1fr));
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .analytics-column {
@@ -247,13 +389,14 @@
   max-width: 3rem;
   height: 9rem;
   background: var(--color-surface-muted);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   overflow: hidden;
 }
 
 .analytics-column-track .analytics-bar-fill {
   width: 100%;
   height: var(--bar-length, 0);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
 }
 
 .analytics-column-label {
@@ -266,16 +409,16 @@
 /* ---------- Count lists (schools, searches) ---------- */
 .analytics-rows {
   list-style: none;
-  margin: 12px 0 0;
+  margin: var(--space-3) 0 0;
   padding: 0;
   columns: 2;
-  column-gap: 48px;
+  column-gap: var(--space-7);
 }
 
 .analytics-rows li {
   display: flex;
   justify-content: space-between;
-  gap: 16px;
+  gap: var(--space-4);
   padding: 10px 0;
   border-bottom: 1px solid var(--color-border-subtle);
   break-inside: avoid;
@@ -293,9 +436,30 @@
 }
 
 /* ---------- Responsive ---------- */
-@media (max-width: 900px) {
+@media (max-width: 1100px) {
   .analytics-panels {
     grid-template-columns: 1fr;
+  }
+}
+
+/* The design system collapses to one column under 760px; the section nav becomes a row of links. */
+@media (max-width: 760px) {
+  .analytics-layout {
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+  }
+
+  .analytics-nav {
+    position: static;
+  }
+
+  .analytics-nav ul {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .analytics-tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .analytics-rows {
@@ -305,8 +469,9 @@
 
 /* Fourteen columns don't fit on a phone, so the daily chart becomes rows like the other charts. */
 @media (max-width: 640px) {
-  .analytics-header {
-    padding: 32px 0 24px;
+  .analytics-container {
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
   }
 
   .analytics-title {
@@ -315,12 +480,16 @@
   }
 
   .analytics-panel {
-    padding: 16px;
+    padding: var(--space-4);
+  }
+
+  .analytics-donut {
+    justify-content: center;
   }
 
   .analytics-bar {
     grid-template-columns: minmax(0, 1fr) auto;
-    gap: 4px 12px;
+    gap: var(--space-1) var(--space-3);
   }
 
   .analytics-bar-track {
@@ -330,14 +499,13 @@
 
   .analytics-columns {
     grid-template-columns: 1fr;
-    gap: 8px;
   }
 
   .analytics-column {
     display: grid;
     grid-template-columns: 6.5rem minmax(0, 1fr) 2.5rem;
     align-items: center;
-    gap: 12px;
+    gap: var(--space-3);
   }
 
   .analytics-column-label {
@@ -364,5 +532,12 @@
   .analytics-column-track .analytics-bar-fill {
     height: 100%;
     width: var(--bar-length, 0);
+    border-radius: var(--radius-sm);
+  }
+}
+
+@media (max-width: 420px) {
+  .analytics-tiles {
+    grid-template-columns: 1fr;
   }
 }

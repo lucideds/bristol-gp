@@ -97,7 +97,7 @@ Every link on the site uses these short URLs. The old file-name addresses, such 
 | `/account` | GET | `account.html`. Requires sign-in. `?edit=name`, `?edit=email` or `?edit=password` opens that change form, and `?edit=remove-interest` opens the "Remove your interest" confirmation, so the links work without JavaScript. |
 | `/account/<form>` | POST | Saves one account detail (`name`, `email` or `password`), or removes the user's interest (`remove-interest`). See `ACCOUNT_FORMS` in `main.py`. Redirects to `/account` with a success message, or shows the page again with the form open and the error. Requires sign-in. Limited to 10 POSTs per minute. |
 | `/interest` | GET, POST | `interest.html`, Register your interest. Visitors who aren't signed in see links to sign in or create an account. `?step=about`, `?step=interests` or `?step=check` picks the step; each step's POST checks only that step, keeps the answers in the session and redirects to the next step. The final POST saves the answers and posts them to Slack. Limited to 10 POSTs per minute. |
-| `/analytics` | GET | `analytics.html`, a dashboard of totals (with the last 7 days), registered interest by route, role, year group and school, visitor activity per day for 14 days, programme views, quiz results and top searches. Requires sign-in with an email in `ANALYTICS_EMAILS`; anyone else signed in gets a 404. |
+| `/analytics` | GET | `analytics.html`, a dashboard of totals (with the last 7 days), registered interest by route, role and year group (the last two as donut charts) and school, visitor activity per day for 14 days, programme views, quiz results and top searches. Requires sign-in with an email in `ANALYTICS_EMAILS`; anyone else signed in gets a 404. |
 | `/download/<name>` | GET | A spec PDF from `resources/specs/`. Requires sign-in. Limited to 30 per minute. |
 | `/accessibility` | GET | Redirects to `/#accessibility`. The settings are now a popup on every page. |
 | `/<page>.html` | GET | Redirects an old file-name address to its short URL. |
@@ -266,7 +266,7 @@ The navigation, footer and chat widget are injected by JavaScript, so you don't 
 | Contact | `contact.css` | `contact.js` (moves focus to the result after sending) |
 | Login | `auth.css` | `auth.js` (switches between sign-in and sign-up, client-side checks) |
 | Account | `auth.css`, `account.css` | `auth.js` (opens and closes the change forms in place, client-side checks) |
-| Analytics | `analytics.css` | `analytics.js` (sizes the chart bars from `data-length`, since the CSP blocks `style` attributes) |
+| Analytics | `analytics.css` | `analytics.js` (sizes the chart bars from `data-length`, since the CSP blocks `style` attributes, and highlights the section nav). The donut charts are server-drawn SVG and need no script |
 | Privacy | `privacy.css` | |
 | 404, 500 | `errorPage.css` | `errorPage.js` (404 only: the "Go back" button) |
 
