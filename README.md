@@ -55,6 +55,7 @@ bristol-gp/
 ├── bot/
 │   └── bot.py              Slack bot: posts contact messages and interest, handles the message buttons
 ├── send_slack_test.py      Sends one fake contact message to Slack to check the setup
+├── seed_db.py              Fills site.db with made-up test data (--reset removes it)
 ├── check_chat_guardrails.py  Sends test conversations to the real chat model and checks it refuses or answers
 ├── smoke_test.py           Runs the backend through the Flask test client and prints PASS or FAIL per case
 ├── requirements.txt
@@ -146,6 +147,8 @@ The 404 handler builds its list of pages from the routes, so a new page is inclu
 - `interest_routes`: `user_id`, `route`, one row per route chosen, primary key `(user_id, route)`. `save_interest()` replaces a user's rows each time, and `remove_interest()` deletes from both tables, since SQLite doesn't enforce the `REFERENCES` without `PRAGMA foreign_keys`.
 
 There are no migrations. `CREATE TABLE IF NOT EXISTS` does not change existing tables, so if you change a schema, either alter `site.db` by hand or delete it and let the app recreate it.
+
+To fill it with made-up test data (30 accounts, about two thirds with registered interest, 8 contact messages and 14 days of analytics events), run `.venv/bin/python -W ignore seed_db.py`. It copies `site.db` to `site.db.bak` first. Seeded emails end `@seed.example.com` and every seeded password is `Passw0rd!`. `seed_db.py --reset` removes the seeded accounts, interest and messages but not the analytics events; restore `site.db.bak` to undo those too.
 
 To look at the data:
 

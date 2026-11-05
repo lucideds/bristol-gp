@@ -1,5 +1,6 @@
 .DS_Store
 site.db
+site.db.bak
 .env
 .venv/
 __pycache__/
