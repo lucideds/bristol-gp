@@ -18,7 +18,12 @@ from extensions import limiter
 chat_bp = Blueprint("chat_api", __name__)
 
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
-DEFAULT_CHAT_MODEL = "nvidia/nemotron-3.5-super-vl:free"  # Used unless OPENROUTER_MODEL is set.
+DEFAULT_CHAT_MODEL = "anthropic/claude-sonnet-5.5"  # Used unless OPENROUTER_MODEL is set.
+
+# Sent with every request, whatever the model. OpenRouter then only routes to endpoints with zero
+# data retention, and fails the request rather than fall back to one that keeps or trains on chats.
+# The privacy page promises this, so don't remove it.
+CHAT_PROVIDER = {"zdr": True, "data_collection": "deny"}
 
 # Sent before every conversation. Visitors can't change it.
 CHAT_SYSTEM_PROMPT = """
@@ -220,6 +225,7 @@ def call_openrouter(clean, api_key, model, stream=False):
         "max_tokens": CHAT_MAX_TOKENS,
         "temperature": 0.2,
         "reasoning": dict(CHAT_REASONING),
+        "provider": dict(CHAT_PROVIDER),
     }
     if stream:
         body["stream"] = True
@@ -246,7 +252,7 @@ def call_openrouter(clean, api_key, model, stream=False):
     if not 200 <= resp.status_code < 300:
         current_app.logger.warning("OpenRouter error %s: %s", resp.status_code, resp.text[:300])
         resp.close()
-        if resp.status_code == 429:  # OpenRouter (or the free model) is rate limiting us.
+        if resp.status_code == 429:  # OpenRouter or the model provider is rate limiting us.
             raise ChatError(BUSY, 503)
         raise ChatError(UNAVAILABLE, 502)  # e.g. a bad key (401/403).
     return resp

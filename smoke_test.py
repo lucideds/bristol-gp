@@ -61,6 +61,7 @@ main.send_interest_to_slack = fake_send_interest_to_slack
 
 model_reply = "A T Level is a two-year course for 16 to 19 year olds."
 sent_to_model = []  # The message lists chat_api.py sent to OpenRouter.
+sent_bodies = []  # The whole request bodies, to check the model and provider settings.
 
 
 class FakeOpenRouterResponse:
@@ -79,6 +80,7 @@ class FakeOpenRouterResponse:
 
 def fake_post(url, json=None, **kwargs):
     sent_to_model.append(json["messages"])
+    sent_bodies.append(json)
     return FakeOpenRouterResponse(model_reply)
 
 
@@ -564,6 +566,9 @@ def chat_validation():
           r.status_code == 200 and r.get_json() == {"reply": model_reply}, r.get_json())
     check("normal", "The server adds its own system prompt first",
           sent_to_model[-1][0]["role"] == "system" and sent_to_model[-1][1] == user("What is a T Level?"))
+    check("normal", "Requests ask OpenRouter for zero data retention endpoints only",
+          sent_bodies[-1].get("provider") == {"zdr": True, "data_collection": "deny"},
+          sent_bodies[-1].get("provider"))
     r = chat([user("Hi"), assistant("Hello."), user("What routes are there?")])
     check("normal", "A conversation with earlier replies is accepted", r.status_code == 200, r.status_code)
 
