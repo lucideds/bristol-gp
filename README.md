@@ -33,7 +33,7 @@ Settings are read from environment variables. `main.py` and `bot/bot.py` also lo
 |---|---|---|
 | `SECRET_KEY` | No | Signs the session cookie. If it is unset, the app generates one on first start and saves it to `.env`, so restarts keep everyone signed in. If `.env` can't be written, a random key is used for that run and everyone is signed out when the app restarts. |
 | `OPENROUTER_API_KEY` | For the chat widget | OpenRouter API key. Without it, the chat API returns 503 and the rest of the site still works. |
-| `OPENROUTER_MODEL` | No | Model ID. Defaults to `nvidia/nemotron-3.5-super-vl:free`. |
+| `OPENROUTER_MODEL` | No | Model ID. Defaults to `anthropic/claude-sonnet-5.5`. Every request is limited to zero data retention endpoints (`CHAT_PROVIDER` in `chat_api.py`). |
 | `OPENROUTER_SITE_URL` | No | Public URL of the site, sent to OpenRouter as the `HTTP-Referer` header. Defaults to the request's host URL. |
 | `SLACK_BOT_TOKEN` | For Slack | Bot token (`xoxb-...`) used to post messages. |
 | `SLACK_CHANNEL_ID` | For Slack | Channel that receives contact form messages. |

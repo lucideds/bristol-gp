@@ -1,6 +1,6 @@
 # Pippin: Backend development notes
 
-Last updated 3 November 2026
+Last updated 5 November 2026
 
 These notes cover how the site's backend was built and the decisions behind it. For the request and response details of each route, see "Endpoint structures and schemas".
 
@@ -102,7 +102,7 @@ The prototype review on 2 November found that the assistant blocked off-topic su
 - Temperature went from 0.3 to 0.2.
 - The server checks replies with looks_like_code(): code fences, a reply that opens with { or [, and lines that start like code (def, print(, import, variable assignments, HTML tags, SELECT ... FROM and so on). The patterns are case-sensitive so normal sentences don't match. A match replaces the reply with CODE_REFUSAL. Assistant messages sent in the history get the same check, so a made-up earlier reply with code in it is passed on as the refusal.
 
-Poems, role-play and other languages are only blocked by the prompt, because they can't be told apart from prose reliably. A second AI call to check each message would catch more but doubles the wait and the use of the free model's rate limit, so it's left as further development.
+Poems, role-play and other languages are only blocked by the prompt, because they can't be told apart from prose reliably. A second AI call to check each message would catch more but doubles the wait and the cost of each reply, so it's left as further development.
 
 The cases are in check_chat_guardrails.py, which calls the real model through the OpenRouter key in .env: 14 that must be refused and 5 that must still be answered, such as "Do I need to know Python for the Digital T Level?" and a safeguarding message. Before the change, 4 of the original 12 attacks got through. After it, all 19 cases passed three runs each (57/57).
 
@@ -123,6 +123,10 @@ We started on nvidia/nemotron-3.5-lightning:free with reasoning turned off. On 1
 
 - The OpenRouter read timeout went up from 30 to 90 seconds.
 - Reasoning effort dropped from medium to low, so less of the 4096 max_tokens budget is spent on thinking. Reasoning is set to exclude, so the thinking is never sent back to us or to visitors.
+
+On 5 November the default changed to anthropic/claude-sonnet-5.5, because we wanted better performance from the chat assistant than the free Nemotron model gave. It's a paid model, so it also doesn't share the free tier's rate limits. The 57/57 guardrail result above was measured on Nemotron, so check_chat_guardrails.py needs to be run again on Sonnet.
+
+At the same time, every request started sending OpenRouter's provider settings {"zdr": true, "data_collection": "deny"} (CHAT_PROVIDER in chat_api.py). OpenRouter then only routes the request to endpoints with zero data retention, and fails it rather than fall back to one that stores chat messages or trains on them. This applies whatever OPENROUTER_MODEL is set to. Before this, zero data retention relied on production setting the paid Nemotron model, because the :free default kept data. smoke_test.py checks that the settings are sent.
 
 Temperature is 0.2 (0.3 until 3 November). The model can be changed without a code edit by setting OPENROUTER_MODEL, which is read on every request.
 
