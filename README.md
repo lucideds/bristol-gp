@@ -290,6 +290,8 @@ The Advice page has four sections: `#why-choose`, `#your-path` (a timeline from 
 .venv/bin/python -W ignore smoke_test.py
 ```
 
+GitHub Actions also runs it on every push to `main` and every pull request, on Python 3.9 and 3.13 (`.github/workflows/smoke-tests.yml`). You can start a run by hand from the repo's Actions tab. The workflow doesn't run `check_chat_guardrails.py`, because that calls the real chat model and needs an OpenRouter key, so it uses no secrets.
+
 Run it before committing a backend change, and add cases when you add a form, a rule or a route. It doesn't check layout, so also check by hand:
 
 - Each page you changed at desktop width and at a phone width of about 390px.

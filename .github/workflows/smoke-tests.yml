@@ -1,0 +1,44 @@
+# Runs smoke_test.py on every push to main and every pull request.
+# check_chat_guardrails.py is left out on purpose: it calls the real chat model, needs an
+# OpenRouter key and its answers vary between runs. smoke_test.py stands in for OpenRouter
+# and Slack, so this job needs no secrets.
+name: Smoke tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: smoke-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke-test:
+    # Pinned rather than ubuntu-latest so Python 3.9 stays installable on the runner.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        # 3.9 matches the team's .venv and is the oldest version the README supports.
+        python-version: ["3.9", "3.13"]
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run smoke tests
+        run: python -W ignore smoke_test.py

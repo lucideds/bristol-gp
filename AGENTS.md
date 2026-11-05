@@ -68,7 +68,7 @@ Team decisions: Slack integration is required (notification on contact submissio
 
 ## Verifying changes
 
-Run `.venv/bin/python -W ignore smoke_test.py` after any backend change; it should end `RESULT: N passed, 0 failed`. When you add or change a form, a rule, a limit or a route, add or update its cases there too. For a quick one-off check, use the Flask test client directly:
+Run `.venv/bin/python -W ignore smoke_test.py` after any backend change; it should end `RESULT: N passed, 0 failed`. When you add or change a form, a rule, a limit or a route, add or update its cases there too. `.github/workflows/smoke-tests.yml` runs the same script on pushes to `main` and on pull requests (Python 3.9 and 3.13, no secrets); keep `smoke_test.py` offline so it keeps working there. For a quick one-off check, use the Flask test client directly:
 
 ```bash
 .venv/bin/python -W ignore - <<'EOF' 2>/dev/null
